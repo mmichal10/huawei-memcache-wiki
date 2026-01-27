@@ -28,7 +28,9 @@ ERROR [952-952][MMC mmc.cpp:70 mmc_init] failed to create or start local service
 ```
 
 **问题根因**
+
 此问题是因为mmc-local.conf配置文件中将ock.mmc.local_service.protocol设置为host_rdma，但是没有正确设置ock.mmc.local_service.hcom_url中的ip地址
 
 **解决方案**
+
 需要在环境上执行show_gids查询RDMA网卡的IP地址，并将其设置到ock.mmc.local_service.hcom_url中
