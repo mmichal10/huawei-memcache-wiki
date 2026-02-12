@@ -6,16 +6,16 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 
 ## <span style="color:#0066cc;">特性功能</span>		
 
-[] [***330***] 支持HBM+DRAM+SSD三层缓存，预计330提供POC测试版本
-[x] [***2025H4***] 支持HBM + DRAM两级缓存
-[x] [***2025H3***] 支持DRAM单级缓存
-
+[] [***330***] 支持HBM+DRAM+SSD三层缓存，预计330提供POC测试版本   
+[x] [***2025H4***] 支持HBM + DRAM两级缓存    
+[x] [***2025H3***] 支持DRAM单级缓存    
+    
 ## <span style="color:#0066cc;">集群可靠性</span>
-[x] [***2025H4***] 支持meta service高可用，支持主备切换，元数据恢复
-[x] [***2025H4***] 支持local service动态扩缩，支持数据多副本放置策略
+[x] [***2025H4***] 支持meta service高可用，支持主备切换，元数据恢复    
+[x] [***2025H4***] 支持local service动态扩缩，支持数据多副本放置策略    
 
 ## <span style="color:#0066cc;">可维测</span>
-[x] [***130***] meta service支持基于[restful](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_restful_api.md)进行集群管理、数据查询、指标查询，支持对接prometheus和grafana
+[x] [***130***] meta service支持基于[restful](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_restful_api.md)进行集群管理、数据查询、指标查询，支持对接prometheus和grafana    
 
 ---
 
