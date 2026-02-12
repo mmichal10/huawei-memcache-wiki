@@ -15,11 +15,6 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 [x] [***2025H4***] 支持local service动态扩缩，支持数据多副本放置策略
 
 ## <span style="color:#0066cc;">可维测</span>
-
-- DRAM 内存池
-- HBM + DRAM两级内存池
-- MetaService 高可用
-- LocalService 动态扩缩容
 [x] [***130***] meta service支持基于[restful](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_restful_api.md)进行集群管理、数据查询、指标查询，支持对接prometheus和grafana
 
 ---
