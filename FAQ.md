@@ -35,7 +35,7 @@ ERROR [952-952][MMC mmc.cpp:70 mmc_init] failed to create or start local service
 
 需要在环境上执行show_gids查询RDMA网卡的IP地址，并将其设置到ock.mmc.local_service.hcom_url中
 
-## HOST_RDMA跨机传输后出现数据一致性问题
+## 2. HOST_RDMA跨机传输后出现数据一致性问题
 **问题现象**
 get获取到的数据和put不相符
 - 单机双client测试无问题
