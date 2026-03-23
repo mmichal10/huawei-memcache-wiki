@@ -53,8 +53,7 @@ HCOM最新版本HOST_RDAM传输需要rdma网卡MTU大于4096，如果不正确�
 ip link set enp67s0f0np0 mtu 4500
 ```
 
-
-## 7. 多个local进程启动失败，日志中报错 AddVaInfo failed: address overlap
+## 3. 多个local进程启动失败，日志中报错 AddVaInfo failed: address overlap
 **问题现象**
 
 初始化时，日志中有如下打印：
