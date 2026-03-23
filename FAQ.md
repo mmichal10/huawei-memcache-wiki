@@ -63,9 +63,11 @@ AddVaInfo failed: address overlap
 **问题根因**
 
 1、每个local进程的配置参数 `max.dram.size` 和 `max.hbm.size` 不一致，比如A进程的  `max.dram.size`  设置 1GB，B进程的 `max.dram.size`设置为1GB，则不一致。
+
 2、`max.dram.size` 和 `max.hbm.size` 没有设置或者设置为0；而不同local进程的 `dram.size` 和 `hbm.size` 配置不一样，比如A进程`hbm.size`设置为1GB，B进程`hbm.size`设置为2GB或者为设置，则不一致。
 
 **解决方案**
 
 1、手动设置 `max.dram.size`和 `max.hbm.size`，让每个local进程一致。
+
 2、如果不设置 `max.dram.size` 或者 `max.hbm.size`，则每个local进程对应的 `dram.size` 和 `hbm.size`要一致。
