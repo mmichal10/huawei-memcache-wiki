@@ -35,8 +35,10 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 - [x] [**快速演进**] 最新feature开发分支，通过内部smoke pipeline用例后，会按照1周~半月的时间节奏同步到master
 
 ### <span style="color:#9933ff;">稳定分支</span>
+**release** 开头的分支是我们发布的稳定分支。比如**release/1.1**，第一个版本为v1.1.0，有bugfix修复，则版本递增v1.1.1/v1.1.2等。
+每发布一个版本，会有对应的tag。
 
-- [ ] [**release/1.1**] 下一个迭代推出的稳定分支，预计于430推出，对应版本号1.1.x
+- [ ] [**release/1.1**] 下一个迭代推出的稳定分支，预计于430推出，第一个版本为v1.1.0。
 - [x] [**v1.0.0**] 1.0.x稳定分支，只会合入必要修改的bugfix，在必要bugfix合入之后，会推送到[pypi](https://pypi.org/project/memcache-hybrid/#history)，对应版本号 1.0.x，x为从0开始递增的数字
 
 ---
