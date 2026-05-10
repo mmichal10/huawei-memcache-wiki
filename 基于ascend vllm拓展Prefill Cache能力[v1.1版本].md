@@ -82,4 +82,5 @@ docker run -dit \
 # 进入容器
 docker exec -ti vllm-ascend-memcache bash
 ```
-
+### 3.3.1 Memfabric安装
+`pip install memcache_hybrid`
