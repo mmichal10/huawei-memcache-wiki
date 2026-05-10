@@ -82,5 +82,207 @@ docker run -dit \
 # 进入容器
 docker exec -ti vllm-ascend-memcache bash
 ```
-### 3.3.1 Memfabric安装
+### 3.3.2 Memfabric安装
 `pip install memcache_hybrid`
+其他安装方式可参考[安装](url)
+
+### 3.3.3 配置配置文件+拉起MetaService服务
+MemCache特性有2个配置文件（mmc-meta.conf和mmc-local.conf）需要配置。其中mmc-meta.conf需要在MetaService拉起前完成配置，mmc-local.conf需要在拉起vLLM Ascend前完成配置。
+
+双机场景，双机使用相同的配置文件内容，并只需要在主机拉起MetaService。
+
+1. 进入容器：
+```
+# 进入容器,容器名根据实际情况配置
+docker exec -ti vllm-ascend-memcache bash
+```
+
+2. 创建配置文件：
+mmc-meta.conf配置文件
+```
+
+```
+mmc-local.conf配置文件
+```
+
+```
+
+更多配置参数可可参考[配置](url)
+
+3. 拉起metaservice服务（双机部署时，只有主机需要拉起）。
+```
+# 使用python脚本方式，拉起metaservice服务
+python3 metaservice.py
+```
+脚本内容如下（metaservice.py）
+```
+from memcache_hybrid import MetaService
+MetaService.main()
+```
+更多拉起方式可参考[拉起metaservice](url)
+
+### 3.3.4  拉起开启MemCache特性的vLLM Ascend服务
+#### 场景1：单机服务
+拉起单机vLLM Ascend服务，增加开启memcache特性的参数，原有业务的配置参数（如卡号，权重等）保持不变。
+```
+source /usr/local/Ascend/ascend-toolkit/set_env.sh
+source /usr/local/Ascend/nnal/atb/set_env.sh
+
+export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+export VLLM_USE_V1=1
+export ASCEND_RT_VISIBLE_DEVICES=2,3 # 使用的NPU卡号
+export ACL_OP_INIT_MODE=1
+export PYTORCH_NPU_ALLOC_CONF="expandable_segments:True"
+export PYTHONHASHSEED=0
+export HCCL_BUFFSIZE=1024
+
+python -m vllm.entrypoints.openai.api_server \
+  --model=/root/.cache/DeepSeek-R1-Distill-Qwen-32B-w8a8 \# 修改实际的权重路径
+  --served-model-name qwen3 \
+  --trust-remote-code \
+  --async-scheduling \
+  --quantization ascend \
+  --distributed-executor-backend mp \
+  --tensor-parallel-size 2 \
+  --port 8113 \
+  --max-model-len 32K \
+  --compilation_config '{"cudagraph_mode":"FULL_DECODE_ONLY"}' \
+  --additional_config='{"ascend_scheduler_config":{"enabled":false}, "enable_shared_expert_dp":false, "chunked_prefill_for_mla":true}' \
+  --gpu-memory-utilization 0.90 \
+  --kv-transfer-config \# 使能MemCache特性
+  '{
+      "kv_connector": "AscendStoreConnector",
+      "kv_role": "kv_both",
+      "kv_connector_extra_config": {
+        "backend": "memcache",
+        "mooncake_rpc_port":"0"
+      }
+  }' > log_vllm_memcache.log 2>&1
+```
+开启MemCache特性的vLLM Ascend服务，在服务的运行日志中会新增External prefix cache hit rate关键字，用于指示MemCache命中率（优先显存命中，显存未命中而内存命中时，统计此命中率）。
+
+单机多个服务开启MemCache场景，保持mmc-meta.conf和mmc-local.conf文件内容相同，可以只拉起1个MetaService，然后拉起多个推理服务。
+#### 场景2：双机服务
+双机DeepSeek-V3服务开启MemCache场景，只需要在主机拉起MetaService，然后在原有双机拉起命令上，增加开启MemCache特性的参数。
+
+双机拉起命令可参考官方文档：https://docs.vllm.ai/projects/ascend/zh-cn/v0.13.0/tutorials/DeepSeek-V3.1.html
+
+权重可参考前置准备，使用modelslim进行转换。
+
+双机拉起DeepSeek的参考命令如下，假设主节点的IP为xx.xx.xx.0，对应网卡名为xxx0；从节点IP为xx.xx.xx.1，对应网卡名为xxx1。
+
+主节点拉起命令:
+```
+source /usr/local/Ascend/ascend-toolkit/set_env.sh
+source /usr/local/Ascend/nnal/atb/set_env.sh
+
+export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+
+# 可通过ifconfig获得以下参数
+# nic_name为local_ip对应的网卡名，例如enp***，local_ip为当前节点的通信IP
+nic_name="xxx0"
+local_ip="xx.xx.xx.0"
+
+# node0_ip配置为主节点IP，
+node0_ip="xx.xx.xx.0"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTHONHASHSEED=0
+export HCCL_BUFFSIZE=1024
+export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
+export VLLM_USE_V1=1
+
+vllm serve /root/.cache/DeepSeek-V3.1-w8a8-mtp-QuaRot \
+  --host 0.0.0.0 \
+  --port 8004 \
+  --enforce-eager \
+  --data-parallel-size 2 \
+  --data-parallel-size-local 1 \
+  --api-server-count 2 \
+  --data-parallel-address $node0_ip \
+  --data-parallel-rpc-port 13389  \
+  --tensor-parallel-size 8 \
+  --seed 1024 \
+  --served-model-name deepseek \
+  --max-model-len 65536 \
+  --max-num-batched-tokens 16384 \
+  --trust-remote-code \
+  --gpu-memory-utilization 0.9 \
+  --quantization ascend \
+  --max-num_seqs 20 \
+  --enable-expert-parallel \
+  --no-enable-prefix-caching \
+  --additional_config='{"ascend_scheduler_config":{"enabled":false}, "enable_shared_expert_dp":false, "chunked_prefill_for_mla":true}' \
+  --kv-transfer-config \
+  '{
+        "kv_connector": "AscendStoreConnector",
+        "kv_role": "kv_both",
+        "kv_connector_extra_config": {
+                "backend": "memcache",
+                "mooncake_rpc_port":"0"
+           }
+  }' > log_hunbu_0.log 2>&1
+```
+从节点拉起命令：
+```
+source /usr/local/Ascend/ascend-toolkit/set_env.sh
+source /usr/local/Ascend/nnal/atb/set_env.sh
+
+export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+
+# 可通过ifconfig获得以下参数
+# nic_name为local_ip对应的网卡名，例如enp***，local_ip为当前节点的通信IP
+nic_name="xxx1"
+local_ip="xx.xx.xx.1"
+
+# node0_ip配置为主节点IP，
+node0_ip="xx.xx.xx.0"
+
+export HCCL_IF_IP=$local_ip
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTHONHASHSEED=0
+export HCCL_BUFFSIZE=1024
+export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
+export VLLM_USE_V1=1
+
+vllm serve /weights/DeepSeek-V3.1-w8a8-mtp-QuaRot \
+  --host 0.0.0.0 \
+  --port 8004 \
+  --headless  \
+  --enforce-eager \
+  --data-parallel-size 2 \
+  --data-parallel-size-local 1 \
+  --data-parallel-start-rank 1 \
+  --data-parallel-address $node0_ip \
+  --data-parallel-rpc-port 13389  \
+  --tensor-parallel-size 8 \
+  --seed 1024 \
+  --served-model-name deepseek \
+  --max-model-len 65536 \
+  --max-num-batched-tokens 16384 \
+  --trust-remote-code \
+  --gpu-memory-utilization 0.9 \
+  --quantization ascend \
+  --max-num_seqs 20 \
+  --enable-expert-parallel \
+  --no-enable-prefix-caching \
+  --additional_config='{"ascend_scheduler_config":{"enabled":false}, "enable_shared_expert_dp":false, "chunked_prefill_for_mla":true}' \
+  --kv-transfer-config \
+   '{
+        "kv_connector": "AscendStoreConnector",
+        "kv_role": "kv_both",
+        "kv_connector_extra_config": {
+                "backend": "memcache",
+                "mooncake_rpc_port":"0"
+           }
+  }' > log_hunbu_1.log 2>&1
+```
