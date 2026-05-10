@@ -9,6 +9,8 @@ MemCache插件是一个由社区维护的高性能分布式KVCache缓存插件�
 ### 安装
 ### 示例
    #### 基于ascend vllm拓展Prefill Cache能力
+   #### 基于sglang拓展Prefill Cache能力
+   #### 基于mindie拓展Prefill Cache能力
 ## 用户指南
 ### 特性指南
    #### 支持的模型
