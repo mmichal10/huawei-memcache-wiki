@@ -100,11 +100,30 @@ docker exec -ti vllm-ascend-memcache bash
 2. 创建配置文件：
 mmc-meta.conf配置文件
 ```
-
+# 双机场景，在主节点和从节点上，以下IP地址都需配置为主节点的IP地址
+# 端口号可按需修改，需要同步修改mmc-local.conf，保持一致
+ock.mmc.meta_service_url = tcp://xx.xx.xx.xx:5000
+ock.mmc.meta_service.config_store_url = tcp://xx.xx.xx.xx:6000
+ock.mmc.meta_service.metrics_url = http://xx.xx.xx.xx:8000
+ock.mmc.log_level = info
 ```
-mmc-local.conf配置文件
+mmc-local.conf配置文件，按需配置NPU卡数和MemCache占用的DRAM内存大小。
 ```
+# 以下IP地址，端口号都需和mmc-meta.conf保持一致
+ock.mmc.meta_service_url = tcp://xx.xx.xx.xx:5000
+ock.mmc.local_service.config_store_url = tcp://xx.xx.xx.xx:6000
+ock.mmc.log_level = info
 
+# 配置总NPU卡数（多机场景配所有设备的总NPU卡数）
+ock.mmc.local_service.world_size = 256
+
+# 300I A2场景（单机），配置为host_shm
+# 800I A2场景（单双机），配置为device_rdma
+ock.mmc.local_service.protocol = device_rdma
+
+# 表示给每卡分配的内存空间，例如配置128G，则使用2卡的服务会占用共256G系统内存
+# 注意预留足够的空间给系统应用，剩余内存空间可分配给MemCache使用
+ock.mmc.local_service.dram.size = 128GB
 ```
 
 更多配置参数可可参考[配置](url)
