@@ -16,9 +16,14 @@ MemCache插件是一个由社区维护的高性能分布式KVCache缓存插件�
    #### A3系列产品，芯片型号910C
    #### K5系列产品
 ### 示例
-   #### [基于ascend vllm拓展Prefill Cache能力](https://gitcode.com/Ascend/memcache/wiki/%E5%9F%BA%E4%BA%8Eascend%20vllm%E6%8B%93%E5%B1%95Prefill%20Cache%E8%83%BD%E5%8A%9B[v1.1%E7%89%88%E6%9C%AC].md)
-   #### 基于sglang拓展Prefill Cache能力
-   #### 基于mindie拓展Prefill Cache能力
+   #### 典型框架示例
+   ##### [基于ascend vllm拓展Prefill Cache能力](https://gitcode.com/Ascend/memcache/wiki/%E5%9F%BA%E4%BA%8Eascend%20vllm%E6%8B%93%E5%B1%95Prefill%20Cache%E8%83%BD%E5%8A%9B[v1.1%E7%89%88%E6%9C%AC].md)
+   ##### 基于sglang拓展Prefill Cache能力
+   ##### 基于mindie拓展Prefill Cache能力
+   #### 典型场景示例
+   ##### 多轮对话参考测试
+   ##### 长文本问答参考测试
+   
 ## 用户指南
 ### 特性指南
    #### 支持的模型
