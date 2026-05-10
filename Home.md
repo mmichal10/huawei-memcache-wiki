@@ -21,7 +21,7 @@ MemCache插件是一个由社区维护的高性能分布式KVCache缓存插件�
    ##### [基于sglang拓展Prefill Cache能力](url)
    ##### [基于mindie拓展Prefill Cache能力](url)
    #### 典型场景示例
-   ##### [多轮对话参考测试](url)
+   ##### [多轮对话参考测试](https://gitcode.com/Ascend/memcache/wiki/%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D%E5%8F%82%E8%80%83%E6%B5%8B%E8%AF%95.md)
    ##### [长文本问答参考测试](url)
    
 ## 用户指南
