@@ -6,6 +6,11 @@ MemCache插件是一个由社区维护的高性能分布式KVCache缓存插件�
 
 ## 快速开始
 ### 快速安装
+   #### 先决条件
+   - 操作系统：Linux
+   -  Python: 3.11 以上
+   #### 安装
+   `pip install memcache_hybrid`
 ### 部署
    #### A2系列产品，芯片型号910B
    #### A3系列产品，芯片型号910C
