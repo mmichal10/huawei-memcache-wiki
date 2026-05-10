@@ -32,3 +32,54 @@ Hugging Face权重下载链接：https://huggingface.co/Qwen/Qwen3-32B，https:/
 | 步骤2：安装MemCache |容器内安装MemCache  | 
 | 步骤3：拉起MetaService |配置mmc-meta.conf+mmc-local.conf文件，拉起MetaService | 
 | 步骤4：拉起开启MemCache特性的vLLM Ascend服务 |拉起命令中，配置相关环境变量并配置开启MemCache | 
+
+## 3.2  详细部署操作
+### 3.3.1 创建vLLM Ascend容器
+本文介绍使用容器部署vLLM Ascend的方式，镜像下载地址：https://quay.io/repository/ascend/vllm-ascend?tab=tags
+
+若需采用其它安装方式（使用Python安装），请参考官方安装指导：https://docs.vllm.ai/projects/ascend/zh-cn/v0.13.0/installation.html#set-up-using-docker
+
+单机部署和双机部署，均参考如下操作步骤：
+```
+# docker拉取镜像
+# 也可以采用下载镜像的tar包，然后使用docker load -i xx.tar的方式安装镜像
+docker pull quay.io/ascend/vllm-ascend:releases-v0.13.0-openeuler
+
+# 根据实际下载镜像版本进行替换
+export IMAGE=quay.io/ascend/vllm-ascend:releases-v0.13.0-openeuler
+
+# 查看NPU设备号
+ls /dev/davinci*
+# 根据查询到的davinci设备号，配置容器创建时的device参数
+/dev/davinci0  /dev/davinci1  /dev/davinci2  /dev/davinci3  /dev/davinci4  /dev/davinci5  /dev/davinci6  /dev/davinci7  /dev/davinci_manager
+
+# 创建容器，注意权重挂载路径根据真实情况替换，NPU卡数据根据实际情况替换（此处以8卡为例）
+docker run -dit \
+    --name vllm-ascend-memcache \# 依据实际情况配置
+    --shm-size=500g \
+    --net=host \
+    --device /dev/davinci0 \# 依据实际情况配置，执行时删除注释，不要有空格
+    --device /dev/davinci1 \
+    --device /dev/davinci2 \
+    --device /dev/davinci3 \
+    --device /dev/davinci4 \
+    --device /dev/davinci5 \
+    --device /dev/davinci6 \
+    --device /dev/davinci7 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/Ascend/driver/tools/hccn_tool:/usr/local/Ascend/driver/tools/hccn_tool \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
+    -v /dev/hugepages:/dev/hugepages \# 挂载大页内存
+    -v /data/weights:/root/.cache \# 根据真实情况替换，执行时删除注释，不要有空格
+    -it $IMAGE bash
+
+# 进入容器
+docker exec -ti vllm-ascend-memcache bash
+```
+
