@@ -85,7 +85,7 @@ docker exec -ti vllm-ascend-memcache bash
 ```
 ### 3.3.2 MemCache安装
 `pip install memcache_hybrid`
-其他安装方式可参考[安装](url)
+其他安装方式可参考[安装](https://gitcode.com/Ascend/memcache/blob/master/doc/install_whl.md)
 
 ### 3.3.3 配置配置文件+拉起MetaService服务
 MemCache特性有2个配置文件（mmc-meta.conf和mmc-local.conf）需要配置。其中mmc-meta.conf需要在MetaService拉起前完成配置，mmc-local.conf需要在拉起vLLM Ascend前完成配置。
