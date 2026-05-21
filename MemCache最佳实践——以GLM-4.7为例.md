@@ -211,7 +211,7 @@ python benchmark_serving_multi_turn.py \
 ```
 GPU KV cache usage: XX%, Prefix cache hit rate: XX%, External prefix cache hit rate: XX%
 ```
-
+![metrics-trend.png](https://raw.gitcode.com/user-images/assets/7672915/b3ec1e88-c776-453e-9fec-8909a7321f54/metrics-trend.png 'metrics-trend.png')
 
 
 分析： 
