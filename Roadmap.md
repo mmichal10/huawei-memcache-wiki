@@ -25,8 +25,8 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 
 ## <span style="color:#008a00;">版本发布</span>
 **release** 开头的分支是我们发布的稳定分支。比如**release/1.1**，第一个版本为v1.1.0，有bugfix修复，则版本递增v1.1.1/v1.1.2等。
-每发布一个版本，会有对应的tag和相关的release note。
-- [开发与发布节奏原则](开发与发布节奏原则.md)
+每发布一个版本，会有对应的tag和相关的release note。具体规则可以参考：[开发与发布节奏原则](开发与发布节奏原则.md)
+		
 - [x] [**release/1.1**]  已于522已推出v1.1.0
 - [x] [**v1.0.0**] 1.0.x稳定分支，只会合入必要修改的bugfix，在必要bugfix合入之后，会推送到[pypi](https://pypi.org/project/memcache-hybrid/#history)，对应版本号 1.0.x，x为从0开始递增的数字
 
