@@ -9,7 +9,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 ## 特性介绍
 
-- [元数据HA原理](MetaService HA实现原理.md)
+- [元数据HA原理](MetaServiceHA实现原理.md)
 - [集群的扩缩容](集群的扩缩容实现.md)
 - [HBM-DDR-SSD三级池化](多级池化的实现.md)
 
@@ -22,5 +22,5 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 ## 快速开始
 
 - [HA部署](怎么部署一个memcache的HA集群.md)  
-- [VLLM快速体验](怎么用vllm+memcache加速TTFT.md)  
+- [vLLM快速体验](怎么用vllm+memcache加速TTFT.md)  
 - [SGL快速体验](怎么用SGL+memcache加速TTFT.md)  
