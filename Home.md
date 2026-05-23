@@ -15,4 +15,6 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、、案例库、FAQ。
 
 ## 案例库
 
-- [GLM4.7+A2](MemCache最佳实践--以GLM-4.7为例.md)
+- [GLM4.7+A2 PD分离案例](MemCache最佳实践--以GLM-4.7为例.md)
+- [GLM5.1+A3*4 PD分离案例](MemCache最佳实践--以A3+GLM-5.1为例.md)
+- [GLM5.1+A2*12 PD分离案例](MemCache最佳实践--以A2+GLM-5.1为例.md)
