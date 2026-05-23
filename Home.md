@@ -24,3 +24,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 - [HA部署](怎么部署一个memcache的HA集群.md)  
 - [vLLM快速体验](怎么用vllm+memcache加速TTFT.md)  
 - [SGL快速体验](怎么用SGL+memcache加速TTFT.md)  
+
+
+## 版本分支规则
+- [分支和版本发布](开发与发布节奏原则.md)
