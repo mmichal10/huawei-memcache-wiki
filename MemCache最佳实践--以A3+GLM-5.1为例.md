@@ -252,7 +252,7 @@ export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
 export VLLM_ASCEND_ENABLE_FUSED_MC2=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 
 vllm serve /home/weights/GLM5.1-W8A8 \
     --host 0.0.0.0 \
@@ -345,7 +345,7 @@ export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
 export VLLM_ASCEND_ENABLE_FUSED_MC2=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 
 vllm serve /home/weights/GLM5.1-W8A8 \
     --host 0.0.0.0 \
@@ -441,7 +441,7 @@ export VLLM_ASCEND_ENABLE_FUSED_MC2=1
 export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 
 vllm serve /home/weights/GLM5.1-W8A8 \
     --host 0.0.0.0 \
@@ -535,7 +535,7 @@ export VLLM_ASCEND_ENABLE_FUSED_MC2=1
 export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-export MMC_LOCAL_CONFIG_PATH=/usr/local/memcache_hybrid/latest/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 
 vllm serve /home/weights/GLM5.1-W8A8 \
     --host 0.0.0.0 \
