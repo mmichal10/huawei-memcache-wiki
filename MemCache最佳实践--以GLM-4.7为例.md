@@ -11,8 +11,11 @@ GLM-4.7 系列是智谱的高智能模型，面向 **Agentic Coding** 场景强�
 本文部署以 [GLM-4.7_vLLM-ascend](https://ai.gitcode.com/Ascend-SACT/GLM-4.7_vLLM-ascend/tree/main) 中提供的环境和脚本为基线
 
 【硬件配置】Atlas 800T A2 双机16卡
+
 【NPU驱动固件】25.5.1
+
 【CANN软件】CANN 8.5
+
 【推理框架】vLLM
 
 ```
@@ -102,15 +105,160 @@ ock.mmc.local_service.dram.size = 80GB                                ## 每个�
 
 
 
-##### 3. 修改vLLM服务启动脚本
+##### 3. 准备vLLM服务启动脚本
 
-添加环境变量导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
+node0
+
+```shell
+local_ip="61.47.16.106"
+nic_name="enp189s0f0"
+
+export HCCL_IF_IP=$local_ip
+
+#export PYTHONPATH=/workspace/vllm:$PYTHONPATH
+export PYTHONPATH=/vllm-workspace/vllm:$PYTHONPATH
+
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export HCCL_BUFFSIZE=1024
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
+export VLLM_USE_V1=1
+export HCCL_OP_EXPANSION_MODE=AIV
+export VLLM_VERSION=0.14.1
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+export VLLM_ASCEND_ENABLE_TOPK_OPTIMIZE=1
+export VLLM_ASCEND_BALANCE_SCHEDULING=1
+export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
+
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+
+export VLLM_TORCH_PROFILER_DIR=/home
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+
+vllm serve /data/GLM-4.7-w8a8/ \
+    --host 0.0.0.0 \
+    --port 8013 \
+    --enable-expert-parallel \
+    --tensor-parallel-size 8 \
+    --data_parallel_size 2 \
+    --data-parallel-size-local 1 \
+    --data-parallel-address 61.47.16.106 \
+    --data-parallel-rpc-port 13345  \
+    --seed 1024 \
+    --served-model-name GLM-4.7-w8a8 \
+    --max-model-len 133120 \
+    --max-num-batched-tokens 8192 \
+    --max-num-seqs 32 \
+    --async-scheduling \
+    --quantization ascend \
+    --trust-remote-code \
+    --gpu-memory-utilization 0.9 \
+    --speculative-config '{"num_speculative_tokens": 3, "model":"/data/GLM-4.7-w8a8/", "method":"mtp"}' \
+    --compilation-config '{"cudagraph_capture_sizes": [1,4,8,16,32,64], "cudagraph_mode": "FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_compilation_config": {"fuse_qknorm_rope": true}, "ascend_fusion_config": {"fusion_ops_gmmswigluquant": false}, "multistream_overlap_shared_expert":"true", "enable_shared_expert_dp": "true"}' \
+    --kv-transfer-config \
+    '{
+        "kv_connector": "AscendStoreConnector",
+        "kv_role": "kv_both",
+        "kv_connector_extra_config": {
+            "backend": "memcache",
+            "mooncake_rpc_port":"0"
+        }
+    }' 2>&1 | tee output.log
+
+```
+
+node1
+
+```shell
+local_ip="61.47.16.107"
+nic_name="enp189s0f0"
+
+export HCCL_IF_IP=$local_ip
+
+#export PYTHONPATH=/workspace/vllm:$PYTHONPATH
+export PYTHONPATH=/vllm-workspace/vllm:$PYTHONPATH
+
+export GLOO_SOCKET_IFNAME=$nic_name
+export TP_SOCKET_IFNAME=$nic_name
+export HCCL_SOCKET_IFNAME=$nic_name
+export HCCL_BUFFSIZE=1024
+export OMP_PROC_BIND=false
+export OMP_NUM_THREADS=10
+export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
+export VLLM_USE_V1=1
+export HCCL_OP_EXPANSION_MODE=AIV
+export VLLM_VERSION=0.14.1
+export VLLM_ASCEND_ENABLE_FUSED_MC2=1
+export VLLM_ASCEND_ENABLE_TOPK_OPTIMIZE=1
+export VLLM_ASCEND_BALANCE_SCHEDULING=1
+export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
+
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
+
+export VLLM_TORCH_PROFILER_DIR=/home
+export VLLM_TORCH_PROFILER_WITH_STACK=0
+
+export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+
+vllm serve /data/GLM-4.7-w8a8/ \
+    --host 0.0.0.0 \
+    --port 8013 \
+    --headless \
+    --enable-expert-parallel \
+    --tensor-parallel-size 8 \
+    --data_parallel_size 2 \
+    --data-parallel-size-local 1 \
+    --data-parallel-start-rank 1 \
+    --data-parallel-address 61.47.16.106 \
+    --data-parallel-rpc-port 13345  \
+    --seed 1024 \
+    --served-model-name GLM-4.7-w8a8 \
+    --max-model-len 133120 \
+    --max-num-batched-tokens 8192 \
+    --max-num-seqs 32 \
+    --async-scheduling \
+    --quantization ascend \
+    --trust-remote-code \
+    --gpu-memory-utilization 0.9 \
+    --speculative-config '{"num_speculative_tokens": 3, "model":"/data/GLM-4.7-w8a8/", "method":"mtp"}' \
+    --compilation-config '{"cudagraph_capture_sizes": [1,4,8,16,32,64], "cudagraph_mode": "FULL_DECODE_ONLY"}' \
+    --additional-config '{"ascend_compilation_config": {"fuse_qknorm_rope": true}, "ascend_fusion_config": {"fusion_ops_gmmswigluquant": false}, "multistream_overlap_shared_expert":"true", "enable_shared_expert_dp": "true"}' \
+    --kv-transfer-config \
+    '{
+        "kv_connector": "AscendStoreConnector",
+        "kv_role": "kv_both",
+        "kv_connector_extra_config": {
+            "backend": "memcache",
+            "mooncake_rpc_port":"0"
+        }
+    }' 2>&1 | tee output.log
+
+```
+
+**需要根据环境做相应修改的包括：**
+
+- local_ip：本机IP地址
+- nic_name：本地网卡名称
+- data-parallel-address：都写DP并行的主节点IP
+- 权重路径
+
+
+
+**相比基线脚本，启用MF时仅涉及以下两点变化**
+
+1. 添加了环境变量导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
 
 ```
 export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 ```
 
-添加 kv-transfer-config 启动参数
+2. 添加 kv-transfer-config 启动参数
 
 ```shell
 --kv-transfer-config \
@@ -122,6 +270,8 @@ export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hy
         }
     }'
 ```
+
+
 
 
 
