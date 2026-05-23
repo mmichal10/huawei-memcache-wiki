@@ -23,18 +23,7 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 
 ---
 
-## <span style="color:#008a00;">分支节奏策略</span>
-
-
-### <span style="color:#9933ff;">master</span>
-
-- [x] [**稳定演进**] 最新feature试用测试分支，通过内部smoke pipeline用例覆盖
-
-### <span style="color:#9933ff;">develop</span>
-
-- [x] [**快速演进**] 最新feature开发分支，通过内部smoke pipeline用例后，会按照1周~半月的时间节奏同步到master
-
-### <span style="color:#9933ff;">稳定分支</span>
+## <span style="color:#008a00;">版本发布</span>
 **release** 开头的分支是我们发布的稳定分支。比如**release/1.1**，第一个版本为v1.1.0，有bugfix修复，则版本递增v1.1.1/v1.1.2等。
 每发布一个版本，会有对应的tag和相关的release note。
 - [开发与发布节奏原则](开发与发布节奏原则.md)
