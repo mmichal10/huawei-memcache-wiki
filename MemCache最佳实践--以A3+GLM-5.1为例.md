@@ -657,7 +657,7 @@ python load_balance_proxy_server_example.py \
 
 #### 4. 拉起服务
 
-首先需要拉起MetaService元数据管理服务
+首先需要拉起MetaService元数据管理服务（任一节点拉起）
 
 ```shell
 export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-meta.conf
