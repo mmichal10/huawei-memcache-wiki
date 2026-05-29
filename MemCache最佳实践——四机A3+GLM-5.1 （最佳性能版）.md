@@ -50,7 +50,7 @@ vllm_ascend                              0.18.0rc1              /vllm-workspace/
 **其中vllm和vllm-ascend需要安装补丁，操作方法如下：**
 
 1. 修复mtp+kv pool兼容：https://github.com/vllm-project/vllm-ascend/pull/7874
-2. KV cache传输稳定性：https://github.com/vllm-project/vllm-ascend/pull/8890、https://github.com/vllm-project/vllm-ascend/pull/8959、https://github.com/vllm-project/vllm-ascend/pull/9235、https://github.com/vllm-project/vllm-ascend/pull/7874
+2. KV cache传输稳定性：https://github.com/vllm-project/vllm-ascend/pull/8890 https://github.com/vllm-project/vllm-ascend/pull/8959 https://github.com/vllm-project/vllm-ascend/pull/9235 https://github.com/vllm-project/vllm-ascend/pull/7874
 3. metrics以及GLM5 chat template：https://github.com/vllm-project/vllm/issues/39614
 4. 修复偶尔崩溃：https://github.com/vllm-project/vllm/pull/34079
 
