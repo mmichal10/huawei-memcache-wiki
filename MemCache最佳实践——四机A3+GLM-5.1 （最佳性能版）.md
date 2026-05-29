@@ -10,15 +10,6 @@
 
 在4机A3集群（每机8×910C，每张910C为双910B合封）上，基于GLM5 W8A8量化模型、PD分离架构（2 Prefill + 2 Decode），对MemCache前缀缓存进行了4组场景的性能测试。核心结论：
 
-| 场景        | Input      | 并发 | TTFT无缓存(ms) | TTFT有缓存(ms) | TTFT降幅  |
-| ----------- | ---------- | ---- | -------------- | -------------- | --------- |
-| 64K × 20CC  | 66560 tok  | 20   | 71,723         | 14,408         | **79.9%** |
-| 128K × 20CC | 131072 tok | 20   | 83,286         | 27,883         | **66.5%** |
-| 64K × 30CC  | 66560 tok  | 30   | 44,120         | 8,932          | **79.8%** |
-| 128K × 30CC | 131072 tok | 30   | 120,392        | 38,679         | **67.9%** |
-
-二轮测试：
-
 | 场景        | Input      | 并发 | TTFT无缓存(ms) | TTFT有缓存(ms) | TTFT降幅 |
 | ----------- | ---------- | ---- | -------------- | -------------- | -------- |
 | 64K × 20CC  | 66560 tok  | 20   | 44,607.7       | 10,512.3       | 76.5%    |
@@ -26,9 +17,7 @@
 | 64K × 30CC  | 66560 tok  | 30   | 61,477.0       | 12,834.1       | 79.1%    |
 | 128K × 30CC | 131072 tok | 30   | 91,201.4       | 24,968.8       | 72.6%    |
 
-**关键发现：**
-
-1. **TTFT大幅下降**：所有场景TTFT降幅 66.5%~79.9%，首Token响应时间从分钟级降至秒级
+1. **TTFT大幅下降**：所有场景TTFT大幅下降 66.5%~79.9%，首Token响应时间从分钟级降至秒级
 2. **实际并发显著提升**：缓存命中后模型侧实际并发从6提升至24，服务承载能力翻倍
 
 
@@ -60,7 +49,10 @@ vllm_ascend                              0.18.0rc1              /vllm-workspace/
 
 **其中vllm和vllm-ascend需要安装补丁，操作方法如下：**
 
-
+# 修复mtp+kv pool兼容：https://github.com/vllm-project/vllm-ascend/pull/7874
+# KV cache传输稳定性：https://github.com/vllm-project/vllm-ascend/pull/8890、https://github.com/vllm-project/vllm-ascend/pull/8959、https://github.com/vllm-project/vllm-ascend/pull/9235、https://github.com/vllm-project/vllm-ascend/pull/7874
+# metrics以及GLM5 chat template：https://github.com/vllm-project/vllm/issues/39614
+# 修复偶尔崩溃：https://github.com/vllm-project/vllm/pull/34079
 
 #### 1. 安装MF
 
