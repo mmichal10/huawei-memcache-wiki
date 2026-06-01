@@ -275,6 +275,8 @@ export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.11.14/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export PYTHONHASHSEED=0
+export VLLM_MOONCAKE_ABORT_REQUEST_TIMEOUT=180
 
 vllm serve /model/ \
     --host 0.0.0.0 \
@@ -369,6 +371,8 @@ export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.11.14/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export PYTHONHASHSEED=0
+export VLLM_MOONCAKE_ABORT_REQUEST_TIMEOUT=180
 
 vllm serve /model/ \
     --host 0.0.0.0 \
@@ -464,6 +468,8 @@ export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.11.14/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export PYTHONHASHSEED=0
+export VLLM_MOONCAKE_ABORT_REQUEST_TIMEOUT=180
 
 vllm serve /model/ \
     --host 0.0.0.0 \
@@ -559,6 +565,8 @@ export VLLM_ASCEND_ENABLE_MLAPO=1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.11.14/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export PYTHONHASHSEED=0
+export VLLM_MOONCAKE_ABORT_REQUEST_TIMEOUT=180
 
 vllm serve /model/ \
     --host 0.0.0.0 \
