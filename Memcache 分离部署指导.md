@@ -2,8 +2,7 @@
 
 使用vLLM等推理框架拉起memcache时，某些时候由于推理框架首先加载权重后初始化kvconnector，导致memcache无法申请到足够内存空间（典型场景为A3使用device_sdma传输协议）。此时可以采用分离部署模式，在拉起推理进程前首先在每个节点启动memcache独立进程提前申请内存，在随后启动的推理进程中memcache使用不贡献内存的配置。
 
-[示意图]
-
+![分离部署.png](https://raw.gitcode.com/user-images/assets/7672915/5b2ef6f2-700f-4c5b-a60f-5879d8c07eaf/分离部署.png '分离部署.png')
 
 
 ### 操作方式
