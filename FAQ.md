@@ -90,7 +90,7 @@ AddVaInfo failed: address overlap
 **问题根因**
 造成问题的原因有一般有一下几种：
 
-1. 🔥 续约失败 → 降级 → 检查到自己是 holder 又夺回 → 循环
+**1. 🔥 续约失败 → 降级 → 检查到自己是 holder 又夺回 → 循环**
 - RenewLoop 每 3s 续约，一旦网络抖动/APIServer 慢/409 冲突导致续约失败，立即 isLeader_=false，label 变 backup
 - 同一进程的 ElectionLoop 同样每 3s 检查 lease，发现 holder 还是自己，又立即夺回，label 变 master
 - 3s 内 label 就来回跳一次
@@ -99,7 +99,7 @@ AddVaInfo failed: address overlap
 
 检查集群网络配置，或手动修改leaseDurationSeconds 从 10 改大到 20-30。  
 
-2. 🔥 两节点时钟不同步
+**2. 🔥 两节点时钟不同步**
 
 - check_leader_status 用本地时间判断租约是否过期
 - A 比 B 快 2s → B 认为 lease 已过期 → 抢主
@@ -110,7 +110,7 @@ AddVaInfo failed: address overlap
 
 手动同步POD的时钟
 
-3. 🔥 外部控制器自动清理k8s租约信息
+**3. 🔥 外部控制器自动清理k8s租约信息**
 
 **解决方案**
 
