@@ -38,8 +38,8 @@ vllm_ascend                              0.18.0rc2.dev100+g9a0b786f2
 在线安装：
 
 ```shell
-pip install memfabric_hybrid==1.1.0
-pip install memcache_hybrid==1.1.0
+pip install memfabric_hybrid==1.1.1
+pip install memcache_hybrid==1.1.1
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
@@ -657,12 +657,58 @@ python load_balance_proxy_server_example.py \
 
 #### 4. 拉起服务
 
+##### 4.1 拉起MetaService服务
 首先需要拉起MetaService元数据管理服务（任一节点拉起）
 
 ```shell
 export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-meta.conf
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
+
+##### 4.2 拉起独立进程服务
+
+在每个节点上都要拉起一个独立进程，进行内存提前占用（拉起前建议使用 echo 3 > /proc/sys/vm/drop_caches 命令先清理缓存）
+
+在每个节点上准备脚本 `memcache.py`
+
+```
+import time
+
+from memcache_hybrid import DistributedObjectStore
+
+
+if __name__ == "__main__":
+    store = DistributedObjectStore()
+    res = store.init(0)
+    if res != 0:
+        print(f"Failed to init memcache, res = {res}")
+        exit(1)
+    print("MemCache init success. ")
+
+    while True:
+        time.sleep(1)
+
+```
+
+复制一份mmc-local.conf配置文件给独立进程使用
+```
+cp /usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf /data/
+```
+
+修改mmc-local.conf配置文件，将ock.mmc.local_service.dram.size设置为独立进程占用内存空间的大小。
+```ini
+ock.mmc.local_service.dram.size = 600GB
+```
+
+启动独立进程
+```
+export MMC_LOCAL_CONFIG_PATH=/data/mmc-local.conf
+
+#启动独立进程
+python memcache.py
+```
+
+##### 4.3 拉起推理服务
 
 然后在每个节点上通过以下命令拉起推理服务
 
