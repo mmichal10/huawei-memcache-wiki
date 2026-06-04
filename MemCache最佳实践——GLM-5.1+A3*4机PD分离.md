@@ -695,7 +695,7 @@ if __name__ == "__main__":
 cp /usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf /data/
 ```
 
-修改mmc-local.conf配置文件，将ock.mmc.local_service.dram.size设置为独立进程占用内存空间的大小。
+修改/data/mmc-local.conf配置文件，将ock.mmc.local_service.dram.size设置为独立进程占用内存空间的大小。
 ```ini
 ock.mmc.local_service.dram.size = 600GB
 ```
