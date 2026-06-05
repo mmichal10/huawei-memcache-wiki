@@ -28,6 +28,7 @@ sudo timedatectl set-time "2025-10-17 17:30:00"
 #### 1.2 安装k8s
 
 请按照k8s安装指南安装好环境。
+参考k8s官方文档: https://kubernetes.io/zh-cn/docs/tasks/tools/install-kubectl-linux/
 
 ```shell
 # 启动k8s命令补全
