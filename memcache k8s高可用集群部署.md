@@ -179,12 +179,13 @@ cp -rf /usr/local/memcache_hybrid/latest/config/* /home/meta/config
 
 #### 2.3 软件包
  
- 部署方案依赖[memcahe](https://gitcode.com/Ascend/memcache)和[memfabirc](https://gitcode.com/Ascend/memfabric_hybrid)，
+ 部署方案依赖[memcahe](https://gitcode.com/Ascend/memcache)、[memfabirc](https://gitcode.com/Ascend/memfabric_hybrid)，
 请按照官方指导编译构建安装包，并放置到/home/meta目录下（pod启动时会自动安装这个目录下的包）
 
 #### 2.4 镜像准备
 
-##### 2.4.1 准备一个已安装好MemCache所有运行依赖的镜像
+##### 2.4.1 准备一个可运行MemCache的镜像（建议镜像系统环境和编译安装环境一致），并映射 `/home/meta` 目录
+推荐使用vllm_ascend官方Dockerfile创建镜像：https://github.com/vllm-project/vllm-ascend/blob/main/Dockerfile
 
 ##### 2.4.2 将docker镜像导入到nerdctl
 ```shell
@@ -199,7 +200,7 @@ nerdctl load -i my-image.tar
 ##### 2.4.3 将准备好的镜像推送至之前创建的镜像仓
 ```shell
 # 推送
-nerdctl push <name:tag>
+nerdctl push my-image:latest
 # 查询镜像仓已有镜像列表
 curl http://127.0.0.1:5000/v2/_catalog
 # 查询镜像仓镜像tag列表
