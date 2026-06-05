@@ -178,7 +178,9 @@ cp -rf /usr/local/memcache_hybrid/latest/config/* /home/meta/config
 请参考[hcom项目](https://atomgit.com/openeuler/ubs-comm/tree/br_dev_container_20260228)获取最新的so文件。
 
 #### 2.3 软件包
-下载源码，并参考README内容，编译构建安装包，并放置到/home/meta目录下（pod启动时会自动安装这个目录下的包）
+ 
+ 部署方案依赖[memcahe](https://gitcode.com/Ascend/memcache)和[memfabirc](https://gitcode.com/Ascend/memfabric_hybrid)，
+请按照官方指导编译构建安装包，并放置到/home/meta目录下（pod启动时会自动安装这个目录下的包）
 
 #### 2.4 镜像准备
 
