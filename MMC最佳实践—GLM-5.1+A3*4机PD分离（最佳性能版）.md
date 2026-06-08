@@ -124,7 +124,7 @@ ock.mmc.local_service.world_size = 256
 ock.mmc.local_service.protocol = device_sdma                          ## 超节点内sdma传输为A3典型配置
 
 ## DRAM space usage
-ock.mmc.local_service.dram.size = 25GB                                ## 每个推理进程提供25GB池化空间，可根据环境情况进行调整，参考https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6
+ock.mmc.local_service.dram.size = 0GB                                ##  A3节点采用独立进程提前占用内存方式，此处设置为0GB。A2节点每个推理进程提供25GB池化空间，可根据环境情况进行调整，参考https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6
 ```
 
 更多配置可以参考官方文档 https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md
