@@ -660,6 +660,7 @@ python load_balance_proxy_server_example.py \
 #### 4. 拉起服务
 
 ##### 4.1 拉起MetaService服务
+
 首先需要拉起MetaService元数据管理服务（任一节点拉起）
 
 ```shell
