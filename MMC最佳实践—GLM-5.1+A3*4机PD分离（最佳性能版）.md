@@ -36,7 +36,7 @@
 
 【推理框架】vLLM
 
-【部署规格】2P2D （Prefill TP8 DP4 Decode TP4 DP8）
+【部署规格】1P1D （Prefill TP8 DP4 Decode TP4 DP8）
 
 ```
 torch                                    2.9.0+cpu
