@@ -86,6 +86,6 @@ if __name__ == "__main__":
    python3 memcache_standalone.py
    ```
 
-   **等待所有节点都启动成功（看到打印"Successfully initizlized memcache. "）后再进行下一步**
+   **等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步**
 
 3. 最后按原有方法拉起推理进程。
