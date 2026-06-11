@@ -8,7 +8,7 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 第一步：在拉起推理进程前，首先在每个节点启动memcache独立进程，即由独立的进程贡献内存		
 第二步：拉起推理进程，此时推理进程中的memcache不贡献内存。		
 部署示意图如下：		
-![分离部署.png](https://raw.gitcode.com/user-images/assets/7672915/5b2ef6f2-700f-4c5b-a60f-5879d8c07eaf/分离部署.png '分离部署.png')
+![memcache_separated_deployment.png](https://raw.gitcode.com/user-images/assets/7672915/faac25cd-1e48-4d5d-9649-eb5fad1850b3/memcache_separated_deployment.png 'memcache_separated_deployment.png')
 
 ### 操作方式
 
