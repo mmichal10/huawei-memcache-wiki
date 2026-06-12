@@ -9,7 +9,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 ## 特性介绍
 
-- [元数据HA原理](memcache k8s高可用集群部署.md)
+- [元数据HA原理](memcache-k8s高可用集群部署.md)
 - [集群的扩缩容](集群的扩缩容.md)
 - [HBM-DDR-SSD三级池化](多级池化的实现.md)
 
