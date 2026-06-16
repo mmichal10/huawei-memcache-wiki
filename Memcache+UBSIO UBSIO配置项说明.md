@@ -8,13 +8,15 @@
 # 设置缓存盘或分区路径。
 bio.disk.path = /dev/loopxxx
 
-# 启动推理服务的 NPU 卡数；0 表示每个 device ID 按下标选择一个磁盘。
-bio.standalone.device_count = 0
-
-# ubsio内存缓存容量，单位GB
+# ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
 bio.mem.size_in_gb = 50
 # ubsio内存淘汰水位，示例为60%
 bio.wcache.evict_water_level = 60
+# ubsio磁盘淘汰水位，示例为90%
+bio.wcache.disk_evict_water_level = 90
+
+# 启动推理服务的 NPU 卡数。
+bio.standalone.device_count = 0
 
 # 设置日志输出级别。可选`error`、`warn`、`info`、`debug`、`trace`。
 bio.log.level = info
@@ -28,6 +30,7 @@ bio.cache.disk_read_write_ratio = 0:10
 bio.underfs.file_system_type = none
 # 本地单机运行时禁用 TLS 配置路径校验。
 bio.net.tls.enable.switch = false
+bio.sdkmem.size_in_mb = 0
 ```
 ## 配置表
 
