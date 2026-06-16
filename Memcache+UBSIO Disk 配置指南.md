@@ -4,6 +4,9 @@
 
 推荐使用 `partition_disks.sh` 一键完成分区并输出配置。
 
+
+> **脚本下载：** [partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/ubsio-boostio/scripts/partition_disks.sh)
+
 ---
 
 ## 场景一：有盘部署
@@ -12,12 +15,28 @@
 
 ### 1. 确认磁盘状态
 
+通过以下命令确认哪些磁盘为可用裸盘（无分区、无挂载、无文件系统签名）。
+
 ```bash
-lsblk /dev/nvme0n1                    # 确认裸盘、无分区
-mount | grep nvme0n1                  # 确认未挂载
+# 1. 列出所有磁盘，确认哪些是裸盘（无分区即为裸盘）
+lsblk
+
+# 输出示例：
+# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+# nvme0n1     259:0    0   3.5T  0 disk              # <-- 裸盘，可用
+# nvme1n1     259:1    0   3.5T  0 disk              # <-- 裸盘，可用
+# nvme2n1     259:2    0   1.8T  0 disk
+# +-nvme2n1p1 259:3    0   1.8T  0 part /data        # <-- 已分区挂载，不可用
+
+# 2. 确认目标盘为裸盘（以 /dev/nvme0n1 为例，替换为实际磁盘）
+lsblk /dev/nvme0n1                    # 应无分区
+mount | grep nvme0n1                  # 应无挂载
+sudo blkid /dev/nvme0n1               # 应无文件系统签名
 ```
 
 ### 2. 使用 partition_disks.sh 分区
+
+> **⚠️ 高危操作：** 选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。
 
 脚本创建 GPT 分区表，均分磁盘并输出 `bio.disk.path`。默认 dry-run，加 `--yes` 才写入。
 
