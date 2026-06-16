@@ -6,7 +6,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 - [版本规划（Roadmap）](Roadmap.md)
 - [常见问题（FAQ）](FAQ.md)
-- [常见MemFabric问题（FAQ](https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md)
+- [常见MemFabric问题（FAQ）](https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md)
 
 ## 特性介绍
 
