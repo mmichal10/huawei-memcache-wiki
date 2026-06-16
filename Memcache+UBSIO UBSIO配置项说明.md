@@ -38,7 +38,7 @@ bio.cache.qos.enable = false
 
 | 配置项 | 值类型 | 是否必填 | 默认值 | 有效范围 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `bio.disk.path` | 字符串 | 可选 | `xxx:xxx:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。path数量需要大于等于单个机器上的当前推理的NPU卡数 |
+| `bio.disk.path` | 字符串 | 可选 | `xxx:xxx:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。path数量需要大于等于单个机器上的当前推理的NPU卡数 [disk配置说明](https://gitcode.com/Ascend/memcache/wiki/Memcache+UBSIO%20Disk%20%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)|
 | `bio.log.level` | 字符串 | 可选 | `info` | `error`、`warn`、`info`、`debug`、`trace` | 配置初始化后设置 BoostIO server 日志级别。 |
 | `bio.standalone.device_count` | 整数 | 可选 | `0` | `0` 到 `16` | 当前 vLLM 服务中的 memcache `local_server` 进程数量。`0` 表示保留旧逻辑，即每个 `deviceId` 按路径下标选择一个设备。 |
 | `bio.segment.size_in_mb` | 整数 | 可选 | `4` | `1` 到 `16` | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小。 |
