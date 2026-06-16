@@ -11,7 +11,7 @@
 wget -O /path/to/partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
 chmod +x /path/to/partition_disks.sh
 ```
-场景一：有盘部署（推荐）
+## 场景一：有盘部署（推荐）
 
 **背景：** 单节点多块 NVMe 盘，分区总数需提前规划，每个分区对应一个推理实例的缓存存储路径。
 
