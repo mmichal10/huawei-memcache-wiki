@@ -254,7 +254,7 @@ vllm serve /data/GLM-4.7-w8a8/ \
 
 1. 添加了环境变量导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
 
-```
+```shell
 export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 ```
 
