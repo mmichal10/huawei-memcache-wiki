@@ -5,7 +5,7 @@
 # BoostIO 配置
 [bio]
 
-# 设置缓存盘或分区路径。
+# 设置缓存盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。
 bio.disk.path = /dev/loopxxx
 
 # ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
@@ -31,6 +31,8 @@ bio.underfs.file_system_type = none
 # 本地单机运行时禁用 TLS 配置路径校验。
 bio.net.tls.enable.switch = false
 bio.sdkmem.size_in_mb = 0
+bio_cli_tools_enable = true
+bio.cache.qos.enable = false
 ```
 ## 配置表
 
