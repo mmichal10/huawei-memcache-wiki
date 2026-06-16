@@ -1,4 +1,34 @@
 # UBSIO 单机模式配置参考
+## 最小本地单机模式示例
+
+```ini
+# BoostIO 配置
+[bio]
+
+# 设置缓存盘或分区路径。
+bio.disk.path = /dev/loopxxx
+
+# 启动推理服务的 NPU 卡数；0 表示每个 device ID 按下标选择一个磁盘。
+bio.standalone.device_count = 0
+
+# ubsio内存缓存容量，单位GB
+bio.mem.size_in_gb = 50
+# ubsio内存淘汰水位，示例为60%
+bio.wcache.evict_water_level = 60
+
+# 设置日志输出级别。可选`error`、`warn`、`info`、`debug`、`trace`。
+bio.log.level = info
+
+# 以下配置无需修改
+# 将全部内存缓存容量用于写缓存。
+bio.cache.mem_read_write_ratio = 0:10
+# 将全部磁盘缓存容量用于写缓存。
+bio.cache.disk_read_write_ratio = 0:10
+# 设置 UnderFS 后端：本地单机使用 none。需要后端访问时使用 ceph 或 hdfs。
+bio.underfs.file_system_type = none
+# 本地单机运行时禁用 TLS 配置路径校验。
+bio.net.tls.enable.switch = false
+```
 ## 配置表
 
 | 配置项 | 值类型 | 是否必填 | 默认值 | 有效范围 | 说明 |
@@ -26,31 +56,3 @@
 | `bio.underfs.ceph.cluster` | 字符串 | 可选 | `ceph` | 非空字符串 | 后端为 Ceph 时，UnderFS 插件使用的 Ceph 集群名。 |
 | `bio.underfs.ceph.user` | 字符串 | 可选 | `client.admin` | 非空字符串 | 后端为 Ceph 时，UnderFS 插件使用的 Ceph 用户。 |
 | `bio.underfs.ceph.pool` | 字符串 | 可选 | `0:jfspool1,1:jfspool2` | 使用逗号分隔的 `poolId:poolName` 条目，poolId 为非负整数 | Ceph pool 映射。当前 UnderFS helper 使用 pool id `0` 初始化插件。 |
-
-## 最小本地单机模式示例
-
-```ini
-# BoostIO 配置
-[bio]
-
-# 设置日志输出级别。
-bio.log.level = info
-
-# 本地单机运行时禁用 TLS 配置路径校验。
-bio.net.tls.enable.switch = false
-
-# 设置缓存盘或分区路径。
-bio.disk.path = /dev/loopxxx
-
-# 启动推理服务的 NPU 卡数；0 表示每个 device ID 按下标选择一个磁盘。
-bio.standalone.device_count = 0
-
-# 将全部内存缓存容量用于写缓存。
-bio.cache.mem_read_write_ratio = 0:10
-
-# 将全部磁盘缓存容量用于写缓存。
-bio.cache.disk_read_write_ratio = 0:10
-
-# 设置 UnderFS 后端：本地单机使用 none，需要后端访问时使用 ceph 或 hdfs。
-bio.underfs.file_system_type = none
-```
