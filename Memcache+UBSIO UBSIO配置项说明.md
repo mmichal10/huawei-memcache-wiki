@@ -6,7 +6,7 @@
 [bio]
 
 # 设置缓存盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。
-bio.disk.path = /dev/loopxxx
+bio.disk.path = 
 
 # ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
 bio.mem.size_in_gb = 50
