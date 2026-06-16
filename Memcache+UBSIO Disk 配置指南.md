@@ -5,11 +5,13 @@
 推荐使用 `partition_disks.sh` 一键完成分区并输出配置。
 
 
-> **脚本下载：** [partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/ubsio-boostio/scripts/partition_disks.sh)
+**[partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/ubsio-boostio/scripts/partition_disks.sh)脚本下载：**
 
----
-
-## 场景一：有盘部署（推荐）
+```bash
+wget -O /path/to/partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
+chmod +x /path/to/partition_disks.sh
+```
+场景一：有盘部署（推荐）
 
 **背景：** 单节点多块 NVMe 盘，分区总数需提前规划，每个分区对应一个推理实例的缓存存储路径。
 
@@ -169,20 +171,6 @@ bio.disk.path = /dev/loop0p1:/dev/loop0p2:/dev/loop0p3:/dev/loop0p4
 # 修改 /etc/rc.local
 losetup /dev/loop0 /data/boostio_disk.img
 ```
-
-### 取消 loop 设备
-
-```bash
-# 1. 查看当前 loop 设备及其关联文件
-losetup -a
-
-# 2. 卸载 loop 设备（含分区）
-sudo losetup -d /dev/loop0
-
-# 3. 删除镜像文件（可选）
-sudo rm -f /data/boostio_disk.img
-```
-
 ---
 
 ## 场景三：无盘部署
@@ -195,6 +183,23 @@ bio.disk.path =
 ```
 
 > 不配置磁盘时，UBSIO 仅使用内存作为缓存，重启后缓存数据不持久化。
+
+---
+
+## 取消 loop 设备
+
+> **⚠️ 注意：** 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。
+
+```bash
+# 1. 查看当前 loop 设备及其关联文件
+losetup -a
+
+# 2. 卸载 loop 设备（假设要卸载的是 /dev/loop0）
+sudo losetup -d /dev/loop0
+
+# 3. 删除镜像文件（可选）
+sudo rm -f /data/boostio_disk.img
+```
 
 ---
 
