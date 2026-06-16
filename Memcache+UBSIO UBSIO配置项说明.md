@@ -33,8 +33,8 @@ bio.net.tls.enable.switch = false
 
 | 配置项 | 值类型 | 是否必填 | 默认值 | 有效范围 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `bio.disk.path` | 字符串 | 必填 | `xxx:xxx:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表。path数量需要大于等于单个机器上的当前推理的NPU卡数 |
 | `bio.log.level` | 字符串 | 可选 | `info` | `error`、`warn`、`info`、`debug`、`trace` | 配置初始化后设置 BoostIO server 日志级别。 |
-| `bio.disk.path` | 字符串 | 必填 | `xxx:xxx:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表。单机模式会在 BDM 启动前，从该列表中选择当前进程使用的磁盘子集。 |
 | `bio.standalone.device_count` | 整数 | 可选 | `0` | `0` 到 `16` | 当前 vLLM 服务中的 memcache `local_server` 进程数量。`0` 表示保留旧逻辑，即每个 `deviceId` 按路径下标选择一个设备。 |
 | `bio.segment.size_in_mb` | 整数 | 可选 | `4` | `1` 到 `16` | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小。 |
 | `bio.mem.size_in_gb` | 整数 | 可选 | `50` | `0` 到 `512`；不得超过当前系统空闲内存 | 单机 server 内存池容量。 |
