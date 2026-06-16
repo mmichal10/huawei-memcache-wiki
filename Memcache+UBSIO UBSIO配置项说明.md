@@ -31,7 +31,6 @@ bio.underfs.file_system_type = none
 # 本地单机运行时禁用 TLS 配置路径校验。
 bio.net.tls.enable.switch = false
 bio.sdkmem.size_in_mb = 0
-bio_cli_tools_enable = true
 bio.cache.qos.enable = false
 ```
 ## 配置表
