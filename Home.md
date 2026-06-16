@@ -15,11 +15,18 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 - [HBM-DDR-SSD三级池化](多级池化的实现.md)
 
 ## 案例库
+#### DSV4
+- [DSV4-Flash+A2单机案例](MMC最佳实践—DSV4-Flash+A2单机.md)
 
-- [GLM-4.7+A2双机混部案例](MMC最佳实践—GLM-4.7+A2双机混部.md)
+#### GLM-5.1
 - [GLM-5.1+A3*4机PD分离案例](MMC最佳实践—GLM-5.1+A3*4机PD分离.md)
 - [GLM-5.1+A3*4机PD分离案例（最佳性能版）](MMC最佳实践—GLM-5.1+A3*4机PD分离（最佳性能版）.md)
 - [GLM-5.1+A2*12机PD分离案例](MMC最佳实践—GLM-5.1+A2*12机PD分离.md)
+
+#### GLM-4.7
+- [GLM-4.7+A2双机混部案例](MMC最佳实践—GLM-4.7+A2双机混部.md)
+
+#### 其他
 - [MemCache+vLLM+A3分离部署案例](MemCache+vLLM+A3分离部署案例.md)
 
 ## 快速开始
