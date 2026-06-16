@@ -9,7 +9,7 @@
 
 ---
 
-## 场景一：有盘部署
+## 场景一：有盘部署（推荐）
 
 **背景：** 单节点多块 NVMe 盘，分区总数需提前规划，每个分区对应一个推理实例的缓存存储路径。
 
@@ -121,9 +121,30 @@ bio.disk.path = /dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 
 ---
 
-## 场景二：无盘部署（loop 设备方案）
+## 场景二：模拟盘部署（loop 设备方案）
 
 无可用裸盘时，用 `dd` + `losetup` 创建 loop 块设备模拟。
+
+> **⚠️ 高危操作：** 创建 loop 设备前，务必确认目标 `/dev/loopN` 未被占用，否则可能导致数据丢失。
+
+先查看哪些 loop 设备可用：
+
+```bash
+# 1. 查看系统有哪些 loop 设备
+ls /dev/loop*
+
+# 输出示例：
+# /dev/loop0  /dev/loop1  /dev/loop2  ...  /dev/loop7
+
+# 2. 查看已占用的 loop 设备
+losetup -a
+
+# 输出示例：
+# /dev/loop1: [2049]:123456 (/data/other.img)   # <-- 已被占用
+# （若无输出则表示所有 loop 设备均空闲）
+```
+
+确认空闲后，再执行以下操作（假设 /dev/loop0 空闲）：
 
 ```bash
 sudo dd if=/dev/zero of=/data/boostio_disk.img bs=1G count=10 status=progress
@@ -161,6 +182,19 @@ sudo losetup -d /dev/loop0
 # 3. 删除镜像文件（可选）
 sudo rm -f /data/boostio_disk.img
 ```
+
+---
+
+## 场景三：无盘部署
+
+当不配置 SSD 缓存层时，`bio.disk.path` 保持为空即可，无需执行分区操作。
+
+```
+# bio.disk.path 留空，不启用磁盘缓存
+bio.disk.path =
+```
+
+> 不配置磁盘时，UBSIO 仅使用内存作为缓存，重启后缓存数据不持久化。
 
 ---
 
