@@ -33,8 +33,8 @@ docker pull quay.nju.edu.cn/ascend/vllm-ascend:v0.18.0
 #### MemCache
 
 ```shell
-pip install memfabric_hybrid==1.1.2
-pip install memcache_hybrid==1.1.2
+pip install memfabric_hybrid==1.1.1
+pip install memcache_hybrid==1.1.1
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
