@@ -5,7 +5,7 @@
 # BoostIO 配置
 [bio]
 
-# 设置缓存盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。
+# 设置缓存盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明。
 bio.disk.path = 
 
 # ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
@@ -15,7 +15,7 @@ bio.wcache.evict_water_level = 90
 # ubsio磁盘淘汰水位，示例为90%
 bio.wcache.disk_evict_water_level = 90
 
-# 启动推理服务的 NPU 卡数。
+# 启动推理服务的 NPU 卡数。例如推理启动4卡，同时bio.disk.path配置了8个分区，配置填4。
 bio.standalone.device_count = 0
 
 # 设置日志输出级别。可选`error`、`warn`、`info`、`debug`、`trace`。
@@ -37,7 +37,7 @@ bio.cache.qos.enable = false
 
 | 配置项 | 值类型 | 是否必填 | 默认值 | 有效范围 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `bio.disk.path` | 字符串 | 可选 | `xxx:xxx:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。path数量需要大于等于单个机器上的当前推理的NPU卡数 [disk配置说明](https://gitcode.com/Ascend/memcache/wiki/Memcache+UBSIO%20Disk%20%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)|
+| `bio.disk.path` | 字符串 | 可选 | `/dev/nvme1:/dev/nvme2:xxx` | 使用冒号分隔的已存在路径 | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。path数量需要大于等于单个机器上的当前推理的NPU卡数 [disk配置说明](https://gitcode.com/Ascend/memcache/wiki/Memcache+UBSIO%20Disk%20%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)|
 | `bio.log.level` | 字符串 | 可选 | `info` | `error`、`warn`、`info`、`debug`、`trace` | 配置初始化后设置 BoostIO server 日志级别。 |
 | `bio.standalone.device_count` | 整数 | 可选 | `0` | `0` 到 `16` | 当前 vLLM 服务中的 memcache `local_server` 进程数量。`0` 表示保留旧逻辑，即每个 `deviceId` 按路径下标选择一个设备。 |
 | `bio.segment.size_in_mb` | 整数 | 可选 | `4` | `1` 到 `16` | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小。 |
