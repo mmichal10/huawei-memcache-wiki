@@ -11,6 +11,7 @@
 wget -O /path/to/partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
 chmod +x /path/to/partition_disks.sh
 ```
+
 ## 场景一：有盘部署（推荐）
 
 **背景：** 单节点多块 NVMe 盘，分区总数需提前规划，每个分区对应一个推理实例的缓存存储路径。
@@ -38,7 +39,7 @@ sudo blkid /dev/nvme0n1               # 应无文件系统签名
 
 ### 2. 使用 partition_disks.sh 分区
 
-> **⚠️ 高危操作：** 选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。
+> <span style="color:red"> ⚠️ 高危操作： 选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。</span>
 
 脚本创建 GPT 分区表，均分磁盘并输出 `bio.disk.path`。默认 dry-run，加 `--yes` 才写入。
 
@@ -127,7 +128,7 @@ bio.disk.path = /dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 
 无可用裸盘时，用 `dd` + `losetup` 创建 loop 块设备模拟。
 
-> **⚠️ 高危操作：** 创建 loop 设备前，务必确认目标 `/dev/loopN` 未被占用，否则可能导致数据丢失。
+> <span style="color:red"> ⚠️ 高危操作： 创建 loop 设备前，务必确认目标 `/dev/loopN` 未被占用，否则可能导致数据丢失。</span>
 
 先查看哪些 loop 设备可用：
 
@@ -188,7 +189,7 @@ bio.disk.path =
 
 ## 取消 loop 设备
 
-> **⚠️ 注意：** 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。
+>  <span style="color:red">⚠️ 注意： 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。</span>
 
 ```bash
 # 1. 查看当前 loop 设备及其关联文件
