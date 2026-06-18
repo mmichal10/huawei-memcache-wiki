@@ -5,7 +5,7 @@
 推荐使用 `partition_disks.sh` 一键完成分区并输出配置。
 
 
-**[partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/ubsio-boostio/scripts/partition_disks.sh)脚本下载：**
+**[partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/scripts/ubsio-boostio/partition_disks.sh)脚本下载：**
 
 ```bash
 wget -O /path/to/partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
