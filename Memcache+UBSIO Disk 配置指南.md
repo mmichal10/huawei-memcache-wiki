@@ -126,9 +126,9 @@ bio.disk.path = /dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 
 ## 场景二：模拟盘部署（loop 设备方案）
 
-无可用裸盘时，用 `dd` + `losetup` 创建 loop 块设备模拟。
+无可用裸盘时，用 `dd` + `losetup` 创建 loop 块设备模拟，默认开启 direct_io 直通模式。
 
-> <span style="color:red"> ⚠️ 高危操作： 创建 loop 设备前，务必确认目标 `/dev/loopN` 未被占用，否则可能导致数据丢失。</span>
+> <span style="color:red">**⚠️ 高危操作：** 创建 loop 设备前，务必确认目标 `/dev/loopN` 未被占用，否则可能导致数据丢失。</span>
 
 先查看哪些 loop 设备可用：
 
@@ -147,12 +147,20 @@ losetup -a
 # （若无输出则表示所有 loop 设备均空闲）
 ```
 
-确认空闲后，再执行以下操作（假设 /dev/loop0 空闲）：
+确认空闲后，再执行以下操作（假设 /dev/loop0 空闲，创建 1TB 镜像）：
 
 ```bash
-sudo dd if=/dev/zero of=/data/boostio_disk.img bs=1G count=10 status=progress
+# 创建 1TB 镜像文件（count=1024，可根据需求调整）
+sudo dd if=/dev/zero of=/data/boostio_disk.img bs=1G count=1024 status=progress
+
+# 挂载 loop 设备，默认开启 direct_io 直通
 sudo losetup --direct-io=on /dev/loop0 /data/boostio_disk.img
 
+# 验证 direct_io 已开启
+losetup -l /dev/loop0 | grep -i direct
+# 期望输出包含：Direct I/O: on
+
+# 分区
 sudo bash /path/to/partition_disks.sh \
     --parts 4 --disk /dev/loop0 -c 4 --yes -f -w
 
@@ -183,7 +191,7 @@ bio.disk.path =
 
 ## 取消 loop 设备
 
->  <span style="color:red">⚠️ 注意： 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。</span>
+> **⚠️ 注意：** 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。
 
 ```bash
 # 1. 查看当前 loop 设备及其关联文件
