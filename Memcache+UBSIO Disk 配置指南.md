@@ -151,7 +151,7 @@ losetup -a
 
 ```bash
 sudo dd if=/dev/zero of=/data/boostio_disk.img bs=1G count=10 status=progress
-sudo losetup /dev/loop0 /data/boostio_disk.img
+sudo losetup --direct-io=on /dev/loop0 /data/boostio_disk.img
 
 sudo bash /path/to/partition_disks.sh \
     --parts 4 --disk /dev/loop0 -c 4 --yes -f -w
@@ -170,7 +170,7 @@ bio.disk.path = /dev/loop0p1:/dev/loop0p2:/dev/loop0p3:/dev/loop0p4
 
 ```bash
 # 修改 /etc/rc.local
-losetup /dev/loop0 /data/boostio_disk.img
+losetup --direct-io=on /dev/loop0 /data/boostio_disk.img
 ```
 ---
 
