@@ -166,12 +166,6 @@ sudo bash /path/to/partition_disks.sh \
 bio.disk.path = /dev/loop0p1:/dev/loop0p2:/dev/loop0p3:/dev/loop0p4
 ```
 
-### 配置开机自动挂载
-
-```bash
-# 修改 /etc/rc.local
-losetup --direct-io=on /dev/loop0 /data/boostio_disk.img
-```
 ---
 
 ## 场景三：无盘部署
