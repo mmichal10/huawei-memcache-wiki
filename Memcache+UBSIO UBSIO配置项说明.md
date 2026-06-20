@@ -5,12 +5,12 @@
 # BoostIO 配置
 [bio]
 
-# 设置缓存盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明。
+# 设置磁盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明。
 bio.disk.path = 
 
 # ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
 bio.mem.size_in_gb = 150
-# ubsio内存淘汰水位，无缓存盘配置时设置为90，缓存盘不为空时设置为0。
+# ubsio内存淘汰水位，无bio.disk.path配置时设置为100，有bio.disk.path配置时设置为0。
 bio.wcache.evict_water_level = 100
 # ubsio磁盘淘汰水位，示例为90%
 bio.wcache.disk_evict_water_level = 100
