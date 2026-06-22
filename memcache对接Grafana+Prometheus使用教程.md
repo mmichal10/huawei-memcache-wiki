@@ -3,25 +3,28 @@ grafana：https://prometheus.io/download/
 prometheus：https://grafana.com/grafana/download/13.0.1?platform=arm
  
 首先，你需要确认你的服务器架构。你可以通过以下命令来查看：
-
+```
 uname -a
+```
 如果输出中包含 aarch64，则你的服务器架构为 ARM64。
 
 2. 下载和解压文件
 Grafana
 根据你的服务器架构，下载相应的Grafana版本：
-
+```
 wget https://dl.grafana.com/grafana-enterprise/release/13.0.1/grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz --no-check-certificate
 tar -zxvf grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz
+```
 Prometheus
 同样，根据你的服务器架构，下载相应的Prometheus版本：
-
+```
 wget https://github.com/prometheus/prometheus/releases/download/v3.12.0/prometheus-3.12.0.linux-arm64.tar.gz
 tar -zxvf prometheus-3.12.0.linux-arm64.tar.gz
+```
 3. 启动服务
 Prometheus
 修改 prometheus.yml 文件，增加监听的端口和目标：
-
+```
 global:
   scrape_interval: 15s
   external_labels:
@@ -40,14 +43,18 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['141.61.39.235:8000']
+```
 启动Prometheus：
-
+```
 cd prometheus-3.12.0.linux-arm64
 ./prometheus --config.file=prometheus.yml
+```
 Grafana
 启动Grafana：
+```
 cd grafana-13.0.1
 ./bin/grafana-server
+```
 4. 配置Grafana
 打开浏览器，访问Grafana的Web界面：
 
