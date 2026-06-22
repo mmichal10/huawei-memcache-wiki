@@ -51,8 +51,8 @@ pip install --upgrade transformers
 #### memcache
 
 ```shell
-pip install memfabric_hybrid==1.1.2
-pip install memcache_hybrid==1.1.2
+pip install memfabric_hybrid==1.1.2   （发布中、可以编译release/1.1分支）
+pip install memcache_hybrid==1.1.2     (发布中、可以编译release/1.1分支）
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
