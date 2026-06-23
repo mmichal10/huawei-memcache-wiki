@@ -3,10 +3,10 @@
 
 下载地址：
 
-grafana：https://prometheus.io/download/
+grafana：https://grafana.com/grafana/download/13.0.1?platform=arm
 
 
-prometheus：https://grafana.com/grafana/download/13.0.1?platform=arm
+prometheus：https://prometheus.io/download/
  
 首先，你需要确认你的服务器架构。你可以通过以下命令来查看：
 ```
