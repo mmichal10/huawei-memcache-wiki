@@ -599,4 +599,8 @@ SGLang 多轮对话测试工具
 | enable  | 20   | 15.62    | 37.64        | 22.02              | 457.74              | 48.11     | 20.79       | 88%      |
 
 
+### FAQ
+1. 如遇到偶现崩溃问题，以补丁方式合入此PR：https://github.com/vllm-project/vllm/pull/34079
+
+
 
