@@ -5,8 +5,11 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 在``融合部署模式``（MemCache和vllm在同一个进程）下，由于推理框架首先加载权重，然后才初始化kvconnector进而初始化MemCache，导致MemCache无法申请到足够内存空间，[典型报错FAQ](https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6)。
 
 此时可以采用``分离部署模式``（MemCache和vllm不在同一个进程）申请尽量大的内存空间:		
-第一步：在拉起推理进程前，首先在每个节点启动memcache独立进程，即由独立的进程贡献内存		
-第二步：拉起推理进程，此时推理进程中的memcache不贡献内存。		
+
+第一步：在拉起推理进程前，首先在每个节点启动memcache独立进程，即由独立的进程贡献内存。
+
+第二步：拉起推理进程，此时推理进程中的memcache不贡献内存。
+
 部署示意图如下：		
 ![memcache_separated_deployment.png](https://raw.gitcode.com/user-images/assets/7672915/faac25cd-1e48-4d5d-9649-eb5fad1850b3/memcache_separated_deployment.png 'memcache_separated_deployment.png')
 
@@ -88,4 +91,4 @@ if __name__ == "__main__":
 
    **等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步**
 
-3. 最后按原有方法拉起推理进程。
+4. 最后按原有方法拉起推理进程。
