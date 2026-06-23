@@ -1,6 +1,7 @@
 
 当前使用的版本为grafana-13.0.1与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本，下载地址：
 grafana：https://prometheus.io/download/
+
 prometheus：https://grafana.com/grafana/download/13.0.1?platform=arm
  
 首先，你需要确认你的服务器架构。你可以通过以下命令来查看：
@@ -25,6 +26,7 @@ tar -zxvf prometheus-3.12.0.linux-arm64.tar.gz
 
 # 2. 启动服务
 Prometheus
+
 修改 prometheus.yml 文件，增加监听的端口和目标：
 ```
 global:
@@ -52,6 +54,7 @@ cd prometheus-3.12.0.linux-arm64
 ./prometheus --config.file=prometheus.yml
 ```
 Grafana
+
 启动Grafana：
 ```
 cd grafana-13.0.1
