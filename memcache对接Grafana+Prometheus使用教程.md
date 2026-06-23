@@ -82,23 +82,26 @@ http://141.61.39.235:3000/
 在Grafana中，选择 Create -> Dashboard。
 添加新的面板，选择 Add query，选择你刚刚添加的Prometheus数据源。
 选择你想要显示的指标，例如 memcache 相关的指标。
-可能的问题及解决方法
-架构不匹配：
 
-确认你下载的Grafana和Prometheus版本与你的服务器架构匹配。如果架构不匹配，解压时会报错。
-文件完整性：
 
-确认下载的文件完整无损。如果文件不完整，解压时会报错。
-配置文件错误：
 
-确认 prometheus.yml 文件的格式正确，没有语法错误。
-端口冲突：
+# 可能的问题及解决方法
 
-确认Prometheus和Grafana使用的端口没有被其他服务占用。
-防火墙和网络问题：
+
+下载的Grafana和Prometheus版本与你的服务器架构匹配。如果架构不匹配，解压时会报错。
+
+
+下载的文件完整无损。如果文件不完整，解压时会报错。
+
+
+prometheus.yml 文件的格式正确，没有语法错误。
+
+
+Prometheus和Grafana使用的端口没有被其他服务占用。
+
 
 确认防火墙没有阻止Prometheus和Grafana的端口（9090和3000）。
-如果你在执行上述步骤时遇到具体错误，请提供错误信息，以便进一步诊断问题。
+
 
 
 ![image.png](https://raw.gitcode.com/user-images/assets/7672915/1b51b1b4-0884-438c-b571-da15e62f2767/image.png 'image.png')
