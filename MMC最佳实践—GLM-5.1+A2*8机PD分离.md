@@ -453,12 +453,15 @@ vllm serve /data02/weight/GLM-5.1-w8a8_modelers \
 
 
 
-**相比基线脚本，启用MF时仅涉及以下两点变化**
+**相比基线脚本，启用MF时仅涉及以下变化**
 
-1. 添加了环境变量导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
+1. 添加了环境变量
 
-```
+```shell
+# 导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
 export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+# 设置Python哈子函数随机种子，保证不同实例接收相同请求后生成相同key
+export PYTHONHASHSEED=0
 ```
 
 2. kv-transfer-config从仅使用MooncakeConnectorV1变为同时使用MooncakeConnectorV1+AscendStoreConnector
@@ -529,8 +532,12 @@ total_hugepages_number = dram_size_per_rank * 8 / Hugepagesize
 
 通过如下命令设置大页数量
 
-```
+```shell
 echo 409600 > /proc/sys/vm/nr_hugepages
+```
+如果是非root用户可使用如下命令
+```shell
+echo 409600 | sudo tee /proc/sys/vm/nr_hugepages
 ```
 
 
