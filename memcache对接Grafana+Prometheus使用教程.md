@@ -62,7 +62,7 @@ Grafana
 启动Grafana：
 ```
 cd grafana-13.0.1
-./bin/grafana-server
+./bin/grafana server
 ```
 
 # 3. 配置Grafana
