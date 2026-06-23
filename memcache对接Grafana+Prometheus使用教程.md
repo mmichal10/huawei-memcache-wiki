@@ -1,6 +1,10 @@
 
-当前使用的版本为grafana-13.0.1与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本，下载地址：
+当前使用的版本为grafana-13.0.1与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本
+
+下载地址：
+
 grafana：https://prometheus.io/download/
+
 
 prometheus：https://grafana.com/grafana/download/13.0.1?platform=arm
  
