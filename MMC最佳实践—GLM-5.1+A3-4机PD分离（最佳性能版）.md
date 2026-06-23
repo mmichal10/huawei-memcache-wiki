@@ -735,6 +735,6 @@ bash start_proxy.sh
 ```
 
 
-
-### 测试
+### FAQ
+1. 如果遇到申请内存时报错：Try HalMemCreate ret: -6，请参考[MemCache+vLLM+A3分离部署文档](MemCache+vLLM+A3分离部署案例.md)。
 
