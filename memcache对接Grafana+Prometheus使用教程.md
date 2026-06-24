@@ -1,5 +1,5 @@
 
-当前使用的版本为grafana-13.0.1与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本
+当前使用的版本为grafana-10.4.2与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本
 
 
 
@@ -7,7 +7,7 @@
 
 
 
-grafana：https://grafana.com/grafana/download/13.0.1?platform=arm
+grafana：https://grafana.com/grafana/download/10.4.2?platform=arm
 
 
 
@@ -34,8 +34,8 @@ Grafana
 
 
 ```
-wget https://dl.grafana.com/grafana-enterprise/release/13.0.1/grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz --no-check-certificate
-tar -zxvf grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz
+wget https://dl.grafana.com/enterprise/release/grafana-enterprise-10.4.2.linux-arm64.tar.gz --no-check-certificate
+tar -zxvf grafana-enterprise-10.4.2.linux-arm64.tar.gz
 ```
 
 
@@ -113,7 +113,7 @@ cd prometheus-3.12.0.linux-arm64
 
 
 ```
-cd grafana-13.0.1
+cd grafana-v10.4.2/
 ./bin/grafana server
 ```
 
@@ -152,10 +152,12 @@ http://141.61.39.235:3000/
 
 
 
+
+
 # 4. 创建仪表盘
 
 
-在Grafana中，选择 Create -> Dashboard
+在Grafana中，选择 Dashboard -> new 
 
 
 添加新的面板，选择 Add query，选择你刚刚添加的Prometheus数据源
@@ -165,15 +167,29 @@ http://141.61.39.235:3000/
 选择你想要显示的指标，例如 memcache 相关的指标。
 
 
+也可以在Dashboard -> new 之后选择import使用已有的模板
 
 
-示例展示图json
+
+模板1：
 
 
-`https://gitcode.com/yuandongsheng/yds_mmc/blob/main/memcache_dashboard.json`
+`https://gitcode.com/yuandongsheng/yds_mmc/blob/main/vLLM%20MemCache%20%E7%9B%91%E6%8E%A7%E7%9C%8B%E6%9D%BF-1782272917266.json`
 
  效果展示图
 
 
-![1872BAB6-C1FB-465D-CD26-E5A972254234.jpg](https://raw.gitcode.com/user-images/assets/7672915/1ef67ea8-66b6-4775-ae06-c8471ed9ec73/1872BAB6-C1FB-465D-CD26-E5A972254234.jpg '1872BAB6-C1FB-465D-CD26-E5A972254234.jpg')
+![1FF81AF5-30BB-4E19-8BAA-7EE50CE9DBE7.jpg](https://raw.gitcode.com/user-images/assets/7672915/d6e337f2-54ca-4e83-87d4-07b4b377ba8f/1FF81AF5-30BB-4E19-8BAA-7EE50CE9DBE7.jpg '1FF81AF5-30BB-4E19-8BAA-7EE50CE9DBE7.jpg')
+
+
+
+
+模板2：
+
+`https://gitcode.com/yuandongsheng/yds_mmc/blob/main/memcache_dash.json`
+
+
+ 效果展示图
+ 
+ ![A3A78D98-4979-45FE-F22A-CF03D292611F.jpg](https://raw.gitcode.com/user-images/assets/7672915/5df55eb2-bec4-45a0-a71d-cb34a708f9c7/A3A78D98-4979-45FE-F22A-CF03D292611F.jpg 'A3A78D98-4979-45FE-F22A-CF03D292611F.jpg')
 
