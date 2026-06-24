@@ -32,6 +32,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 ## 快速开始
 
 - [怎么部署一个memcache的HA集群](怎么部署一个memcache的HA集群.md)  
+- [怎么对接grafana json监控](memcache对接Grafana+Prometheus使用教程.md)
 - [vLLM快速体验](怎么用vllm+memcache加速TTFT.md)  
 - [SGL快速体验](怎么用SGL+memcache加速TTFT.md)  
 
