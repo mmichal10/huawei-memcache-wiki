@@ -1,21 +1,35 @@
 
 当前使用的版本为grafana-13.0.1与prometheus-3.12.0，需要根据使用服务器的架构来选择下载的小版本
 
+
+
 下载地址：
+
+
 
 grafana：https://grafana.com/grafana/download/13.0.1?platform=arm
 
 
+
 prometheus：https://prometheus.io/download/
+
+
  
 首先，你需要确认你的服务器架构。你可以通过以下命令来查看：
+
+
 ```
 uname -a
 ```
-如果输出中包含 aarch64，则你的服务器架构为 ARM64。
+
+
 
 # 1. 下载和解压文件
+
+
 Grafana
+
+
 根据你的服务器架构，下载相应的Grafana版本：
 
 
@@ -39,6 +53,7 @@ tar -zxvf prometheus-3.12.0.linux-arm64.tar.gz
 Prometheus
 
 修改 prometheus.yml 文件，增加监听的端口和目标：
+
 
 
 ```
@@ -79,7 +94,9 @@ scrape_configs:
 ```
 
 
+
 启动Prometheus：
+
 
 
 ```
@@ -94,33 +111,55 @@ cd prometheus-3.12.0.linux-arm64
 启动Grafana：
 
 
+
 ```
 cd grafana-13.0.1
 ./bin/grafana server
 ```
 
 
+
 # 3. 配置Grafana
 
 
+
 打开浏览器，访问Grafana的Web界面：
+
 
 
 http://141.61.39.235:3000/
 使用默认的用户名和密码 admin 登录，并设置新密码。
 
 
+
 添加Prometheus数据源：
 
 
-在左侧菜单中选择 Connections -> Data Sources -> Add data source。
-选择 Prometheus。
+
+在左侧菜单中选择 Connections -> Data Sources -> Add data source
+
+
+选择 Prometheus
+
+
 在 HTTP 部分，输入Prometheus的URL，例如 http://141.61.39.235:9090/
-点击 Save & Test。
+
+
+点击 Save & Test
+
+
+
 
 # 4. 创建仪表盘
-在Grafana中，选择 Create -> Dashboard。
-添加新的面板，选择 Add query，选择你刚刚添加的Prometheus数据源。
+
+
+在Grafana中，选择 Create -> Dashboard
+
+
+添加新的面板，选择 Add query，选择你刚刚添加的Prometheus数据源
+
+
+
 选择你想要显示的指标，例如 memcache 相关的指标。
 
 
