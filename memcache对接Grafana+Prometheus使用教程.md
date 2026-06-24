@@ -17,21 +17,30 @@ uname -a
 # 1. 下载和解压文件
 Grafana
 根据你的服务器架构，下载相应的Grafana版本：
+
+
 ```
 wget https://dl.grafana.com/grafana-enterprise/release/13.0.1/grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz --no-check-certificate
 tar -zxvf grafana-enterprise_13.0.1_24542347077_linux_arm64.tar.gz
 ```
+
+
 Prometheus
 同样，根据你的服务器架构，下载相应的Prometheus版本：
+
+
 ```
 wget https://github.com/prometheus/prometheus/releases/download/v3.12.0/prometheus-3.12.0.linux-arm64.tar.gz
 tar -zxvf prometheus-3.12.0.linux-arm64.tar.gz
 ```
 
+
 # 2. 启动服务
 Prometheus
 
 修改 prometheus.yml 文件，增加监听的端口和目标：
+
+
 ```
 # my global config
 global:
@@ -68,26 +77,41 @@ scrape_configs:
 
 
 ```
+
+
 启动Prometheus：
+
+
 ```
 cd prometheus-3.12.0.linux-arm64
 ./prometheus --config.file=prometheus.yml
 ```
+
+
 Grafana
 
+
 启动Grafana：
+
+
 ```
 cd grafana-13.0.1
 ./bin/grafana server
 ```
 
+
 # 3. 配置Grafana
+
+
 打开浏览器，访问Grafana的Web界面：
+
 
 http://141.61.39.235:3000/
 使用默认的用户名和密码 admin 登录，并设置新密码。
 
+
 添加Prometheus数据源：
+
 
 在左侧菜单中选择 Connections -> Data Sources -> Add data source。
 选择 Prometheus。
@@ -101,32 +125,11 @@ http://141.61.39.235:3000/
 
 
 
-# 可能的问题及解决方法
 
 
-下载的Grafana和Prometheus版本与你的服务器架构匹配。如果架构不匹配，解压时会报错。
-
-
-下载的文件完整无损。如果文件不完整，解压时会报错。
-
-
-prometheus.yml 文件的格式正确，没有语法错误。
-
-
-Prometheus和Grafana使用的端口没有被其他服务占用。
-
-
-确认防火墙没有阻止Prometheus和Grafana的端口（9090和3000）。
-
-
-
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/1b51b1b4-0884-438c-b571-da15e62f2767/image.png 'image.png')
- 
- ![image.png](https://raw.gitcode.com/user-images/assets/7672915/12ab887a-71c4-4bd6-8fd4-ad3772bef8ee/image.png 'image.png')
+ 效果展示图
  
- 
- ![image.png](https://raw.gitcode.com/user-images/assets/7672915/b192dd1e-6154-4bb8-90f5-9c28bdb0b307/image.png 'image.png')
- 
+ 
  
  
  
