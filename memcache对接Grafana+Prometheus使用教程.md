@@ -88,7 +88,7 @@ cd prometheus-3.12.0.linux-arm64
 ```
 
 
-Grafana
+
 
 
 启动Grafana：
