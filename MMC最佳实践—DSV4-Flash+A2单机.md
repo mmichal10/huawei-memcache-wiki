@@ -43,8 +43,13 @@ pip install --upgrade transformers
 | Align AscendStore grouped hash lookup encoding | https://github.com/vllm-project/vllm-ascend/pull/10217 | 解决External Cache无命中   |
 | Avoid logging KV store keys at error level     | https://github.com/vllm-project/vllm-ascend/pull/10329 | 解决报错时key刷屏问题      |
 | Support AscendStore load masks                 | https://github.com/vllm-project/vllm-ascend/pull/10436 | 解决读取数据过多导致无收益 |
+| Support AscendStore retention masks for v0.20.2     | https://github.com/vllm-project/vllm-ascend/pull/10439 | 减少读写的cache数据 |
+
+其中PR10439可以替代PR10436，同时减少读写的数据，可以支持存储更多的cache，提升端到端收益。
 
 可以基于vllm-ascend代码仓v0.20.2rc1 tag拉取分支，并将4个PR的commit通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。可以参考分支：[SanyueHan/vllm-ascend at v0.20.2rc1](https://github.com/SanyueHan/vllm-ascend/tree/v0.20.2rc1)
+或者直接拉取vllm-ascend代码仓的v0.20.2rc分支再将PR10439或者PR10436通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。
+
 
 
 
@@ -135,6 +140,9 @@ export VLLM_ASCEND_APPLY_DSV4_PATCH=1
 export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
 export TASK_QUEUE_ENABLE=1
 export HCCL_OP_EXPANSION_MODE="AIV"
+
+# 合并PR10439后需设置此环境变量
+export VLLM_PREFIX_CACHE_RETENTION_INTERVAL=0
 
 export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
 
