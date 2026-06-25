@@ -47,8 +47,7 @@ pip install --upgrade transformers
 
 其中PR10439可以替代PR10436，同时减少读写的数据，可以支持存储更多的cache，提升端到端收益。
 
-可以基于vllm-ascend代码仓v0.20.2rc1 tag拉取分支，并将4个PR的commit通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。可以参考分支：[SanyueHan/vllm-ascend at v0.20.2rc1](https://github.com/SanyueHan/vllm-ascend/tree/v0.20.2rc1)
-或者直接拉取vllm-ascend代码仓的v0.20.2rc分支再将PR10439或者PR10436通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。
+可以基于vllm-ascend代码仓v0.20.2rc1 tag拉取分支，并将4个PR的commit通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。可以参考分支：[SanyueHan/vllm-ascend at v0.20.2rc1](https://github.com/SanyueHan/vllm-ascend/tree/v0.20.2rc1)。或者直接拉取vllm-ascend代码仓的v0.20.2rc分支再将PR10439或者PR10436通过cherry-pick方式合入，后续替换文件或者重新安装vllm_ascend部署。
 
 
 
