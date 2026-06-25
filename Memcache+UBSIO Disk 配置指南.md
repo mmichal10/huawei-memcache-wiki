@@ -212,7 +212,7 @@ sudo rm -f /data/boostio_disk.img
 |------|------|
 | 磁盘独占 | UBSIO / BoostIO 独占配置的磁盘/分区，不可与其他服务共享 |
 | 物理盘隔离 | 同一物理盘的分区不会分配给同一 deviceId（算法自动打散） |
-| 路径上限 | `bio.disk.path` 最多 16 条路径 |
+| 路径上限 | `bio.disk.path` 最多 64 条路径 |
 | 动态加盘 | standalone 模式不支持运行时加盘 |
 | 复用磁盘 | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限 | 进程需对块设备有读写权限，建议 root 运行 |
