@@ -45,7 +45,7 @@ pip install --upgrade transformers
 | Support AscendStore load masks                 | https://github.com/vllm-project/vllm-ascend/pull/10436 | 解决读取数据过多导致无收益 |
 | Support AscendStore retention masks for v0.20.2     | https://github.com/vllm-project/vllm-ascend/pull/10439 | 减少读写的cache数据 |
 
-其中PR10439可以替代PR10436，同时减少读写的数据，可以支持存储更多的cache，提升端到端收益。
+~~其中PR10439可以替代PR10436，同时减少读写的数据，可以支持存储更多的cache，提升端到端收益。~~<span style="color:#e60000;">注意：此PR暂不稳定，不要用于生产环境</span>
 
 可以基于vllm-ascend代码仓v0.20.2rc1 tag拉取分支，并将4个PR的commit通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。可以参考分支：[SanyueHan/vllm-ascend at v0.20.2rc1](https://github.com/SanyueHan/vllm-ascend/tree/v0.20.2rc1)。或者直接拉取vllm-ascend代码仓的v0.20.2rc分支再将PR10439或者PR10436通过cherry-pick方式合入，后续替换文件或者重新安装vllm_ascend部署。
 
