@@ -296,7 +296,7 @@ vllm serve /home/weights/GLM5.1-W8A8 \
                     "kv_port": "30000",
                     "kv_connector_extra_config": {
                         "use_ascend_direct": true,
-                        "prefill": {"dp_size": 2, "tp_size": 16},
+                        "prefill": {"dp_size": 4, "tp_size": 8},
                         "decode": {"dp_size": 8, "tp_size": 4}
                     }
                 },
@@ -390,7 +390,7 @@ vllm serve /home/weights/GLM5.1-W8A8 \
                     "kv_port": "30000",
                     "kv_connector_extra_config": {
                         "use_ascend_direct": true,
-                        "prefill": {"dp_size": 2, "tp_size": 16},
+                        "prefill": {"dp_size": 4, "tp_size": 8},
                         "decode": {"dp_size": 8, "tp_size": 4}
                     }
                 },
@@ -682,13 +682,13 @@ python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ###### P0
 
 ```shell
-python launch_online_dp.py --dp-size 2 --tp-size 16 --dp-size-local 1 --dp-rank-start 0 --dp-address 141.61.39.233 --dp-rpc-port 10521 --vllm-start-port 6700
+python launch_online_dp.py --dp-size 4 --tp-size 8 --dp-size-local 2 --dp-rank-start 0 --dp-address 141.61.39.233 --dp-rpc-port 10521 --vllm-start-port 6700
 ```
 
 ###### P1
 
 ```shell
-python launch_online_dp.py --dp-size 2 --tp-size 16 --dp-size-local 1 --dp-rank-start 1 --dp-address 141.61.39.233 --dp-rpc-port 10521 --vllm-start-port 6700
+python launch_online_dp.py --dp-size 4 --tp-size 8 --dp-size-local 2 --dp-rank-start 2 --dp-address 141.61.39.233 --dp-rpc-port 10521 --vllm-start-port 6700
 ```
 
 ###### D0
