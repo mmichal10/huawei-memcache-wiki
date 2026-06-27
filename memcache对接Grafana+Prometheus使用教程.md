@@ -174,7 +174,7 @@ http://141.61.39.235:3000/
 模板1：
 
 
-`https://gitcode.com/yuandongsheng/yds_mmc/blob/main/vLLM%20MemCache%20%E7%9B%91%E6%8E%A7%E7%9C%8B%E6%9D%BF-1782272917266.json`
+`https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashboard_graph.json`
 
  效果展示图
 
@@ -186,7 +186,7 @@ http://141.61.39.235:3000/
 
 模板2：
 
-`https://gitcode.com/yuandongsheng/yds_mmc/blob/main/memcache_dash.json`
+`https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashboard_math.json`
 
 
  效果展示图
