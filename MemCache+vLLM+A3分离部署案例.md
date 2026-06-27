@@ -17,7 +17,27 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 
 本文假定读者已经掌握了常规方式拉起推理框架+memcache的能力。
 
-##### 1. 准备配置文件
+##### 1. 扫描确认环境sdma可用内存量
+
+确保 free -h 所示的 “buff/cache”项占用尽量少
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672915/838d16fc-206d-4bad-9488-12d71cc93a49/image.png 'image.png')
+		
+可以通过下列命令清掉文件缓存<span style="color:#e60000;">！！！注意！！！</span>此命令为清缓存命令，会导致权重等缓存需要从文件系统重新加载，再次拉起vllm框架会变慢，请熟悉其背后代表的含义判断是否使用		
+
+```shell
+echo 3 > /proc/sys/vm/drop_caches
+```
+
+运行[mem_scan.py](urlhttps://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本扫描可用的物理内存：
+
+`python3 mem_scan.py`
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672916/348c0854-4efb-4803-8222-f6bf19589fa1/image.png 'image.png')
+
+##### 2. 准备配置文件
+
+假设在上一步中扫描得知环境上至少有600GB可用内存。
 
 首先修改推理进程使用的mmc-local.conf，将ock.mmc.local_service.dram.size修改为0，然后增加配置项 ock.mmc.local_service.max.dram.size = 1024GB
 
@@ -40,7 +60,7 @@ ock.mmc.local_service.max.dram.size = 1024GB
 ```
 
 
-##### 2. 准备脚本
+##### 3. 准备脚本
 
 在每个节点上准备如下脚本，假设命名为 memcache_standalone.py
 
@@ -63,7 +83,7 @@ if __name__ == "__main__":
 ```
 
 
-##### 3. 拉起
+##### 4. 拉起
 
 1. 首先按原有方案拉起metaservice。
 
@@ -71,18 +91,8 @@ if __name__ == "__main__":
    export MMC_META_CONFIG_PATH=[mmc-meta.conf PATH]
    python3 -c 'from memcache_hybrid import MetaService; MetaService.main()'
    ```
-   
-   
-2. 确保 free -h 所示的 “buff/cache”项占用尽量少
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/838d16fc-206d-4bad-9488-12d71cc93a49/image.png 'image.png')
-		
-   可以通过下列命令清掉文件缓存<span style="color:#e60000;">！！！注意！！！</span>此命令为清缓存命令，会导致权重等缓存需要从文件系统重新加载，再次拉起vllm框架会变慢，请熟悉其背后代表的含义判断是否使用		
 
-   ```shell
-	echo 3 > /proc/sys/vm/drop_caches
-   ```
-
-3. 然后拉起memcache独立进程。
+2. 然后拉起memcache独立进程。
 
    ```shell
    export MMC_LOCAL_CONFIG_PATH="mmc-local-standalone.conf"
@@ -91,4 +101,4 @@ if __name__ == "__main__":
 
    **等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步**
 
-4. 最后按原有方法拉起推理进程。
+3. 最后按原有方法拉起推理进程。
