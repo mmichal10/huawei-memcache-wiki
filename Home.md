@@ -10,7 +10,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 ## 特性介绍
 
-- [元数据HA原理](https://gitcode.com/Ascend/memcache/wiki/%E6%80%8E%E4%B9%88%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAmemcache%E7%9A%84HA%E9%9B%86%E7%BE%A4.md)
+- [元数据HA原理](https://gitcode.com/Ascend/memcache/wiki/memcache%E7%9A%84HA%E5%8E%9F%E7%90%86%E5%8F%8A%E5%85%B6%E9%83%A8%E7%BD%B2.md)
 - [集群的扩缩容](集群的扩缩容.md)
 - [HBM-DDR-SSD三级池化](多级池化的实现.md)
 
