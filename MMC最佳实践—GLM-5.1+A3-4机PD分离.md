@@ -8,7 +8,7 @@
 
 ### 部署
 
-本文采用的部署方案基于 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html) 修改
+本文采用的部署方案基于 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html) 修改。
 
 【硬件配置】Atlas 900 A3 SuperPoD 四机64卡
 
@@ -20,22 +20,17 @@
 
 【推理框架】vLLM
 
-【部署规格】2P2D （Prefill TP16 DP2，Decode TP4 DP8）
+【部署规格】2P2D （Prefill TP8 DP4，Decode TP4 DP8）
 
+
+#### 1. 拉取vllm-ascend官方镜像
+```shell
+docker pull quay.io/ascend/vllm-ascend:v0.21.0rc1-a3
 ```
-torch                                    2.9.0
-torch_npu                                2.9.0.post1+gitee7ba04
-torchaudio                               2.9.0
-torchvision                              0.24.0
-transformers                             5.9.0
-triton-ascend                            3.2.0.dev20260322
-vllm                                     0.18.0+empty
-vllm_ascend                              0.18.0rc2.dev100+g9a0b786f2
-```
+启动容器的命令参考 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html)。
 
 
-
-#### 1. 安装MF
+#### 2. 安装MF
 
 在线安装：
 
@@ -52,7 +47,7 @@ pip install memcache_hybrid==1.1.1
 
 
 
-#### 2. 修改配置文件
+#### 3. 修改配置文件
 
 MemCache由MetaService和LocalService两个组件构成，其中LocalService集成到推理框架中随推理进程一同启动，负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
@@ -110,9 +105,9 @@ ock.mmc.local_service.dram.size = 25GB                                ## 每个�
 
 
 
-#### 3. 准备推理服务启动相关脚本
+#### 4. 准备推理服务启动相关脚本
 
-##### 3.1 服务拉起辅助脚本
+##### 4.1 服务拉起辅助脚本
 
 在每个节点上准备脚本 `launch_online_dp.py`：
 
@@ -219,7 +214,7 @@ if __name__ == "__main__":
 
 
 
-##### 3.2 vLLM启动脚本
+##### 4.2 vLLM启动脚本
 
 在每个节点上准备脚本 `run_dp_template.sh`
 
@@ -624,7 +619,7 @@ export PYTHONHASHSEED=0
 
 
 
-##### 3.3 请求转发脚本
+##### 4.3 请求转发脚本
 
 从vllm-ascend仓库中获取代理程序[load_balance_proxy_server_example.py](https://github.com/vllm-project/vllm-ascend/blob/main/examples/disaggregated_prefill_v1/load_balance_proxy_server_example.py)
 
@@ -664,9 +659,9 @@ python load_balance_proxy_server_example.py \
 
 
 
-#### 4. 拉起服务
+#### 5. 拉起服务
 
-##### 4.1 拉起MetaService服务
+##### 5.1 拉起MetaService服务
 
 任一节点拉起MetaService元数据管理服务
 
@@ -675,7 +670,7 @@ export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hyb
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
-##### 4.2 拉起推理服务
+##### 5.2 拉起推理服务
 
 然后在每个节点上通过以下命令拉起推理服务
 
