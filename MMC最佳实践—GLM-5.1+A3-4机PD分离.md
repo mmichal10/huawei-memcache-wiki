@@ -25,7 +25,7 @@
 
 #### 1. 拉取vllm-ascend官方镜像
 ```shell
-docker pull quay.io/ascend/vllm-ascend:v0.21.0rc1-a3
+docker pull quay.io/ascend/vllm-ascend:v0.18.0-a3
 ```
 启动容器的命令参考 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html)。
 
