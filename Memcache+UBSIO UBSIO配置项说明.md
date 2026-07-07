@@ -5,26 +5,26 @@
 # BoostIO 配置
 [bio]
 
-# 设置磁盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明。
+# 设置磁盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明
 bio.disk.path = 
 
-# ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。
+# ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。有bio.disk.path配置时可以适当减少内存用量，可以配置50
 bio.mem.size_in_gb = 150
-# ubsio内存淘汰水位，无bio.disk.path配置时设置为100，有bio.disk.path配置时设置为0。
-bio.wcache.evict_water_level = 100
-# ubsio磁盘淘汰水位，示例为90%
-bio.wcache.disk_evict_water_level = 100
+# ubsio内存淘汰水位，无bio.disk.path配置时设置为100，有bio.disk.path配置时设置为0
+bio.wcache.evict_water_level = 85
+# ubsio磁盘淘汰水位
+bio.wcache.disk_evict_water_level = 90
 
-# 启动推理服务的 NPU 卡数。例如推理启动4卡，同时bio.disk.path配置了8个分区，配置填4。
+# memcache local_server的进程数量。例如memcache混部，一个推理进程初始化一个local_server，推理启动4卡，配置填4。如果memcache独立部署，配置填1
 bio.standalone.device_count = 0
 
 # 设置日志输出级别。可选`error`、`warn`、`info`、`debug`、`trace`。
 bio.log.level = info
 
 # 以下配置无需修改
-# 将全部内存缓存容量用于写缓存。
+# 将全部内存缓存容量用于写缓存
 bio.cache.mem_read_write_ratio = 0:10
-# 将全部磁盘缓存容量用于写缓存。
+# 将全部磁盘缓存容量用于写缓存
 bio.cache.disk_read_write_ratio = 0:10
 # 设置 UnderFS 后端：本地单机使用 none。需要后端访问时使用 ceph 或 hdfs。
 bio.underfs.file_system_type = none
