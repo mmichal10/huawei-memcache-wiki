@@ -5,6 +5,33 @@
 **GLM-5.1** 是智谱最新旗舰模型，代码能力大大增强，**长程任务**显著提升，能够在单次任务中持续、自主地工作长达 8 小时，完成从规划、执行到迭代优化的完整闭环，交付工程级成果。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
+### 测试结果总结
+**多轮会话数据集测试**
+
+|     | MF      | 轮数 | 每轮输入 | 每轮输出 | 并发 | 总会话数 | mean ttft (ms)  | mean tpot (ms) | 总耗时 (s)  | HBM命中率 | DRAM命中率 |
+|-----|---------|----|------|------|----|------|-----------------|----------------|----------|--------|---------|
+| 第一组 | disable | 20 | 9216 | 1024 | 16 | 16   | 48166.97        | 8.61           | 594.513  | 2.8%   | /       |
+| 第一组 | enable  | 20 | 9216 | 1024 | 16 | 16   | 27450.59 (↓43%) | 9.92           | 377.931  | 1.6%   | 68.6%   |
+| 第二组 | disable | 40 | 4096 | 1024 | 16 | 16   | 37498.54        | 15.53          | 1070.425 | 4.0%   | /       |
+| 第二组 | enable  | 40 | 4096 | 1024 | 16 | 16   | 17744.16 (↓52%) | 17.33          | 710.006  | 4.2%   | 82.3%   |
+| 第三组 | disable | 20 | 9216 | 1024 | 30 | 30   | 90407.57        | 7.56           | 1048.888 | 0.1%   | /       |
+| 第三组 | enable  | 20 | 9216 | 1024 | 30 | 30   | 41756.93 (↓54%) | 8.91           | 519.047  | 0.2%   | 69.2%   |
+
+**90%固定前缀重复率测试**
+
+在4机A3集群（每机8×910C，每张910C为双910B合封）上，基于GLM5.1 W8A8量化模型、PD分离架构（2 Prefill * 4DP * 8TP + 2 Decode * 8DP * 4TP），对MemCache前缀缓存进行了4组场景的性能测试。核心结论：
+
+| 场景 | Input | 并发（实际CC） | TTFT无缓存(ms) | TTFT有缓存(ms) | TTFT降幅 |
+|----|-------|----------|-------------|-------------|--------|
+| 1  | 64k   | 16       | 71723       | 14407       | 79.91% |
+| 2  | 128k  | 13       | 83286       | 27883       | 66.52% |
+| 3  | 64k   | 24       | 77366       | 8931        | 88.45% |
+| 4  | 128k  | 21       | 120392      | 38678       | 67.87% |
+
+**结论**
+1. **TTFT大幅下降**：所有场景TTFT大幅下降 ~80.6%，首Token响应时间从分钟级降至秒级
+2. **实际并发显著提升**：缓存命中后模型侧实际并发从6提升至24，服务承载能力翻倍
+
 
 ### 部署
 
@@ -49,7 +76,7 @@ pip install memcache_hybrid==1.1.1
 
 #### 3. 修改配置文件
 
-MemCache由MetaService和LocalService两个组件构成，其中LocalService集成到推理框架中随推理进程一同启动，负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
+MemCache由MetaService和LocalService两个组件构成，其中LocalService负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
 启动时MetaService、LocalService的配置由各自配置文件导入，默认配置文件在memcache的whl包config目录下
 
@@ -57,9 +84,13 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService集�
 /usr/local/lib/python3.11/site-packages/memcache_hybrid/config
 ```
 
+本文基于A3上典型配置，采用了分离部署模式，每个节点将独立启动一个LocalService负责申请内存，而跟随推理进程启动的LocalService只支持读写数据不提供内存。
+方案的详细介绍请参考[MemCache分离部署文档](MemCache+vLLM+A3分离部署案例.md)。
 
 
-###### MetaService 配置文件
+###### 准备 MetaService 配置文件
+
+任选一个节点作为MetaService启动节点，将配置中ock.mmc.meta_service_url、ock.mmc.meta_service.config_store_url修改为节点IP，保存为mmc-meta.conf
 
 ```ini
 ## Meta service start-up url
@@ -69,15 +100,16 @@ ock.mmc.meta_service_url = tcp://127.0.0.1:5000               ## IP 需要修改
 ock.mmc.meta_service.config_store_url = tcp://127.0.0.1:6000  ## IP 需要修改为启动节点IP
 
 ## HTTP service url
-ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000      ## IP 需要修改为启动节点IP
+ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
 ```
 
 
+###### 准备不提供内存的 LocalService 配置文件
 
-###### LocalService 配置文件
+将如下配置中的IP替换为MetaService节点IP，在每个节点上保存为mmc-local.conf
 
 ```ini
 ## Meta service start-up url
@@ -98,11 +130,55 @@ ock.mmc.local_service.world_size = 256
 ock.mmc.local_service.protocol = device_sdma                          ## 超节点内sdma传输为A3典型配置
 
 ## DRAM space usage
-ock.mmc.local_service.dram.size = 25GB                                ## 每个推理进程提供25GB池化空间，可根据环境情况进行调整，参考https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6
+ock.mmc.local_service.dram.size = 0GB                                 ## 跟随推理进程启动的LocalService不申请内存
+
+ock.mmc.local_service.max.dram.size = 1024GB
+```
+
+
+###### 准备提供内存的 LocalService 配置文件
+
+运行[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本扫描可用的物理内存：
+
+`python3 mem_scan.py`
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672916/348c0854-4efb-4803-8222-f6bf19589fa1/image.png 'image.png')
+
+通常2T内存的A3服务器最多有600+GB内存可供MemCache使用。如果扫描结果较少，可以通过下列命令清掉文件缓存
+
+<span style="color:#e60000;">！！！注意！！！此命令为清缓存命令，会导致权重等缓存需要从文件系统重新加载，再次拉起vllm框架会变慢，请熟悉其背后代表的含义判断是否使用。</span>
+```shell
+echo 3 > /proc/sys/vm/drop_caches
+```
+
+如仍然较少，可能是内存碎片导致的，需要重启环境恢复。
+
+假设在上一步中扫描得知环境上至少有600GB可用内存，将如下配置中IP替换为MetaService节点IP，在每个节点上保存为mmc-local-standalone.conf
+```ini
+## Meta service start-up url
+## Keep consistent with the same name configuration in mmc-meta.conf
+ock.mmc.meta_service_url = tcp://127.0.0.1:5000                       ## 配置为MetaService启动节点IP
+
+## Config store url
+## Keep consistent with the same name configuration in mmc-meta.conf
+ock.mmc.local_service.config_store_url = tcp://127.0.0.1:6000         ## 配置为MetaService启动节点IP
+
+## Log level: debug, info, warn, error
+ock.mmc.log_level = info
+
+## The maximum supported rank count; once ranks are connected, no further modifications are allowed — a meta restart is required
+ock.mmc.local_service.world_size = 256
+
+## Data transfer protocol options
+ock.mmc.local_service.protocol = device_sdma                          ## 超节点内sdma传输为A3典型配置
+
+## DRAM space usage
+ock.mmc.local_service.dram.size = 600GB                               ## 独立启动的LocalService提供600GB内存
+
+ock.mmc.local_service.max.dram.size = 1024GB
 ```
 
 更多配置可以参考官方文档 https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md
-
 
 
 #### 4. 准备推理服务启动相关脚本
@@ -663,16 +739,44 @@ python load_balance_proxy_server_example.py \
 
 ##### 5.1 拉起MetaService服务
 
-任一节点拉起MetaService元数据管理服务
+在之前选定的节点拉起MetaService元数据管理服务
 
 ```shell
 export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-meta.conf
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
-##### 5.2 拉起推理服务
+##### 5.2 
+在每个节点上准备如下脚本，命名为memcache-standalone.py。
 
-然后在每个节点上通过以下命令拉起推理服务
+```python
+import time
+
+from memcache_hybrid import DistributedObjectStore
+
+
+if __name__ == "__main__":
+    store = DistributedObjectStore()
+    res = store.init(0)
+    if res != 0:
+        print(f"Failed to initialize memcache, res = {res}")
+        exit(1)
+    print("Successfully initialized memcache. ")
+
+    while True:
+        time.sleep(1)
+```
+
+在每个节点通过如下命令拉起MemCache独立进程
+```shell
+export MMC_LOCAL_CONFIG_PATH="mmc-local-standalone.conf"
+python3 memcache_standalone.py
+```
+**等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步**
+
+##### 5.3 拉起推理服务
+
+在每个节点上通过以下命令拉起推理服务
 
 ###### P0
 
@@ -768,7 +872,3 @@ python benchmark_serving_multi_turn.py \
 | 第二组 | enable  | 40   | 4096     | 1024     | 16   | 16       | 17744.16 (↓52%) | 17.33          | 710.006    | 4.2%      | 82.3%      |
 | 第三组 | disable | 20   | 9216     | 1024     | 30   | 30       | 90407.57        | 7.56           | 1048.888   | 0.1%      | /          |
 | 第三组 | enable  | 20   | 9216     | 1024     | 30   | 30       | 41756.93 (↓54%) | 8.91           | 519.047    | 0.2%      | 69.2%      |
-
-
-### FAQ
-1. 如果遇到申请内存时报错：Try HalMemCreate ret: -6，请参考[MemCache+vLLM+A3分离部署文档](MemCache+vLLM+A3分离部署案例.md)。
