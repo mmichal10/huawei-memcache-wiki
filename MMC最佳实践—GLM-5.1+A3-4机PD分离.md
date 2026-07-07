@@ -19,7 +19,7 @@
 
 **90%固定前缀重复率测试**
 
-在4机A3集群（每机8×910C，每张910C为双910B合封）上，基于GLM5.1 W8A8量化模型、PD分离架构（2 Prefill * 4DP * 8TP + 2 Decode * 8DP * 4TP），对MemCache前缀缓存进行了4组场景的性能测试。核心结论：
+在4机A3集群（每机8×910C，每张910C为双910B合封）上，基于GLM5.1 W8A8量化模型、PD分离架构（2 Prefill * 4DP * 8TP + 2 Decode * 8DP * 4TP），对MemCache前缀缓存进行了4组场景的性能测试。
 
 | 场景 | Input | 并发（实际CC） | TTFT无缓存(ms) | TTFT有缓存(ms) | TTFT降幅 |
 |----|-------|----------|-------------|-------------|--------|
@@ -84,8 +84,8 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService负�
 /usr/local/lib/python3.11/site-packages/memcache_hybrid/config
 ```
 
-本文基于A3上典型配置，采用了分离部署模式，每个节点将独立启动一个LocalService负责申请内存，而跟随推理进程启动的LocalService只支持读写数据不提供内存。
-方案的详细介绍请参考[MemCache分离部署文档](MemCache+vLLM+A3分离部署案例.md)。
+**本文基于A3上典型配置，采用了分离部署模式，每个节点将独立启动一个LocalService负责申请内存，而跟随推理进程启动的LocalService只支持读写数据不提供内存。
+方案的详细介绍请参考[MemCache分离部署文档](MemCache+vLLM+A3分离部署案例.md)。**
 
 
 ###### 准备 MetaService 配置文件
@@ -746,7 +746,7 @@ export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hyb
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
-##### 5.2 
+##### 5.2 拉起MemCache独立进程
 在每个节点上准备如下脚本，命名为memcache-standalone.py。
 
 ```python
