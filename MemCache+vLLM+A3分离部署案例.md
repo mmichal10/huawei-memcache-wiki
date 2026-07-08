@@ -132,15 +132,15 @@ if __name__ == "__main__":
 
 BIOS更新前，内存地址空间范围：
 
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/b6592bb0-fa73-4c53-9c93-fab37f035471/image.png 'image.png')
+![image 2.1.png](https://raw.gitcode.com/user-images/assets/7672915/784b432d-02c7-4c6d-a398-ad99e68b15e6/image_2.1.png 'image 2.1.png')
 
 BIOS更新后，内存地址空间范围：
 
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/bcc3338d-898f-451a-89df-bf816ba8adbc/image.png 'image.png')
+![image3.1.png](https://raw.gitcode.com/user-images/assets/7672915/bdae6c36-29c1-44e4-8adf-9444e303e192/image3.1.png 'image3.1.png')
 
 案例2：A3 2T内存设备（已在算力先遣队内部环境完成验证）
 
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/ecc90d80-3778-4573-90b9-3cf16dd6e860/image.png 'image.png')
+![image1.png](https://raw.gitcode.com/user-images/assets/7672915/ea7aed17-52bc-4a73-858f-389162080588/image1.png 'image1.png')
 
 更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续可直接使用融合部署模式即可。
 
