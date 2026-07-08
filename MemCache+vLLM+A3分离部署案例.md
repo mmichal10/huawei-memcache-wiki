@@ -110,7 +110,7 @@ if __name__ == "__main__":
 原理：通过安装BIOS补丁，修改物理机初始内存地址空间范围，使其与DRAM可用内存地址空间有更大的交集。
 
 ##### 1. 获取BIOS补丁文件
-联系产品线（）获取最新BIOS补丁文件。
+联系产品线（施伟康 00632249）获取最新BIOS补丁文件。
 
 ##### 2. 在iBMC页面安装补丁文件，进行固件升级
 
@@ -118,11 +118,11 @@ if __name__ == "__main__":
 
 第二步：点击 **固件升级**；
 
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/580c30e2-a260-4749-95b7-5044392cfa53/image.png 'image.png')
+![image5.1.png](https://raw.gitcode.com/user-images/assets/7672915/2913054e-b637-4a10-b69c-3d2a607f24c6/image5.1.png 'image5.1.png')
 
 第三步：点击**固件更新**，上传BIOS补丁文件，点击**开始更新**。
 
-![image.png](https://raw.gitcode.com/user-images/assets/7672915/dc88f0f8-02e1-475b-b8fe-38877450f760/image.png 'image.png')
+![image 4.1.png](https://raw.gitcode.com/user-images/assets/7672915/340040ff-b301-4ea1-9f0e-31fbbda296b3/image_4.1.png 'image 4.1.png')
 
 ##### 3. 重启物理机，使BIOS生效
 
