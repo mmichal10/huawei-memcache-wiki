@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
 ![image5.png](https://raw.gitcode.com/user-images/assets/7672915/8260c91c-602e-4994-9b81-b49e2e400ea0/image5.png 'image5.png')
 
-第三步：点击**固件更新**，上传BIOS补丁文件，点击**开始更新**。
+第三步：点击**固件更新**，上传BIOS补丁文件，点击**开始升级**。
 
 ![image 4.png](https://raw.gitcode.com/user-images/assets/7672915/559914f4-0a70-4fe7-8c44-50c2ff0c2f9e/image_4.png 'image 4.png')
 
