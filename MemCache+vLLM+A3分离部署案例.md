@@ -13,7 +13,7 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 部署示意图如下：		
 ![memcache_separated_deployment.png](https://raw.gitcode.com/user-images/assets/7672915/faac25cd-1e48-4d5d-9649-eb5fad1850b3/memcache_separated_deployment.png 'memcache_separated_deployment.png')
 
-#### 操作方式
+### 操作方式
 
 本文假定读者已经掌握了常规方式拉起推理框架+memcache的能力。
 
@@ -102,60 +102,3 @@ if __name__ == "__main__":
    **等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步**
 
 3. 最后按原有方法拉起推理进程。
-
-
-#### 案例：通过安装BIOS补丁，扩大DRAM可用地址空间范围
-
-原理：通过安装BIOS补丁，修改物理机初始内存地址空间范围，使其与HCCS空间地址有更大的交集。
-
-##### 1. 获取BIOS补丁文件
-
-联系产品线（施伟康 00632249）获取最新BIOS补丁文件。
-
-##### 2. 在iBMC页面安装补丁文件，进行固件升级
-
-第一步：进入iBMC页面；
-
-第二步：点击 **固件升级**；
-
-![image5.png](https://raw.gitcode.com/user-images/assets/7672915/8260c91c-602e-4994-9b81-b49e2e400ea0/image5.png 'image5.png')
-
-第三步：点击**固件更新**，上传BIOS补丁文件，点击**开始升级**。
-
-![image 4.png](https://raw.gitcode.com/user-images/assets/7672915/559914f4-0a70-4fe7-8c44-50c2ff0c2f9e/image_4.png 'image 4.png')
-
-##### 3. 重启物理机，使BIOS补丁生效
-
-##### 4. 获取内存地址空间，与安装BIOS补丁文件前进行对比
-
-案例1：A3 1T内存设备（已由制造中队程海涛在HX局点完成验证）
-
-BIOS更新前，内存地址空间范围：
-
-![image 2.1.png](https://raw.gitcode.com/user-images/assets/7672915/784b432d-02c7-4c6d-a398-ad99e68b15e6/image_2.1.png 'image 2.1.png')
-
-BIOS更新后，内存地址空间范围：
-
-![image3.1.png](https://raw.gitcode.com/user-images/assets/7672915/bdae6c36-29c1-44e4-8adf-9444e303e192/image3.1.png 'image3.1.png')
-
-案例2：A3 2T内存设备（已在算力先遣队内部环境完成验证）
-
-![image_1.png](https://raw.gitcode.com/user-images/assets/7672915/60adbd8e-891a-4ef6-85b1-94ca877b5498/image_1.png 'image_1.png')
-
-![25413B40-FF8D-4FFD-95EA-419A663FADE3.png](https://raw.gitcode.com/user-images/assets/7672915/ee51bde1-ff02-4315-ba66-df5c56a156f7/25413B40-FF8D-4FFD-95EA-419A663FADE3.png '25413B40-FF8D-4FFD-95EA-419A663FADE3.png')
-
-更新后的地址空间均包含在以下地址段中，后续继续使用分离部署模式，拉起memcache与vllm服务。
-
-0x29580000000-0x34000000000
-
-0xa9580000000-0xb4000000000
-  
-0x129580000000-0x134000000000
-  
-0x1a9580000000-0x1b4000000000
-
-##### 补充：扫描DRAM可用内存空间
-
-可通过[scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本，获取当前设备DRAM可用的内存空间。
-
-
