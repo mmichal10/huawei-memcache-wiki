@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
 #### 方案二：打BIOS补丁，扩大DRAM可使用的地址交集
 
-原理：通过BIOS补丁修改物理机初始内存地址空间范围，使其与DRAM可用内存地址段有更大的交集。
+原理：通过BIOS补丁修改物理机初始内存地址空间范围，使其与DRAM可用内存地址空间有更大的交集。
 
 ##### 1. 获取BIOS补丁文件
 联系产品线（）获取最新BIOS补丁文件。
@@ -125,3 +125,25 @@ if __name__ == "__main__":
 ![image.png](https://raw.gitcode.com/user-images/assets/7672915/dc88f0f8-02e1-475b-b8fe-38877450f760/image.png 'image.png')
 
 ##### 3. 重启物理机，使BIOS生效
+
+##### 4. 获取内存地址空间，与安装补丁文件前进行对比
+
+案例1：1T设备（已由制造中队程海涛在宏*局点完成验证）
+
+更新前：
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672915/b6592bb0-fa73-4c53-9c93-fab37f035471/image.png 'image.png')
+
+更新后：
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672915/bcc3338d-898f-451a-89df-bf816ba8adbc/image.png 'image.png')
+
+案例2：2T设备（已在参谋部内部环境完成验证）
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672915/ecc90d80-3778-4573-90b9-3cf16dd6e860/image.png 'image.png')
+
+##### 5. 扫描DRAM可用内存空间
+
+通过[scan.py](url)脚本，获取当前设备DRAM可用的内存空间。
+
+
