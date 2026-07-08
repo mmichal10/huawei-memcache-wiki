@@ -142,8 +142,14 @@ if __name__ == "__main__":
 
 ![image.png](https://raw.gitcode.com/user-images/assets/7672915/ecc90d80-3778-4573-90b9-3cf16dd6e860/image.png 'image.png')
 
-##### 5. 扫描DRAM可用内存空间
+更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续拉取vllm可直接融合部署模式即可。
+  0x29580000000-0x34000000000
+  0xa9580000000-0xb4000000000
+  0x129580000000-0x134000000000
+  0x1a9580000000-0x1b4000000000
 
-通过[scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本，获取当前设备DRAM可用的内存空间。
+##### 补充：扫描DRAM可用内存空间
+
+可通过[scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本，获取当前设备DRAM可用的内存空间。
 
 
