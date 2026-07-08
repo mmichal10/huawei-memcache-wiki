@@ -142,7 +142,7 @@ BIOS更新后，内存地址空间范围：
 
 ![image1.png](https://raw.gitcode.com/user-images/assets/7672915/ea7aed17-52bc-4a73-858f-389162080588/image1.png 'image1.png')
 
-更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续可直接使用融合部署模式即可。
+更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续继续使用分离部署模式，拉起memcache与vllm服务。
 
 0x29580000000-0x34000000000
 
