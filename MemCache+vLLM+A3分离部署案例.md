@@ -14,7 +14,7 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 部署示意图如下：		
 ![memcache_separated_deployment.png](https://raw.gitcode.com/user-images/assets/7672915/faac25cd-1e48-4d5d-9649-eb5fad1850b3/memcache_separated_deployment.png 'memcache_separated_deployment.png')
 
-### 操作方式
+#### 操作方式
 
 本文假定读者已经掌握了常规方式拉起推理框架+memcache的能力。
 
@@ -106,3 +106,10 @@ if __name__ == "__main__":
 
 
 #### 方案二：打BIOS补丁，扩大DRAM可使用的地址交集
+
+原理：通过BIOS补丁修改物理机初始内存地址空间范围，使其与DRAM可用内存地址段有更大的交集。
+
+##### 获取BIOS补丁文件
+联系产品线（）获取最新BIOS补丁文件
+
+##### 在iBMC页面安装补丁文件，进行固件升级
