@@ -144,7 +144,7 @@ BIOS更新后，内存地址空间范围：
 
 ![25413B40-FF8D-4FFD-95EA-419A663FADE3.png](https://raw.gitcode.com/user-images/assets/7672915/ee51bde1-ff02-4315-ba66-df5c56a156f7/25413B40-FF8D-4FFD-95EA-419A663FADE3.png '25413B40-FF8D-4FFD-95EA-419A663FADE3.png')
 
-更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续继续使用分离部署模式，拉起memcache与vllm服务。
+更新后的地址空间均包含在以下地址段中，后续继续使用分离部署模式，拉起memcache与vllm服务。
 
 0x29580000000-0x34000000000
 
