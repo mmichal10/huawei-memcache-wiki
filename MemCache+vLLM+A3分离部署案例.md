@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
 ##### 4. 获取内存地址空间，与安装BIOS补丁文件前进行对比
 
-案例1：A3 1T内存设备（已由制造中队程海涛在弘*局点完成验证）
+案例1：A3 1T内存设备（已由制造中队程海涛在HX局点完成验证）
 
 BIOS更新前，内存地址空间范围：
 
@@ -140,7 +140,9 @@ BIOS更新后，内存地址空间范围：
 
 案例2：A3 2T内存设备（已在算力先遣队内部环境完成验证）
 
-![image1.png](https://raw.gitcode.com/user-images/assets/7672915/ea7aed17-52bc-4a73-858f-389162080588/image1.png 'image1.png')
+![image_1.png](https://raw.gitcode.com/user-images/assets/7672915/60adbd8e-891a-4ef6-85b1-94ca877b5498/image_1.png 'image_1.png')
+
+![25413B40-FF8D-4FFD-95EA-419A663FADE3.png](https://raw.gitcode.com/user-images/assets/7672915/ee51bde1-ff02-4315-ba66-df5c56a156f7/25413B40-FF8D-4FFD-95EA-419A663FADE3.png '25413B40-FF8D-4FFD-95EA-419A663FADE3.png')
 
 更新后的地址空间均包含在以下地址段（DRAM可用地址范围）中，后续继续使用分离部署模式，拉起memcache与vllm服务。
 
