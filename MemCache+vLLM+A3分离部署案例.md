@@ -4,8 +4,7 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 
 在``融合部署模式``（MemCache和vllm在同一个进程）下，由于推理框架首先加载权重，然后才初始化kvconnector进而初始化MemCache，导致MemCache无法申请到足够内存空间，[典型报错FAQ](https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6)。
 
-此时可以采用如下两套方案申请尽量大的内存空间:		
-#### 方案一：``分离部署模式``（MemCache和vllm不在同一个进程）
+此时可以采用``分离部署模式``（MemCache和vllm不在同一个进程）申请尽量大的内存空间:		
 
 第一步：在拉起推理进程前，首先在每个节点启动memcache独立进程，即由独立的进程贡献内存。
 
@@ -105,11 +104,12 @@ if __name__ == "__main__":
 3. 最后按原有方法拉起推理进程。
 
 
-#### 方案二：安装BIOS补丁，扩大DRAM可用地址空间范围
+#### 案例：通过安装BIOS补丁，扩大DRAM可用地址空间范围
 
 原理：通过安装BIOS补丁，修改物理机初始内存地址空间范围，使其与DRAM可用内存地址空间有更大的交集。
 
 ##### 1. 获取BIOS补丁文件
+
 联系产品线（施伟康 00632249）获取最新BIOS补丁文件。
 
 ##### 2. 在iBMC页面安装补丁文件，进行固件升级
@@ -118,11 +118,11 @@ if __name__ == "__main__":
 
 第二步：点击 **固件升级**；
 
-![image5.1.png](https://raw.gitcode.com/user-images/assets/7672915/2913054e-b637-4a10-b69c-3d2a607f24c6/image5.1.png 'image5.1.png')
+![image5.png](https://raw.gitcode.com/user-images/assets/7672915/8260c91c-602e-4994-9b81-b49e2e400ea0/image5.png 'image5.png')
 
 第三步：点击**固件更新**，上传BIOS补丁文件，点击**开始更新**。
 
-![image 4.1.png](https://raw.gitcode.com/user-images/assets/7672915/340040ff-b301-4ea1-9f0e-31fbbda296b3/image_4.1.png 'image 4.1.png')
+![image 4.png](https://raw.gitcode.com/user-images/assets/7672915/559914f4-0a70-4fe7-8c44-50c2ff0c2f9e/image_4.png 'image 4.png')
 
 ##### 3. 重启物理机，使BIOS生效
 
