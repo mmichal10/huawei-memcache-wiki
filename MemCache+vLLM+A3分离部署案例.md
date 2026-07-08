@@ -144,6 +144,6 @@ if __name__ == "__main__":
 
 ##### 5. 扫描DRAM可用内存空间
 
-通过[scan.py](url)脚本，获取当前设备DRAM可用的内存空间。
+通过[scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本，获取当前设备DRAM可用的内存空间。
 
 
