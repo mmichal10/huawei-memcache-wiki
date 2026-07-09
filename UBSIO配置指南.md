@@ -5,7 +5,7 @@
 ### A2 配置示例
 
 ```ini
-# BoostIO 配置
+# UBSIO 配置
 [bio]
 
 # A2 必须配置本地 SSD 缓存盘或分区路径；多个路径使用英文冒号分隔。
@@ -38,7 +38,7 @@ bio.cache.qos.enable = false
 ### A3 配置示例
 
 ```ini
-# BoostIO 配置
+# UBSIO 配置
 [bio]
 
 # A3 可配置一块或多块独占 SSD，多个路径使用英文冒号分隔。
