@@ -274,7 +274,7 @@ vllm serve /data02/weight/GLM-5.1-w8a8_modelers \
     --max-num-batched-tokens 2048 \
     --trust-remote-code \
     --max-num-seqs 24 \
-    --gpu-memory-utilization 0.91 \
+    --gpu-memory-utilization 0.90 \
     --quantization ascend \
     --async-scheduling \
     --enforce-eager \
@@ -387,7 +387,7 @@ vllm serve /data02/weight/GLM-5.1-w8a8_modelers \
     --max-num-batched-tokens 64 \
     --trust-remote-code \
     --max-num-seqs 48 \
-    --gpu-memory-utilization 0.92 \
+    --gpu-memory-utilization 0.90 \
     --async-scheduling \
     --quantization ascend \
     --enable-auto-tool-choice \
