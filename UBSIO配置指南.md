@@ -110,10 +110,10 @@ A2 场景下，`bio.disk.path` 需要与当前推理使用的 NPU 卡数或 devi
 
 ```ini
 # 4 卡推理实例，1 块盘切 4 个分区
-bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
+bio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvmexn1p4
 
 # 4 卡推理实例，2 块盘共 8 个分区，配合 device_count 做路径分配
-bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
+bio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvmexn1p4:/dev/nvmeyn1p1:/dev/nvmeyn1p2:/dev/nvmeyn1p3:/dev/nvmeyn1p4
 bio.standalone.device_count = 4
 ```
 
@@ -123,15 +123,15 @@ A3 场景下，UBSIO 独立于推理进程，随 memcache 独立进程启动，�
 
 ```ini
 # 1 个 UBSIO 服务，直接使用独占磁盘，不分区
-bio.disk.path = /dev/nvme0n1
+bio.disk.path = /dev/nvmexn1
 bio.standalone.device_count = 1
 
 # 多块独占磁盘时使用冒号分隔
-bio.disk.path = /dev/nvme0n1:/dev/nvme1n1
+bio.disk.path = /dev/nvmexn1:/dev/nvmexn1
 bio.standalone.device_count = 1
 
 # 无可用物理盘时，也可以使用 loop 设备
-bio.disk.path = /dev/loop2
+bio.disk.path = /dev/loopx
 bio.standalone.device_count = 1 
 ```
 
@@ -154,7 +154,7 @@ bio.disk.path =
 示例：4 卡推理服务使用 2 块盘切出的 8 个分区时，填写 `4`，让 4 个 deviceId 分摊这些分区路径。
 
 ```ini
-bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
+bio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvme0n1p4:/dev/nvmeyn1p1:/dev/nvmeyn1p2:/dev/nvmeyn1p3:/dev/nvmeyn1p4
 bio.standalone.device_count = 4
 ```
 
@@ -207,7 +207,7 @@ bio.wcache.evict_water_level = 85
 有盘模式下，如果希望写缓存更快进入 SSD 层，可设置为较低水位，例如：
 
 ```ini
-bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
+bio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvmexn1p4
 bio.wcache.evict_water_level = 0
 ```
 
@@ -222,7 +222,7 @@ bio.wcache.evict_water_level = 0
 该配置只在 `bio.disk.path` 非空时有实际意义。常见有盘配置如下：
 
 ```ini
-bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
+bio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvmexn1p4
 bio.wcache.disk_evict_water_level = 90
 ```
 
