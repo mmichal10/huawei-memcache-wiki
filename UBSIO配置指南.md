@@ -339,7 +339,7 @@ bio.disk.path = /dev/loop2p1:/dev/loop2p2:/dev/loop2p3:/dev/loop2p4
 
 ### 取消 loop 设备
 
-> **⚠️ 注意：** 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。
+> <span style="color:red">**⚠️ 注意： 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。**</span>
 
 ```bash
 # 1. 查看当前 loop 设备及其关联文件
