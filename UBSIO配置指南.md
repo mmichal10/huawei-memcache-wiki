@@ -1,47 +1,82 @@
-# UBSIO 单机模式配置参考
+# UBSIO配置参考
+
 ## 最小本地单机模式示例
+
+### A2 配置示例
 
 ```ini
 # BoostIO 配置
 [bio]
 
-# 设置磁盘或分区路径。不填表示不使用磁盘设备，仅使用ubsio内存。填写方式见配置说明
-bio.disk.path = 
+# A2 必须配置本地 SSD 缓存盘或分区路径；多个路径使用英文冒号分隔。
+bio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
 
-# ubsio单个进程内存大小，单位GB。例如单节点剩余内存200GB，推理服务启动4卡，可以配置200/4=50GB。有bio.disk.path配置时可以适当减少内存用量，可以配置50
-bio.mem.size_in_gb = 150
-# ubsio内存淘汰水位，无bio.disk.path配置时设置为100，有bio.disk.path配置时设置为0
-bio.wcache.evict_water_level = 85
-# ubsio磁盘淘汰水位
+# UBSIO 内存池大小，单位 GB。A2 默认配置 10GB。
+bio.mem.size_in_gb = 10
+
+# A2 推荐内存淘汰水位配置为 0，使数据尽快下沉到 SSD。
+bio.wcache.evict_water_level = 0
+
+# 写缓存磁盘淘汰水位，推荐配置为 90。
 bio.wcache.disk_evict_water_level = 90
 
-# UBSIO 服务数量。默认情况下按当前推理使用的 NPU 卡数填写；A3 分离部署且只有一个 UBSIO 服务时填 1。
-bio.standalone.device_count = 0
+# A2 需要与推理进程使用的 NPU 卡数保持一致；此处假设推理进程启用 8 张卡。
+bio.standalone.device_count = 8
 
-# 设置日志输出级别。可选`error`、`warn`、`info`、`debug`、`trace`。
+# 设置日志输出级别。可选 `error`、`warn`、`info`、`debug`、`trace`。
 bio.log.level = info
 
-# 以下配置无需修改
-# 将全部内存缓存容量用于写缓存
+# 以下配置无需修改。
 bio.cache.mem_read_write_ratio = 0:10
-# 将全部磁盘缓存容量用于写缓存
 bio.cache.disk_read_write_ratio = 0:10
-# 设置 UnderFS 后端：本地单机使用 none。需要后端访问时使用 ceph 或 hdfs。
 bio.underfs.file_system_type = none
-# 本地单机运行时禁用 TLS 配置路径校验。
 bio.net.tls.enable.switch = false
 bio.sdkmem.size_in_mb = 0
 bio.cache.qos.enable = false
 ```
+
+### A3 配置示例
+
+```ini
+# BoostIO 配置
+[bio]
+
+# A3 可配置一块或多块独占 SSD，多个路径使用英文冒号分隔。
+bio.disk.path = /dev/nvmexnx:/dev/nvmexnx
+
+# UBSIO 内存池大小，单位 GB。A3 默认配置 800GB，推荐按 600-800GB 配置。
+bio.mem.size_in_gb = 800
+
+# A3 推荐内存淘汰水位配置为 85。
+bio.wcache.evict_water_level = 85
+
+# 写缓存磁盘淘汰水位，推荐配置为 90。
+bio.wcache.disk_evict_water_level = 90
+
+# A3 只有一个 UBSIO 服务时配置为 1。
+bio.standalone.device_count = 1
+
+# 设置日志输出级别。可选 `error`、`warn`、`info`、`debug`、`trace`。
+bio.log.level = info
+
+# 以下配置无需修改。
+bio.cache.mem_read_write_ratio = 0:10
+bio.cache.disk_read_write_ratio = 0:10
+bio.underfs.file_system_type = none
+bio.net.tls.enable.switch = false
+bio.sdkmem.size_in_mb = 0
+bio.cache.qos.enable = false
+```
+
 ## 配置表
 
 | 配置项                                                                     | 值类型 | 是否必填 | 默认值                         | 有效范围                                              | 说明                                                                                            |
 | ----------------------------------------------------------------------- | --- | ---- | --------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| [`bio.disk.path`](#biodiskpath)                                         | 字符串 | 可选   | `/dev/nvme1:/dev/nvme2:xxx` | 使用冒号分隔的已存在路径                                      | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。默认部署形态下路径数量建议不小于当前推理使用的 NPU 卡数；A3 分离部署且只有一个 UBSIO 服务时可直接配置独占磁盘、分区或 loop 设备 |
+| [`bio.disk.path`](#biodiskpath)                                         | 字符串 | 可选   | `/dev/nvme1:/dev/nvme2:xxx` | 使用冒号分隔的已存在路径                                      | 缓存盘或分区列表，不填表示不使用磁盘设备仅使用内存缓存。A2 场景下路径数量建议不小于当前推理使用的 NPU 卡数；A3 场景下只有一个 UBSIO 服务时可直接配置独占磁盘、分区或 loop 设备 |
 | `bio.log.level`                                                         | 字符串 | 可选   | `info`                      | `error`、`warn`、`info`、`debug`、`trace`             | 配置初始化后设置 BoostIO server 日志级别。                                                                 |
 | [`bio.standalone.device_count`](#biostandalonedevice_count)             | 整数  | 可选   | `0`                         | `0` 到 `16`                                        | 当前推理服务对应的 UBSIO 服务数量。`0` 表示保留旧逻辑，即每个 `deviceId` 按路径下标选择一个设备。                                  |
 | `bio.segment.size_in_mb`                       | 整数  | 可选   | `4`                         | `1` 到 `16`                                        | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小。                          |
-| `bio.mem.size_in_gb`                                                    | 整数  | 可选   | `50`                        | `0` 到 `512`；不得超过当前系统空闲内存                          | 单机 server 内存池容量。                                                                              |
+| [`bio.mem.size_in_gb`](#biomemsize_in_gb)                             | 整数  | 可选   | `50`                        | `0` 到 `512`；不得超过当前系统空闲内存                          | 单机 server 内存池容量。                                                                              |
 | `bio.sdkmem.size_in_mb`                                                 | 整数  | 可选   | `5120`                      | `0` 到 `4194304`                                   | SDK data-message 内存池大小，主要用于 BatchGet 数据缓冲。                                                    |
 | `bio.net.tls.enable.switch`                                             | 布尔值 | 可选   | `true`                      | `true` 或 `false`                                  | 本地单机运行且没有 TLS 文件时，将该项设为 `false`。                                                              |
 | `bio.trace.enable`                                                      | 布尔值 | 可选   | `true`                      | `true` 或 `false`                                  | 启用或禁用 HTrace 采集。单机模式会初始化 tracer 模块。                                                           |
@@ -69,9 +104,9 @@ bio.cache.qos.enable = false
 
 `bio.disk.path` 用于指定三级池化缓存层使用的块设备或分区，决定是否启用本地 SSD 缓存层：留空表示无盘模式，仅使用 `bio.mem.size_in_gb` 配置的本地内存池；配置为块设备或分区路径时，UBSIO 会将这些路径作为 SSD 缓存空间使用。多个路径使用英文冒号（`:`）分隔，最多 **64** 条。
 
-#### 默认部署形态
+#### A2
 
-默认部署形态下，`bio.disk.path` 需要与当前推理使用的 NPU 卡数或 deviceId 分配关系匹配，路径数量建议不小于当前推理使用的 NPU 卡数；单实例多盘时可配置为“卡数 × 盘数”，让每个 deviceId 获得多条分区路径。详细分区操作见 [默认部署形态分区操作](#默认部署形态分区操作)。
+A2 场景下，`bio.disk.path` 需要与当前推理使用的 NPU 卡数或 deviceId 分配关系匹配，路径数量建议不小于当前推理使用的 NPU 卡数；单实例多盘时可配置为“卡数 × 盘数”，让每个 deviceId 获得多条分区路径。详细分区操作见 [A2 分区操作](#a2-分区操作)。
 
 ```ini
 # 4 卡推理实例，1 块盘切 4 个分区
@@ -82,9 +117,9 @@ bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev
 bio.standalone.device_count = 4
 ```
 
-#### A3 分离部署形态
+#### A3
 
-A3 分离部署下，UBSIO 独立于推理进程，随 memcache 独立进程启动，通常只有一个 UBSIO 服务，不需要按 NPU 卡数切分 `bio.disk.path`。如果磁盘由 UBSIO 独占使用，可以直接配置整盘路径，不强制分区；也可以配置已有分区路径。无可用物理盘时，也可以使用 loop 设备作为 `bio.disk.path`。
+A3 场景下，UBSIO 独立于推理进程，随 memcache 独立进程启动，通常只有一个 UBSIO 服务，不需要按 NPU 卡数切分 `bio.disk.path`。如果磁盘由 UBSIO 独占使用，可以直接配置整盘路径，不强制分区；也可以配置已有分区路径。无可用物理盘时，也可以使用 loop 设备作为 `bio.disk.path`。
 
 ```ini
 # 1 个 UBSIO 服务，直接使用独占磁盘，不分区
@@ -100,7 +135,7 @@ bio.disk.path = /dev/loop2
 bio.standalone.device_count = 1 
 ```
 
-无盘模式表示不接入本地 SSD 作为 L3 缓存扩容层，UBSIO 仅使用 `bio.mem.size_in_gb` 配置的本地内存池承载缓存读写，重启后缓存数据不持久化；配置可直接参考 [最小本地单机模式示例](#最小本地单机模式示例)。
+无盘模式表示不接入本地 SSD 作为 L3 缓存扩容层，UBSIO 仅使用 `bio.mem.size_in_gb` 配置的本地内存池承载缓存读写，重启后缓存数据不持久化；配置示例如下。
 
 ```ini
 # 无盘模式：不启用 SSD 缓存层
@@ -128,6 +163,32 @@ bio.standalone.device_count = 4
 ```ini
 bio.disk.path =
 bio.standalone.device_count = 0
+```
+
+---
+
+## bio.mem.size_in_gb
+
+`bio.mem.size_in_gb` 表示 UBSIO 可使用的本地内存池容量，单位为 GB。该值需要结合 A2 / A3 场景和节点剩余内存规划，不能超过推理进程、Memcache 等业务进程占用后可留给 UBSIO 的内存空间。
+
+### A2
+
+A2 场景下，UBSIO 通常随推理进程按卡维度使用本地缓存资源，`bio.mem.size_in_gb` 建议默认配置为 `10`。
+
+```ini
+# 示例：A2 默认配置 10GB
+bio.mem.size_in_gb = 10
+bio.standalone.device_count = 8
+```
+
+### A3
+
+A3 场景下，UBSIO 随 memcache 独立进程启动，通常只有一个 UBSIO 服务。`bio.mem.size_in_gb` 需要按整机维度规划，不超过推理进程和 Memcache 占用后剩余的内存总量。
+
+```ini
+# 示例：A3 默认配置 800GB，推荐按 600-800GB 配置
+bio.mem.size_in_gb = 800
+bio.standalone.device_count = 1
 ```
 
 ---
@@ -178,9 +239,9 @@ bio.wcache.disk_evict_water_level = 90
 
 # 其他
 
-## 默认部署形态分区操作
+## A2 分区操作
 
-默认部署形态下，启用 SSD 缓存层通常需要先把物理盘或 loop 设备切分为与 deviceId 匹配的分区，再把输出写入 `bio.disk.path`。A3 分离部署不需要执行本节分区操作；只有一个 UBSIO 服务时，可直接配置独占磁盘或 loop 设备路径。
+A2 启用 SSD 缓存层通常需要先把物理盘或 loop 设备切分为与 deviceId 匹配的分区，再把输出写入 `bio.disk.path`。A3 不需要执行本节分区操作；只有一个 UBSIO 服务时，可直接配置独占磁盘或 loop 设备路径。
 
 ### 场景一：有盘部署（推荐）
 
@@ -245,7 +306,7 @@ sudo bash /path/to/partition_disks.sh \
 # bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
 ```
 
-**`vim /etc/boostio/ubsio.conf`，增加或修改下述配置：**
+**`vim ubsio.conf`，增加或修改下述配置：**
 
 ```
 bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
@@ -261,7 +322,7 @@ sudo bash /path/to/partition_disks.sh \
 # bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 ```
 
-**`vim /etc/boostio/ubsio.conf`，增加或修改下述配置：**
+**`vim ubsio.conf`，增加或修改下述配置：**
 
 ```
 bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
@@ -285,13 +346,13 @@ sudo bash /path/to/partition_disks.sh \
 # bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 ```
 
-**`vim /etc/boostio/ubsio.conf`（实例 0），增加或修改下述配置：**
+**`vim ubsio.conf`（实例 0），增加或修改下述配置：**
 
 ```
 bio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4
 ```
 
-**`vim /etc/boostio/ubsio.conf`（实例 1），增加或修改下述配置：**
+**`vim ubsio.conf`（实例 1），增加或修改下述配置：**
 
 ```
 bio.disk.path = /dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
@@ -302,7 +363,7 @@ bio.disk.path = /dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
 
 ### 场景二：模拟盘部署（loop 设备方案）
 
-默认部署形态下无可用裸盘时，可用 `dd` + `losetup --find --show` 创建 loop 块设备模拟，由系统自动选择空闲 loop 设备，默认开启 direct_io 直通模式，并继续按本节步骤分区。A3 分离部署可直接使用 loop 设备路径，不需要执行分区命令。
+A2 无可用裸盘时，可用 `dd` + `losetup --find --show` 创建 loop 块设备模拟，由系统自动选择空闲 loop 设备，默认开启 direct_io 直通模式，并继续按本节步骤分区。A3 可直接使用 loop 设备路径，不需要执行分区命令。
 
 > <span style="color:red">**⚠️ 高危操作：创建 loop 设备前，建议先确认当前 loop 设备占用情况；不要手动复用已被占用的 `/dev/loopN`，否则可能导致数据丢失。**</span>
 
@@ -329,7 +390,7 @@ sudo bash /path/to/partition_disks.sh \
 # bio.disk.path = /dev/loop2p1:/dev/loop2p2:/dev/loop2p3:/dev/loop2p4
 ```
 
-**`vim /etc/boostio/ubsio.conf`，将脚本输出的实际分区路径增加或修改到下述配置：**
+**`vim ubsio.conf`，将脚本输出的实际分区路径增加或修改到下述配置：**
 
 ```
 bio.disk.path = /dev/loop2p1:/dev/loop2p2:/dev/loop2p3:/dev/loop2p4
