@@ -1,8 +1,6 @@
 # UBSIO配置参考
 
-## 最小本地单机模式示例
-
-### A2 配置示例
+## A2 配置示例
 
 ```ini
 # UBSIO 配置
@@ -35,7 +33,7 @@ bio.sdkmem.size_in_mb = 0
 bio.cache.qos.enable = false
 ```
 
-### A3 配置示例
+## A3 配置示例
 
 ```ini
 # UBSIO 配置
