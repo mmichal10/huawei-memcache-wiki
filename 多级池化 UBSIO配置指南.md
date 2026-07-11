@@ -147,7 +147,7 @@ bio.disk.path =
 `bio.standalone.device_count` 表示当前单机推理服务中参与本地缓存路径分配的 device 数量。它主要用于有盘模式下把 `bio.disk.path` 中的多条路径分配给不同 deviceId。
 
 - `0`：兼容旧逻辑。每个 deviceId 按 `bio.disk.path` 的路径下标选择设备，例如 `deviceId = 1` 选择第 2 条路径。
-- 大于 `0`：按配置的 device 数量对 `bio.disk.path` 路径做均衡分配。默认情况下按当前推理使用的 NPU 卡数填写；A3 分离部署且只有一个 UBSIO 服务时可填 `1`。
+- 大于 `0`：按配置的 device 数量对 `bio.disk.path` 路径做均衡分配。默认情况下按当前推理使用的 NPU 卡数填写；A3 场景只有一个 UBSIO 服务时可填 `1`。
 
 示例：4 卡推理服务使用 2 块盘切出的 8 个分区时，填写 `4`，让 4 个 deviceId 分摊这些分区路径。
 
@@ -163,6 +163,12 @@ bio.disk.path =
 bio.standalone.device_count = 0
 ```
 
+A3 场景只有一个 UBSIO 服务时填 `1` 即可：
+
+```ini
+bio.standalone.device_count = 1
+```
+
 ---
 
 ## bio.mem.size_in_gb
@@ -176,7 +182,6 @@ A2 场景下，UBSIO 通常随推理进程按卡维度使用本地缓存资源�
 ```ini
 # 示例：A2 默认配置 10GB
 bio.mem.size_in_gb = 10
-bio.standalone.device_count = 8
 ```
 
 ### A3
@@ -186,7 +191,6 @@ A3 场景下，UBSIO 随 memcache 独立进程启动，通常只有一个 UBSIO 
 ```ini
 # 示例：A3 默认配置 800GB，推荐按 600-800GB 配置
 bio.mem.size_in_gb = 800
-bio.standalone.device_count = 1
 ```
 
 ---
