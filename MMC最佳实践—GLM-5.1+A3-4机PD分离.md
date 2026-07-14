@@ -54,6 +54,8 @@
 ```shell
 docker pull quay.io/ascend/vllm-ascend:v0.18.0-a3
 ```
+**vllm-ascend版本可以高于此版本，此版本只是案例推出时的vllm-ascend版本，非强制要求，vllm-ascend版本可按需选择合适的release版本测试**<span style="color:#e60000;"></span>
+
 启动容器的命令参考 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html)。
 
 
