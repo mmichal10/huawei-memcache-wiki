@@ -34,7 +34,7 @@ docker pull quay.nju.edu.cn/ascend/vllm-ascend:v0.20.2rc1
 pip install --upgrade transformers
 ```
 
-由于目前vllm-ascend支持DSV4池化特性处于POC状态（正式支持时间为630），基于vllm-ascend官方镜像v0.20.2rc1，需要将以下PR中修改以补丁形式合并到v0.20.2rc1解决一些问题：
+由于目前vllm-ascend支持DSV4池化特性处于POC状态，基于vllm-ascend官方镜像v0.20.2rc1，需要将以下PR中修改以补丁形式合并到v0.20.2rc1解决一些问题：
 <span style="color:#e60000;">注意，部分补丁未合入主线，需要等待正式方案，此案例为尝鲜试用，正式版本等待后续刷新</span>
 
 | 标题                                           | 链接                                                   | 概述                       |
