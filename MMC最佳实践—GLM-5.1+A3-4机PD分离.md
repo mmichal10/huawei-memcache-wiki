@@ -78,7 +78,7 @@ pip install memcache_hybrid==1.1.2
 
 MemCache由MetaService和LocalService两个组件构成，其中LocalService负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
-启动时MetaService、LocalService的配置由各自配置文件导入，默认配置文件在memcache的whl包config目录下
+启动时MetaService、LocalService的配置由各自配置文件导入，默认配置文件在memcache的whl包config目录下 （通过 pip show memcache_hybrid 查看具体的路径）
 
 ```
 /usr/local/lib/python3.11/site-packages/memcache_hybrid/config
