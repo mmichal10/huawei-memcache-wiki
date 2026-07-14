@@ -1,4 +1,4 @@
-### <span style="color:#e60000;">20260714此文档已过期，参考  [A3 * 4 + GLM5.1]</span>(https://gitcode.com/Ascend/memcache/wiki/MMC%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E2%80%94GLM-5.1+A3-4%E6%9C%BAPD%E5%88%86%E7%A6%BB.md)
+### <span style="color:#e60000;">20260714此文档已过期，请参考  [A3 * 4 + GLM5.1]</span>(https://gitcode.com/Ascend/memcache/wiki/MMC%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E2%80%94GLM-5.1+A3-4%E6%9C%BAPD%E5%88%86%E7%A6%BB.md)
 
 ### 概述
 
