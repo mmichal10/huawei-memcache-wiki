@@ -12,7 +12,6 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 - [元数据HA原理](怎么部署一个memcache的HA集群.md)
 - [集群的扩缩容](集群的扩缩容.md)
-- [HBM-DDR-SSD三级池化](https://gitcode.com/Ascend/memcache/wiki/%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96.md)
 
 ## 案例库
 #### DSV4
@@ -27,6 +26,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 #### 其他
 - [MemCache+vLLM+A3分离部署案例](MemCache+vLLM+A3分离部署案例.md)
+- [DDR-SSD二级池化](https://gitcode.com/Ascend/memcache/wiki/%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96.md)
 
 ## 快速开始
 
