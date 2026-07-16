@@ -93,6 +93,7 @@ ock.mmc.storage.prefetch.enabled = false
 **部署样例参考：**
 
 A2：[MMC最佳实践—GLM-5.1+A2-8机PD分离](https://gitcode.com/Ascend/memcache/wiki/MMC%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E2%80%94GLM-5.1+A2-8%E6%9C%BAPD%E5%88%86%E7%A6%BB.md)
+
 A3：[MemCache+vLLM+A3分离部署案例](https://gitcode.com/Ascend/memcache/wiki/MemCache+vLLM+A3%E5%88%86%E7%A6%BB%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B.md)
 
 #### 卸载
