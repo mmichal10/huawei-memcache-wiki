@@ -37,7 +37,7 @@ ubsio.cache.qos.enable = false
 
 ```ini
 # UBSIO 配置
-[bio]
+[ubsio]
 
 # A3 可配置一块或多块独占 SSD，多个路径使用英文冒号分隔。
 ubsio.disk.path = /dev/nvmexnx:/dev/nvmexnx
