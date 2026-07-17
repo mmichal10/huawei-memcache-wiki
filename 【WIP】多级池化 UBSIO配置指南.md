@@ -150,7 +150,7 @@ ubsio.standalone.device_count = 1
 
 ## ubsio.mem.size_in_gb
 
-`ubsio.mem.size_in_gb` 表示 UBSIO 可使用的本地内存池容量，单位为 GB。该值需要结合 A2 / A3 场景和节点剩余内存规划，不能超过推理进程、Memcache 等业务进程占用后可留给 UBSIO 的内存空间。
+`ubsio.mem.size_in_gb` 表示 UBSIO 可使用的本地内存池容量，单位为 GB。**该值需要结合 A2 / A3 场景和节点剩余内存规划，不能超过推理进程、Memcache 等业务进程占用后可留给 UBSIO 的内存空间。**
 
 ### A2
 
