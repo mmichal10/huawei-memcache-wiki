@@ -225,32 +225,7 @@ ubsio.wcache.disk_evict_water_level = 90
 - 大于 `1` 时，每个 deviceId 至少分配 1 个分区，分区总数不得小于 `device_count`。
 建议每块盘切分为 `device_count` 个相同容量的分区，即分区总数为 `device_count × 盘数`。
 
-
-### 场景一：有盘部署（推荐）
-
-**背景：** 单节点一块或多块 NVMe 盘，分区总数需提前规划，每个分区作为一个本地缓存路径。
-
-#### 1. 确认磁盘状态
-
-通过以下命令确认哪些磁盘为可用裸盘（无分区、无挂载、无文件系统签名）。
-
-```bash
-# 1. 列出所有磁盘，确认哪些是裸盘（无分区即为裸盘）
-lsblk
-
-# 输出示例：
-# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-# nvme0n1     259:0    0   3.5T  0 disk              # <-- 裸盘，可用
-# nvme1n1     259:1    0   3.5T  0 disk              # <-- 裸盘，可用
-# nvme2n1     259:2    0   1.8T  0 disk
-# +-nvme2n1p1 259:3    0   1.8T  0 part /data        # <-- 已分区挂载，不可用
-
-# 2. 确认目标盘为裸盘（以 /dev/nvme0n1 为例，替换为实际磁盘）
-lsblk /dev/nvme0n1                    # 应无分区
-mount | grep nvme0n1                  # 应无挂载
-```
-
-#### 2. 使用 partition_disks.sh 分区
+### partition_disks.sh 分区指导
 
 > <span style="color:red">**⚠️ 高危操作：选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。**</span>
 
@@ -280,7 +255,31 @@ ubsio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:...
 | `-f, --force`         | 覆盖已有分区表                                                   |
 | `-w, --wipe-metadata` | 擦除旧文件系统签名和 BDM 头                                          |
 
-#### 2.1 典型场景
+### 场景一：有盘部署（推荐）
+
+**背景：** 单节点一块或多块 NVMe 盘，分区总数需提前规划，每个分区作为一个本地缓存路径。
+
+#### 1. 确认磁盘状态
+
+通过以下命令确认哪些磁盘为可用裸盘（无分区、无挂载、无文件系统签名）。
+
+```bash
+# 1. 列出所有磁盘，确认哪些是裸盘（无分区即为裸盘）
+lsblk
+
+# 输出示例：
+# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+# nvme0n1     259:0    0   3.5T  0 disk              # <-- 裸盘，可用
+# nvme1n1     259:1    0   3.5T  0 disk              # <-- 裸盘，可用
+# nvme2n1     259:2    0   1.8T  0 disk
+# +-nvme2n1p1 259:3    0   1.8T  0 part /data        # <-- 已分区挂载，不可用
+
+# 2. 确认目标盘为裸盘（以 /dev/nvme0n1 为例，替换为实际磁盘）
+lsblk /dev/nvme0n1                    # 应无分区
+mount | grep nvme0n1                  # 应无挂载
+```
+
+#### 2. 典型场景
 
 以下示例按推荐值配置：单盘时 `--parts = device_count`；多盘时 `--parts = device_count × 盘数`。
 
@@ -322,7 +321,7 @@ sudo bash /path/to/partition_disks.sh \
 
 > <span style="color:red">**⚠️ 高危操作：创建 loop 设备前，建议先确认当前 loop 设备占用情况；不要手动复用已被占用的 `/dev/loopN`，否则可能导致数据丢失。**</span>
 
-创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本说明](#分区脚本说明) 中的 `partition_disks.sh`：
+创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本说明](#partition_disks.sh 分区使用指导) 中的 `partition_disks.sh`：
 
 ```bash
 # 创建 1TB 镜像文件（count=1024，可根据需求调整）
@@ -366,7 +365,9 @@ sudo rm -f /data/boostio_disk.img
 | ----- | -------------------------------------- |
 | 磁盘独占  | UBSIO / BoostIO 独占配置的磁盘/分区，不可与其他服务共享   |
 | 物理盘隔离 | 同一物理盘的分区不会分配给同一 deviceId（算法自动打散）       |
-| 路径上限  | `ubsio.disk.path` 最多 64 条路径              |
+| 路径上限  | `ubsio.disk.path` 最多 64 条路径            |
 | 动态加盘  | standalone 模式不支持运行时加盘                  |
 | 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限    | 进程需对块设备有读写权限，建议 root 运行                |
+| 磁盘规格  | 读写带宽建议不低于 7GB/s                        |
+
