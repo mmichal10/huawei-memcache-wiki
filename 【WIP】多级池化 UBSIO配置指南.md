@@ -220,12 +220,14 @@ ubsio.wcache.disk_evict_water_level = 90
 
 ## 分区操作
 
+推荐使用 `partition_disks.sh` 进行分区，具体用法见[分区脚本使用指导](#分区脚本使用指导)。
+
 分区操作统一按 `device_count` 规划；该值应与已启用 DRAM 的 local_service 进程数一致。
 - `device_count = 1` 时直接配置目标整盘，无需分区；
 - 大于 `1` 时，每个 deviceId 至少分配 1 个分区，分区总数不得小于 `device_count`。
 建议每块盘切分为 `device_count` 个相同容量的分区，即分区总数为 `device_count × 盘数`。
 
-### partition_disks.sh 分区指导
+### 分区脚本使用指导
 
 > <span style="color:red">**⚠️ 高危操作：选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。**</span>
 
@@ -321,7 +323,7 @@ sudo bash /path/to/partition_disks.sh \
 
 > <span style="color:red">**⚠️ 高危操作：创建 loop 设备前，建议先确认当前 loop 设备占用情况；不要手动复用已被占用的 `/dev/loopN`，否则可能导致数据丢失。**</span>
 
-创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本说明](#partition_disks.sh 分区使用指导) 中的 `partition_disks.sh`：
+创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本使用指导](#分区脚本使用指导) 中的 `partition_disks.sh`：
 
 ```bash
 # 创建 1TB 镜像文件（count=1024，可根据需求调整）
@@ -370,4 +372,5 @@ sudo rm -f /data/boostio_disk.img
 | 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限    | 进程需对块设备有读写权限，建议 root 运行                |
 | 磁盘规格  | 读写带宽建议不低于 7GB/s                        |
+
 
