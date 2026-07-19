@@ -56,18 +56,17 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService集�
 ```
 
 
-
 ##### MetaService 配置文件
 
 ```ini
-## Meta service start-up url
-ock.mmc.meta_service_url = tcp://127.0.0.1:5000               ## IP 需要修改为启动节点IP
+## IP 需要修改为启动节点IP
+ock.mmc.meta_service_url = tcp://127.0.0.1:5000
 
-## Config store url
-ock.mmc.meta_service.config_store_url = tcp://127.0.0.1:6000  ## IP 需要修改为启动节点IP
+## IP 需要修改为启动节点IP
+ock.mmc.meta_service.config_store_url = tcp://127.0.0.1:6000
 
 ## HTTP service url
-ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000      ## IP 需要修改为启动节点IP
+ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
@@ -80,13 +79,11 @@ ock.mmc.log_level = info
 ##### LocalService 配置文件
 
 ```ini
-## Meta service start-up url
-## Keep consistent with the same name configuration in mmc-meta.conf
-ock.mmc.meta_service_url = tcp://127.0.0.1:5000                       ## 配置为MetaService启动节点IP
+## 配置为MetaService启动节点IP
+ock.mmc.meta_service_url = tcp://127.0.0.1:5000
 
-## Config store url
-## Keep consistent with the same name configuration in mmc-meta.conf
-ock.mmc.local_service.config_store_url = tcp://127.0.0.1:6000         ## 配置为MetaService启动节点IP
+## 配置为MetaService启动节点IP
+ock.mmc.local_service.config_store_url = tcp://127.0.0.1:6000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
@@ -94,11 +91,11 @@ ock.mmc.log_level = info
 ## The maximum supported rank count; once ranks are connected, no further modifications are allowed — a meta restart is required
 ock.mmc.local_service.world_size = 256
 
-## Data transfer protocol options
-ock.mmc.local_service.protocol = device_rdma                          ## 卡侧ROCE网络传输为A2典型配置
+ ## 卡侧ROCE网络传输为A2典型配置
+ock.mmc.local_service.protocol = device_rdma
 
-## DRAM space usage
-ock.mmc.local_service.dram.size = 100GB                               ## 每卡配置100GB内存容量，可根据环境实际内存大小适当调整
+## 每卡配置100GB内存容量，可根据环境实际内存大小适当调整
+ock.mmc.local_service.dram.size = 100GB
 ock.mmc.local_service.max.dram.size = 1024GB
 
 ## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
