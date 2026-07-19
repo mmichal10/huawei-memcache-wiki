@@ -94,14 +94,14 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService集�
 ###### MetaService 配置文件
 
 ```ini
-## Meta service start-up url
-ock.mmc.meta_service_url = tcp://127.0.0.1:5000               ## IP 需要修改为启动节点IP
+## IP 需要修改为MetaService启动节点IP
+ock.mmc.meta_service_url = tcp://127.0.0.1:5000
 
-## Config store url
-ock.mmc.meta_service.config_store_url = tcp://127.0.0.1:6000  ## IP 需要修改为启动节点IP
+## IP 需要修改为MetaService启动节点IP
+ock.mmc.meta_service.config_store_url = tcp://127.0.0.1:6000
 
 ## HTTP service url
-ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000      ## IP 需要修改为启动节点IP
+ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
@@ -112,13 +112,11 @@ ock.mmc.log_level = info
 ###### LocalService 配置文件
 
 ```ini
-## Meta service start-up url
-## Keep consistent with the same name configuration in mmc-meta.conf
-ock.mmc.meta_service_url = tcp://127.0.0.1:5000                       ## 配置为MetaService启动节点IP
+## 配置为MetaService启动节点IP
+ock.mmc.meta_service_url = tcp://127.0.0.1:5000
 
-## Config store url
-## Keep consistent with the same name configuration in mmc-meta.conf
-ock.mmc.local_service.config_store_url = tcp://127.0.0.1:6000         ## 配置为MetaService启动节点IP
+## 配置为MetaService启动节点IP
+ock.mmc.local_service.config_store_url = tcp://127.0.0.1:6000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
@@ -126,11 +124,11 @@ ock.mmc.log_level = info
 ## The maximum supported rank count; once ranks are connected, no further modifications are allowed — a meta restart is required
 ock.mmc.local_service.world_size = 256
 
-## Data transfer protocol options
-ock.mmc.local_service.protocol = device_sdma                          ## 超节点内sdma传输为A3典型配置
+## 超节点内sdma传输为A3典型配置
+ock.mmc.local_service.protocol = device_sdma
 
-## DRAM space usage
-ock.mmc.local_service.dram.size = 25GB                                ##  每个推理进程提供25GB池化空间，可根据环境情况进行调整，参考https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6
+## 每个推理进程提供25GB池化空间，可根据环境情况进行调整
+ock.mmc.local_service.dram.size = 25GB
 ```
 
 更多配置可以参考官方文档 https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md
