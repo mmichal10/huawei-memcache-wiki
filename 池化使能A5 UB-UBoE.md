@@ -13,6 +13,20 @@ for i in {0..7}; do npu-smi set -t custom-op-secverify-mode -i $i -d 0; done;
 
 ## 2. 协议选择
 
-```
+### 在 950 Pod机型中
 
 ```
+ock.mmc.local_service.protocol = device_urma
+```
+
+### 在 950 Server机型中
+
+```
+ock.mmc.local_service.protocol = device_urma / device_uboe
+```
+
+device_urma：使用的是die0的8个出框口
+device_uboe：使用是die1的1个参数面口
+
+
+
