@@ -70,14 +70,19 @@ SSD 缓存涉及两层配置：
 ```ini
 # 是否启用 SSD 缓存（默认关闭）
 ock.mmc.local_service.storage.enabled = false
+```
+| 参数                                      | 含义       | 默认值     | 可选值              |
+| --------------------------------------- | -------- | ------- | ---------------- |
+| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关 | `false` | `true` / `false` |
 
+配置文件 `mmc-meta.conf`：
+```ini
 # 预取开关，Exist 检测到冷数据时是否异步回温到 DRAM
 ock.mmc.storage.prefetch.enabled = false
 ```
 
 | 参数                                      | 含义       | 默认值     | 可选值              |
 | --------------------------------------- | -------- | ------- | ---------------- |
-| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关 | `false` | `true` / `false` |
 | `ock.mmc.storage.prefetch.enabled`      | 预取开关     | `false` | `true` / `false` |
 
 > **预取**：开启后，`Exist` 发现数据仅存在于 SSD 时会异步将其回温到 DRAM，减少后续 `Get` 的冷延迟。
