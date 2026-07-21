@@ -18,6 +18,7 @@ for i in {0..7}; do npu-smi set -t custom-op-secverify-mode -i $i -d 0; done;
 ```
 ock.mmc.local_service.protocol = device_urma
 ```
+使用的是6个出框口
 
 ### 在 950 Server机型中
 
