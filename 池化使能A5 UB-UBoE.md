@@ -26,6 +26,7 @@ ock.mmc.local_service.protocol = device_urma / device_uboe
 ```
 
 device_urma：使用的是die0的8个出框口
+
 device_uboe：使用是die1的1个参数面口
 
 
