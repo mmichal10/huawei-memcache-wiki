@@ -1,4 +1,4 @@
-# MemCache 客户端 Metric 拉取方案设计文档
+# MemCache 客户端定时上报metric数据方案
 
 ## 1. 功能介绍
 
