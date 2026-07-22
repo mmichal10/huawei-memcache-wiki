@@ -91,7 +91,7 @@ ock.mmc.storage.prefetch.enabled = false
 
 #### UBS IO 侧：SSD配置
 
-参见 [UBS IO 配置指南](https://gitcode.com/Ascend/memcache/wiki/%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%20UBSIO%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)
+参见 [UBS IO 配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)
 
 #### 使用
 
