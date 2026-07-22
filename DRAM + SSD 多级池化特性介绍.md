@@ -1,5 +1,4 @@
-# MemCache SSD 缓存特性介绍
-
+#  MemCache SSD 缓存特性介绍
 ## 1. 背景与动机
 
 MemCache 是面向 LLM 推理的高性能分布式 KV Cache 引擎，基于 MemFabric 池化内存架构构建。在长上下文推理场景中，单次请求的 KV Cache 数据量可达数十 GB，纯 HBM + DRAM 两级缓存成本极高。
@@ -32,17 +31,17 @@ SSD 缓存是 MemCache 新增的第三级存储特性，通过对接外部 UBS I
 
 ## 3. 编译
 
-基础编译安装流程参见 [run包编译、安装及使用](./install_run.md)，本节仅说明 SSD 后端的增量步骤。
+基础编译安装流程参见 [run包编译、安装及使用](./install_run.md)。当前默认以 RELEASE 模式编译并开启 UBS IO，直接执行以下命令即可：
 
 ### run 包
 
 #### 编译
 
 ```bash
-bash script/build_and_pack_run.sh --build_mode RELEASE --build_ubsio ON  # 追加 --build_ubsio ON
+bash script/build_and_pack_run.sh --build_mode RELEASE --build_ubsio ON # 追加 --build_ubsio ON
 ```
 
-开启后，CMake 自动从 [ubs-io](https://gitcode.com/openeuler/ubs-io) 仓库（`develop` 分支）拉取源码，编译 UBS IO，产物随 run 包一起打包。，产物随 run 包一起打包。
+构建过程中，CMake 自动从 [ubs-io](https://gitcode.com/openeuler/ubs-io) 仓库的 `openEuler-24.03-LTS-SP4` 分支拉取源码并编译 UBS IO，相关产物随 run 包一起打包。
 
 ## 4. 部署
 
@@ -55,43 +54,70 @@ source /usr/local/memcache_hybrid/set_env.sh
 
 安装后路径：
 
-| 内容                 | 路径                                                          |
-| ------------------ | ----------------------------------------------------------- |
-| UBS IO 运行时库        | `<install_path>/memcache_hybrid/latest/{arch}-linux/lib64/` |
-| 配置文件（`ubsio.conf`） | `<install_path>/memcache_hybrid/latest/config/`             |
+| 内容                      | 路径                                                            |
+| ----------------------- | ------------------------------------------------------------- |
+| UBS IO 运行时库             | `<install_path>/memcache_hybrid/latest/{arch}-linux/lib64/`   |
+| 配置文件（`mmc-meta.conf`）  | `<install_path>/memcache_hybrid/latest/config/mmc-meta.conf`  |
+| 配置文件（`mmc-local.conf`） | `<install_path>/memcache_hybrid/latest/config/mmc-local.conf` |
 
 ### 4.2 修改配置文件
 
-SSD 缓存涉及两层配置：
-#### MemCache 侧：开关控制
+SSD 缓存涉及 `mmc-local.conf` 和 `mmc-meta.conf` 两个配置文件。
 
-配置文件 `mmc-local.conf`：
+#### 配置文件 `mmc-local.conf`：
 
 ```ini
-# 是否启用 SSD 缓存（默认关闭）
-ock.mmc.local_service.storage.enabled = false
+# 启用 SSD 缓存
+ock.mmc.local_service.storage.enabled = true
 ```
-| 参数                                      | 含义       | 默认值     | 可选值              |
-| --------------------------------------- | -------- | ------- | ---------------- |
-| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关 | `false` | `true` / `false` |
 
-配置文件 `mmc-meta.conf`：
+| 参数                                      | 含义       | 默认值     | A2 配置  |
+| --------------------------------------- | -------- | ------- | ------ |
+| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关 | `false` | `true` |
+
+```ini
+# 本地 SSD 缓存盘或分区路径，多个路径使用英文冒号分隔
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
+```
+
+| 参数                | 含义              | A2 配置        | 说明                |
+| ----------------- | --------------- | ------------ | ----------------- |
+| `ubsio.disk.path` | 本地 SSD 缓存盘或分区路径 | SSD 盘或分区路径列表 | 必须配置，多个路径使用英文冒号分隔 |
+
+```ini
+# UBS IO 单进程内存池大小，单位 GB
+ubsio.mem.size_in_gb = 10
+```
+
+| 参数                     | 含义              | A2 配置 | 说明          |
+| ---------------------- | --------------- | ----- | ----------- |
+| `ubsio.mem.size_in_gb` | UBS IO 单进程内存池大小 | `10`  | 可根据节点剩余内存调整 |
+
+```ini
+# standalone device 数量
+ubsio.standalone.device_count = 8
+```
+
+| 参数                              | 含义                   | A2 配置 | 说明                                                              |
+| ------------------------------- | -------------------- | ----- | --------------------------------------------------------------- |
+| `ubsio.standalone.device_count` | standalone device 数量 | `8`   | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致 |
+
+#### 配置文件 `mmc-meta.conf`：
+
 ```ini
 # 预取开关，Exist 检测到冷数据时是否异步回温到 DRAM
 ock.mmc.storage.prefetch.enabled = false
 ```
 
-| 参数                                      | 含义       | 默认值     | 可选值              |
-| --------------------------------------- | -------- | ------- | ---------------- |
-| `ock.mmc.storage.prefetch.enabled`      | 预取开关     | `false` | `true` / `false` |
+| 参数                                  | 含义    | 默认值     | 可选值              |
+| ----------------------------------- | ----- | ------- | ---------------- |
+| `ock.mmc.storage.prefetch.enabled` | 预取开关  | `false` | `true` / `false` |
 
 > **预取**：开启后，`Exist` 发现数据仅存在于 SSD 时会异步将其回温到 DRAM，减少后续 `Get` 的冷延迟。
 >
-> MemCache 仅控制 SSD 的**启用开关**和回温策略，不管理 SSD 容量。SSD 的具体容量、淘汰水位等由 UBS IO 层配置。
+> MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
 
-#### UBS IO 侧：SSD配置
-
-参见 [UBS IO 配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)
+其他 UBS IO 配置项及磁盘分区方法，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
 
 #### 使用
 
