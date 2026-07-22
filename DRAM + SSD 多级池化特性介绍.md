@@ -69,38 +69,23 @@ SSD 缓存涉及 `mmc-local.conf` 和 `mmc-meta.conf` 两个配置文件。
 ```ini
 # 启用 SSD 缓存
 ock.mmc.local_service.storage.enabled = true
-```
 
-| 参数                                      | 含义       | 默认值     | A2 配置  |
-| --------------------------------------- | -------- | ------- | ------ |
-| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关 | `false` | `true` |
-
-```ini
 # 本地 SSD 缓存盘或分区路径，多个路径使用英文冒号分隔
 ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
-```
 
-| 参数                | 含义              | A2 配置        | 说明                |
-| ----------------- | --------------- | ------------ | ----------------- |
-| `ubsio.disk.path` | 本地 SSD 缓存盘或分区路径 | SSD 盘或分区路径列表 | 必须配置，多个路径使用英文冒号分隔 |
-
-```ini
 # UBS IO 单进程内存池大小，单位 GB
 ubsio.mem.size_in_gb = 10
-```
 
-| 参数                     | 含义              | A2 配置 | 说明          |
-| ---------------------- | --------------- | ----- | ----------- |
-| `ubsio.mem.size_in_gb` | UBS IO 单进程内存池大小 | `10`  | 可根据节点剩余内存调整 |
-
-```ini
 # standalone device 数量
 ubsio.standalone.device_count = 8
 ```
 
-| 参数                              | 含义                   | A2 配置 | 说明                                                              |
-| ------------------------------- | -------------------- | ----- | --------------------------------------------------------------- |
-| `ubsio.standalone.device_count` | standalone device 数量 | `8`   | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致 |
+| 参数                                      | 含义                   | A2 配置        | 说明                                                                                                                                                                                                          |
+| --------------------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `true`       | 默认关闭；使用 SSD 多级池化时必须开启                                                                                                                                                                                       |
+| `ubsio.disk.path`                       | 本地 SSD 缓存盘或分区路径      | SSD 盘或分区路径列表 | 必须配置，多个路径使用英文冒号分隔。分区操作参考：[分区操作](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#%E5%88%86%E5%8C%BA%E6%93%8D%E4%BD%9C) |
+| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `10`         | 可根据节点剩余内存调整                                                                                                                                                                                                 |
+| `ubsio.standalone.device_count`         | standalone device 数量 | `8`          | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致                                                                                                                                             |
 
 #### 配置文件 `mmc-meta.conf`：
 
@@ -117,7 +102,7 @@ ock.mmc.storage.prefetch.enabled = false
 >
 > MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
 
-其他 UBS IO 配置项及磁盘分区方法，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
+UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
 
 #### 使用
 
