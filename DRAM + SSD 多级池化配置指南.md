@@ -1,6 +1,6 @@
 # 配置指南
 
-UBSIO 与 Memcache 共用 `mmc-local.conf`。下表保留当前 UBSIO standalone 配置文件中的全部配置项，以及 Memcache Wiki 原配置表中的全部配置项；重复项已合并，默认值和有效范围以当前 UBSIO 代码为准。
+UBSIO 与 Memcache 共用 `mmc-local.conf`。
 
 ## A2 配置示例
 
