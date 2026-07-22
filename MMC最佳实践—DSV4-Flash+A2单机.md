@@ -14,7 +14,7 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 【驱动固件】：25.5.3（最低要求为25.5.1）
 
-【模型权重】：DeepSeek-V4-Flash-w8a8-mtp
+【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
 
 
 
@@ -23,40 +23,19 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 拉取vllm-ascend官方镜像
 
 ```shell
-docker pull quay.nju.edu.cn/ascend/vllm-ascend:v0.20.2rc1
+docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
 ```
 
 启动容器的命令可参考 [vllm-ascend 部署 DeepSeek-V4-Flash 官方指导文档](https://docs.vllm.ai/projects/ascend/zh-cn/latest/tutorials/models/DeepSeek-V4-Flash.html) 。
 
-升级transformers：
-
-```shell
-pip install --upgrade transformers
-```
-
-由于目前vllm-ascend支持DSV4池化特性处于POC状态，基于vllm-ascend官方镜像v0.20.2rc1，需要将以下PR中修改以补丁形式合并到v0.20.2rc1解决一些问题：
-<span style="color:#e60000;">注意，部分补丁未合入主线，需要等待正式方案，此案例为尝鲜试用，正式版本等待后续刷新</span>
-
-| 标题                                           | 链接                                                   | 概述                       |
-| ---------------------------------------------- | ------------------------------------------------------ | -------------------------- |
-| Rehash AscendStore grouped keys                | https://github.com/vllm-project/vllm-ascend/pull/10194 | 解决External Cache无命中   |
-| Align AscendStore grouped hash lookup encoding | https://github.com/vllm-project/vllm-ascend/pull/10217 | 解决External Cache无命中   |
-| Avoid logging KV store keys at error level     | https://github.com/vllm-project/vllm-ascend/pull/10329 | 解决报错时key刷屏问题      |
-| Support AscendStore load masks                 | https://github.com/vllm-project/vllm-ascend/pull/10436 | 解决读取数据过多导致无收益 |
-| Support AscendStore retention masks for v0.20.2     | https://github.com/vllm-project/vllm-ascend/pull/10439 | 减少读写的cache数据 |
-
-~~其中PR10439可以替代PR10436，同时减少读写的数据，可以支持存储更多的cache，提升端到端收益。~~<span style="color:#e60000;">注意：此PR暂不稳定，不要用于生产环境</span>
-
-可以基于vllm-ascend代码仓v0.20.2rc1 tag拉取分支，并将4个PR的commit通过cherry-pick方式合入，然后通过替换镜像中vllm-ascend代码文件的方式部署。可以参考分支：[SanyueHan/vllm-ascend at v0.20.2rc1](https://github.com/SanyueHan/vllm-ascend/tree/v0.20.2rc1)。或者直接拉取vllm-ascend代码仓的v0.20.2rc分支再将PR10439或者PR10436通过cherry-pick方式合入，后续替换文件或者重新安装vllm_ascend部署。
-
-
-
 
 #### memcache
 
+vllm-ascend官方镜像中已安装v1.1.2版本的memcache及其配套。如需手动安装参考如下：
+
 ```shell
-pip install memfabric_hybrid==1.1.2   （发布中、可以编译release/1.1分支）
-pip install memcache_hybrid==1.1.2     (发布中、可以编译release/1.1分支）
+pip install memfabric_hybrid==1.1.2
+pip install memcache_hybrid==1.1.2
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
@@ -74,7 +53,7 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService集�
 启动时MetaService、LocalService的配置由各自配置文件导入，默认配置文件在memcache的whl包config目录下
 
 ```
-/usr/local/lib/python3.11/site-packages/memcache_hybrid/config
+/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/
 ```
 
 
@@ -120,7 +99,8 @@ ock.mmc.local_service.world_size = 256
 ock.mmc.local_service.protocol = host_shm
 
 ## DRAM space usage
-ock.mmc.local_service.dram.size = 50GB
+## 根据实际情况修改单卡dram的size
+ock.mmc.local_service.dram.size = 80GB
 
 ## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
 ```
@@ -135,15 +115,16 @@ export OMP_NUM_THREADS=10
 export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
 export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libjemalloc.so.2:$LD_PRELOAD
 export HCCL_BUFFSIZE=1024
-export VLLM_ASCEND_APPLY_DSV4_PATCH=1
 export VLLM_ASCEND_ENABLE_FLASHCOMM1=1
 export TASK_QUEUE_ENABLE=1
 export HCCL_OP_EXPANSION_MODE="AIV"
 
-# 合并PR10439后需设置此环境变量
+# 此环境变量可减少部分kvcache读写量，在某些场景下可优化性能，但也可能影响前缀命中率，建议实测按需设置。
+# 不设置为默认行为，设置0为最激进策略，其他值可设置为最小可命中token数的倍数，以dsv4模型block_size=128为例，可以设置为16384的倍数。
+# vllm环境变量参考https://docs.vllm.com.cn/en/latest/configuration/env_vars/?h=environment
 export VLLM_PREFIX_CACHE_RETENTION_INTERVAL=0
 
-export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf
 
 vllm serve /home/weights/DeepSeek-V4-Flash-w8a8-mtp \
     --port 8900 \
@@ -195,13 +176,12 @@ vllm serve /home/weights/DeepSeek-V4-Flash-w8a8-mtp \
 1. 添加了环境变量导入MemCache LocalService配置文件路径（这里给的是whl包默认配置文件路径）
 
 ```shell
-export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-local.conf
+export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf
 ```
 
-2. 添加了 no-disable-hybrid-kv-cache-manager 和 kv-transfer-config
+2. 添加了 kv-transfer-config
 
 ```shell
---no-disable-hybrid-kv-cache-manager \
 --kv-transfer-config \
     '{
         "kv_connector": "AscendStoreConnector",
@@ -229,58 +209,23 @@ python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 
 #### 4. 测试
 
-本文使用vLLM官方多轮会话测试工具 [vllm/benchmarks/multi_turn/README.md at main · vllm-project/vllm](https://github.com/vllm-project/vllm/blob/main/benchmarks/multi_turn/README.md)
 
-在generate_multi_turn.json中可以配置对话数量、轮数、每轮输入输出等关键参数，这里以下面第一组数据为例
+使用aisbench前缀测试工具验证：
+case1: 50%前缀，输入token数40K，输出token数200，并发32，共128条请求，其中有32个不同的前缀，每4个请求共享一个前缀
 
-```json
-{
-    "filetype": "generate_conversations",
-    "num_conversations": 10,
-    "text_files": ["pg1184.txt"],
-    "print_stats": false,
-    "prompt_input": {
-        "num_turns": {
-            "distribution": "constant",
-            "value": 20
-        },
-        "prefix_num_tokens": {
-            "distribution": "constant",
-            "value": 10240
-        },
-        "num_tokens": {
-            "distribution": "constant",
-            "value": 9216
-        }
-    },
-    "prompt_output": {
-        "num_tokens": {
-            "distribution": "constant",
-            "value": 1024
-        }
-    }
-}
-```
+测试结果：
 
-使用如下命令启动测试
-
-```python3
-python benchmark_serving_multi_turn.py \
-    --model /home/weights/DeepSeek-V4-Flash-w8a8-mtp \
-    --served-model-name dsv4 \
-    --input-file generate_multi_turn.json \
-    --num-clients 10 \
-    --max-active-conversations 10 \
-    --no-early-stop \
-    --request-timeout-sec 600 \
-    -u http://127.0.0.1:8900
-```
+| 是否开启memcache | mean ttft(ms) | mean tpot(ms) | HBM命中率 | DRAM命中率 |
+|--|--|--|--|--|
+| 否 | 69887 | 226.9 | 7.46% | / |
+| 是 | 59126 | 238.3 | 7.11% | 35.13% |
 
 
+case2: 90%前缀，输入token数128K，输出token数1，并发16，共64条请求，其中有16个不同的前缀，每4个请求共享一个前缀
 
-### 测试结果
+测试结果：
 
-| MF      | 轮数 | 每轮输入 | 每轮输出 | 并发 | 总会话数 | mean ttft (ms) | mean tpot (ms) | 总耗时 (s) | HBM命中率 | DRAM命中率 |
-| ------- | ---- | -------- | -------- | ---- | -------- | -------------- | -------------- | ---------- | --------- | ---------- |
-| disable | 20   | 9216     | 1024     | 10   | 10       | 8775.00        | 71.75          | 830.846    | 0.0%      | /          |
-| enable  | 20   | 9216     | 1024     | 10   | 10       | 4542.21        | 54.50          | 620.689    | 0.0%      | 72.5%      |
+| 是否开启memcache | mean ttft(ms) | mean tpot(ms) | HBM命中率 | DRAM命中率 |
+|--|--|--|--|--|
+| 否 | 109819 | / | 0% | / |
+| 是 | 34991 | / | 0% | 87.5% |
