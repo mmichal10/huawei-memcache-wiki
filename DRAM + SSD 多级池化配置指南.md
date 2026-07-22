@@ -87,6 +87,8 @@ ubsio.standalone.device_count = 1
 ubsio.mem.size_in_gb = floor(节点可供 UBSIO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数)
 ```
 
+<span style="color:red">**计算结果不得低于 `5GB`。如果单个 UBSIO 进程可分配的内存不足 `5GB`，应先释放节点内存或减少已启用 DRAM 的 local_service 进程数，再配置该参数。**</span>
+
 例如，节点可供 UBSIO 使用的剩余内存为 `200GB`，共有 `4` 个 `ock.mmc.local_service.dram.size > 0` 的 local_service 进程：
 
 ```ini
