@@ -87,10 +87,6 @@ ubsio.standalone.device_count = 1
 ubsio.mem.size_in_gb = floor(节点可供 UBSIO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数)
 ```
 
-### 融合部署
-
-MemCache 与推理服务运行在同一进程中。每个已启用 DRAM 的 local_service 进程都会使用一份 UBSIO 内存池，因此需要按进程数均分节点剩余内存。
-
 例如，节点可供 UBSIO 使用的剩余内存为 `200GB`，共有 `4` 个 `ock.mmc.local_service.dram.size > 0` 的 local_service 进程：
 
 ```ini
@@ -98,16 +94,6 @@ MemCache 与推理服务运行在同一进程中。每个已启用 DRAM 的 loca
 ubsio.mem.size_in_gb = 50
 ```
 
-### 分离部署
-
-MemCache 与推理服务运行在不同进程中。只统计负责贡献 DRAM、即 `ock.mmc.local_service.dram.size > 0` 的独立 local_service 进程；推理进程中 DRAM 配置为 `0` 的 local_service 不计入分母。
-
-例如，节点可供 UBSIO 使用的剩余内存为 `800GB`，只有 `1` 个已启用 DRAM 的独立 local_service 进程：
-
-```ini
-# floor(800 / 1) = 800
-ubsio.mem.size_in_gb = 800
-```
 
 ---
 
