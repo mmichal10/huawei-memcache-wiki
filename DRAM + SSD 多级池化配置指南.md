@@ -1,10 +1,11 @@
 # 配置指南
 
+UBSIO 与 Memcache 共用 `mmc-local.conf`。下表保留当前 UBSIO standalone 配置文件中的全部配置项，以及 Memcache Wiki 原配置表中的全部配置项；重复项已合并，默认值和有效范围以当前 UBSIO 代码为准。
+
 ## A2 配置示例
 
 ```ini
-# UBSIO 配置
-[ubsio]
+# UBSIO 配置（写入 mmc-local.conf）
 
 # A2 必须配置本地 SSD 缓存盘或分区路径；多个路径使用英文冒号分隔。
 ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
@@ -15,29 +16,17 @@ ubsio.mem.size_in_gb = 10
 # A2 推荐内存淘汰水位配置为 0，使数据尽快下沉到 SSD。
 ubsio.wcache.evict_water_level = 0
 
-# 写缓存磁盘淘汰水位，推荐配置为 90。
-ubsio.wcache.disk_evict_water_level = 90
-
 # 应与已启用 DRAM 的 local_service 进程数一致（即ock.mmc.local_service.dram.size非0）
 ubsio.standalone.device_count = 8
 
-# 设置日志输出级别。可选 `error`、`warn`、`info`、`debug`、`trace`。
-ubsio.log.level = info
-
-# 以下配置无需修改。
-ubsio.cache.mem_read_write_ratio = 0:10
-ubsio.cache.disk_read_write_ratio = 0:10
-ubsio.underfs.file_system_type = none
-ubsio.net.tls.enable.switch = false
-ubsio.sdkmem.size_in_mb = 0
-ubsio.cache.qos.enable = false
+# A2 可关闭 scratch pool，使 BDM 直接写入上层 buffer。
+ubsio.bdm.batch_read.standalone.use_scratch_pool = false
 ```
 
 ## A3 配置示例
 
 ```ini
-# UBSIO 配置
-[ubsio]
+# UBSIO 配置（写入 mmc-local.conf）
 
 # A3 可配置一块或多块独占 SSD，多个路径使用英文冒号分隔。
 ubsio.disk.path = /dev/nvmexnx:/dev/nvmexnx
@@ -48,51 +37,40 @@ ubsio.mem.size_in_gb = 800
 # A3 推荐内存淘汰水位配置为 85。
 ubsio.wcache.evict_water_level = 85
 
-# 写缓存磁盘淘汰水位，推荐配置为 90。
-ubsio.wcache.disk_evict_water_level = 90
-
 # 应与已启用 DRAM 的 local_service 进程数一致（即 `ock.mmc.local_service.dram.size` 非 `0`）
 ubsio.standalone.device_count = 1
-
-# 设置日志输出级别。可选 `error`、`warn`、`info`、`debug`、`trace`。
-ubsio.log.level = info
-
-# 以下配置无需修改。
-ubsio.cache.mem_read_write_ratio = 0:10
-ubsio.cache.disk_read_write_ratio = 0:10
-ubsio.underfs.file_system_type = none
-ubsio.net.tls.enable.switch = false
-ubsio.sdkmem.size_in_mb = 0
-ubsio.cache.qos.enable = false
 ```
 
 ## 配置表
 
-| 配置项                                                                           | 值类型 | 是否必填 | 默认值                     | 有效范围                                                | 说明                                                                                          |
-| ----------------------------------------------------------------------------- | --- | ---- | ----------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [`ubsio.disk.path`](#ubsio.disk.path)                                         | 字符串 | 可选   | `空`                     | 使用冒号分隔的已存在路径                                        | 缓存盘或分区列表，不填表示不使用磁盘设备，仅使用内存缓存                                                                |
-| `ubsio.log.level`                                                             | 字符串 | 可选   | `info`                  | `error`、`warn`、`info`、`debug`、`trace`               | 配置初始化后设置 BoostIO server 日志级别。                                                               |
-| [`ubsio.standalone.device_count`](#ubsio.standalone.device_count)             | 整数  | 可选   | `0`                     | `0` 到 `16`                                          | 应与已启用 DRAM 的 local_service 进程数一致，即 `ock.mmc.local_service.dram.size` 非 `0` 的进程数。`0` 表示保留旧逻辑 |
-| `ubsio.segment.size_in_mb`                                                    | 整数  | 可选   | `4`                     | `1` 到 `16`                                          | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小。                        |
-| [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                               | 整数  | 可选   | `50`                    | `0` 到 `512`；不得超过当前系统空闲内存                            | 单机 server 内存池容量。                                                                            |
-| `ubsio.sdkmem.size_in_mb`                                                     | 整数  | 可选   | `5120`                  | `0` 到 `4194304`                                     | SDK data-message 内存池大小，主要用于 BatchGet 数据缓冲。                                                  |
-| `ubsio.net.tls.enable.switch`                                                 | 布尔值 | 可选   | `true`                  | `true` 或 `false`                                    | 本地单机运行且没有 TLS 文件时，将该项设为 `false`。                                                            |
-| `ubsio.trace.enable`                                                          | 布尔值 | 可选   | `true`                  | `true` 或 `false`                                    | 启用或禁用 HTrace 采集。单机模式会初始化 tracer 模块。                                                         |
-| `ubsio.data.crc.enable`                                                       | 布尔值 | 可选   | `false`                 | `true` 或 `false`                                    | 启用缓存数据 CRC 校验。单机 direct-call 路径会把该设置传给 SDK 和 cache 模块。                                      |
-| `ubsio.cache.qos.enable`                                                      | 布尔值 | 可选   | `true`                  | `true` 或 `false`                                    | 启用 cache QoS 和过载控制行为。                                                                       |
-| [`ubsio.wcache.evict_water_level`](#ubsio.wcache.evict_water_level)           | 整数  | 可选   | `0`                     | `0` 到 `100`                                         | 写缓存内存淘汰水位，占配置的写缓存内存容量的百分比。                                                                  |
-| [`ubsio.wcache.disk_evict_water_level`](#ubsio.wcache.disk_evict_water_level) | 整数  | 可选   | `100`                   | `0` 到 `100`                                         | 写缓存磁盘淘汰水位，占配置的写缓存磁盘容量的百分比。                                                                  |
-| `ubsio.rcache.evict_water_level`                                              | 整数  | 可选   | `90`                    | `0` 到 `100`                                         | 读缓存淘汰水位。内存和磁盘读缓存淘汰阈值使用同一个值。                                                                 |
-| `ubsio.cache.mem_read_write_ratio`                                            | 字符串 | 可选   | `5:5`                   | 两个 `0` 到 `10` 的整数；总和必须为 `10`                        | 将 `ubsio.mem.size_in_gb` 划分给读缓存和写缓存。例如：`0:10` 表示把全部内存缓存容量预留给写缓存。                            |
-| `ubsio.cache.disk_read_write_ratio`                                           | 字符串 | 可选   | `5:5`                   | 两个 `0` 到 `10` 的整数；总和必须为 `10`                        | 将缓存盘容量划分给读缓存和写缓存。例如：`0:10` 表示把全部磁盘缓存容量预留给写缓存。                                               |
-| `ubsio.work.io.timeout`                                                       | 整数  | 可选   | `60`                    | `60` 到 `300`                                        | 通过单机 runtime config 传给 SDK 的 I/O 超时时间，单位为秒。                                                 |
-| `ubsio.batchget.thread.num`                                                   | 整数  | 可选   | `32`                    | `8` 到 `512`                                         | MirrorServer BatchGet executor 线程数。                                                         |
-| `ubsio_cli_tools_enable`                                                      | 布尔值 | 可选   | `false`                 | `true` 或 `false`                                    | 启用 CLI agent 诊断能力。使用 `cli_client --attach` 连接 `bio_console` 时应设为 `true`。                    |
-| `ubsio.underfs.file_system_type`                                              | 字符串 | 可选   | `ceph`                  | `ceph`、`hdfs` 或 `none`                              | UnderFS 后端类型。单机模式使用 `none`。需要 load 或 write-through 后端访问时使用 `ceph` 或 `hdfs`。                 |
-| `ubsio.underfs.ceph.cfg.path`                                                 | 字符串 | 可选   | `/etc/ceph/ceph.conf`   | 当 `ubsio.underfs.file_system_type = ceph` 时必须是已存在路径 | Ceph 配置文件路径。当 UnderFS 类型为 `ceph` 且该路径无效时，配置初始化失败。                                           |
-| `ubsio.underfs.ceph.cluster`                                                  | 字符串 | 可选   | `ceph`                  | 非空字符串                                               | 后端为 Ceph 时，UnderFS 插件使用的 Ceph 集群名。                                                          |
-| `ubsio.underfs.ceph.user`                                                     | 字符串 | 可选   | `client.admin`          | 非空字符串                                               | 后端为 Ceph 时，UnderFS 插件使用的 Ceph 用户。                                                           |
-| `ubsio.underfs.ceph.pool`                                                     | 字符串 | 可选   | `0:jfspool1,1:jfspool2` | 使用逗号分隔的 `poolId:poolName` 条目，poolId 为非负整数           | Ceph pool 映射。当前 UnderFS helper 使用 pool id `0` 初始化插件。                                        |
+| 配置项                                                                                                     | 值类型 | 是否必填 | 默认值                  | 有效范围                                  | 说明                                                                         |
+| ------------------------------------------------------------------------------------------------------- | --- | ---- | -------------------- | ------------------------------------- | -------------------------------------------------------------------------- |
+| [`ubsio.disk.path`](#ubsio.disk.path)                                                                   | 字符串 | 必填   | `xxx:xxx:xxx`（代码占位值） | 最多 64 个有效块设备路径，以英文冒号分隔                | 缓存盘或分区列表；部署时应显式配置有效路径，或留空表示仅使用内存缓存。                                        |
+| [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                                                         | 整数  | 必填   | `50`                 | `0` 到 `1024`；不得超过系统可用内存               | UBSIO 单进程内存池容量，单位 GB。                                                      |
+| [`ubsio.standalone.device_count`](#ubsio.standalone.device_count)                                       | 整数  | 必填   | `0`                  | `0` 到 `16`                            | 已启用 DRAM 的 local_service 进程数；`0` 表示保留旧逻辑。                                  |
+| [`ubsio.wcache.evict_water_level`](#ubsio.wcache.evict_water_level)                                     | 整数  | 必填   | `0`                  | `0` 到 `100`                           | 写缓存内存淘汰水位，单位百分比。                                                           |
+| `ubsio.wcache.disk_evict_water_level`                                                                   | 整数  | 可选   | `90`                 | `0` 到 `100`                           | 写缓存磁盘淘汰水位，单位百分比。                                                           |
+| `ubsio.bdm.io_engine`                                                                                   | 字符串 | 可选   | `sync`               | `sync`、`io_uring`                     | BDM I/O 引擎。                                                                |
+| `ubsio.bdm.io_uring.sqpoll_mode`                                                                        | 字符串 | 可选   | `auto`               | `auto`、`required`、`disabled`          | io_uring SQPOLL 模式；`auto` 会在不支持时回退到普通 io_uring。                            |
+| `ubsio.bdm.sync.worker_num`                                                                             | 整数  | 可选   | `16`                 | `1` 到 `64`                            | sync 引擎执行 BDM 批量阻塞 I/O 的内部线程数。                                             |
+| `ubsio.bdm.batch_read.window_keys`                                                                      | 整数  | 可选   | `128`                | `1` 到 `1024`                          | BatchGet 经 BDM 读盘时单窗口 key 数上限。                                             |
+| `ubsio.bdm.batch_read.window_bytes_mb`                                                                  | 整数  | 可选   | `64`                 | `1` 到 `1024`                          | BatchGet 经 BDM 读盘时单窗口字节数上限，单位 MB。                                          |
+| `ubsio.bdm.batch_read.pipeline_depth`                                                                   | 整数  | 可选   | `4`                  | `1` 到 `64`                            | BatchGet 经 BDM 读盘时允许同时在途的窗口数。                                              |
+| `ubsio.bdm.batch_read.temp_pool_mb`                                                                     | 整数  | 可选   | `0`                  | `0` 到 `65535`                         | BDM 批量读独立临时缓冲池大小，单位 MB；`0` 表示按需申请。                                         |
+| [`ubsio.bdm.batch_read.standalone.use_scratch_pool`](#ubsio.bdm.batch_read.standalone.use_scratch_pool) | 布尔值 | 可选   | `true`               | `true`、`false`                        | standalone BatchGet 是否先读入 scratch pool；A2 可关闭，A3 必须开启。                     |
+| `ubsio.log.level`                                                                                       | 字符串 | 可选   | `info`               | `error`、`warn`、`info`、`debug`、`trace` | 日志输出级别。                                                                    |
+| `ubsio.segment.size_in_mb`                                                                              | 整数  | 可选   | `4`                  | `1` 到 `16`                            | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小，单位 MB。 |
+| `ubsio.sdkmem.size_in_mb`                                                                               | 整数  | 可选   | `0`                  | `0` 到 `4194304`                       | SDK data-message 内存池大小，单位 MB；`0` 表示不预申请。                                   |
+| `ubsio.net.tls.enable.switch`                                                                           | 布尔值 | 可选   | `false`              | `true`、`false`                        | TLS 网络安全开关。单机本地部署通常保持为 `false`。                                            |
+| `ubsio.trace.enable`                                                                                    | 布尔值 | 可选   | `true`               | `true` 或 `false`                      | 启用或禁用 HTrace 采集。单机模式会初始化 tracer 模块。                                        |
+| `ubsio.cache.qos.enable`                                                                                | 布尔值 | 可选   | `false`              | `true`、`false`                        | Cache QoS 和过载控制开关。                                                         |
+| `ubsio.rcache.evict_water_level`                                                                        | 整数  | 可选   | `90`                 | `0` 到 `100`                           | 读缓存淘汰水位。内存和磁盘读缓存淘汰阈值使用同一个值。                                                |
+| `ubsio.cache.mem_read_write_ratio`                                                                      | 字符串 | 可选   | `0:10`               | 两个 `0` 到 `10` 的整数，和为 `10`             | 内存读缓存与写缓存资源配比。                                                             |
+| `ubsio.cache.disk_read_write_ratio`                                                                     | 字符串 | 可选   | `0:10`               | 两个 `0` 到 `10` 的整数，和为 `10`             | 磁盘读缓存与写缓存资源配比。                                                             |
+| `ubsio.work.io.timeout`                                                                                 | 整数  | 可选   | `60`                 | `60` 到 `300`                          | 通过单机 runtime config 传给 SDK 的 I/O 超时时间，单位为秒。                                |
+| `ubsio.batchget.thread.num`                                                                             | 整数  | 可选   | `32`                 | `8` 到 `512`                           | MirrorServer BatchGet executor 线程数。                                        |
+| `ubsio.cli_tools.enable`                                                                                | 布尔值 | 可选   | `false`              | `true` 或 `false`                      | 启用 CLI agent 诊断能力。使用 `cli_client --attach` 连接 `bio_console` 时应设为 `true`。   |
+| `ubsio.underfs.file_system_type`                                                                        | 字符串 | 可选   | `none`               | `ceph`、`hdfs`、`none`                  | UnderFS 后端类型；单机本地部署使用 `none`。                                              |
 
 # 详细配置项说明
 
@@ -142,7 +120,7 @@ ubsio.standalone.device_count = 0
 只有 1 个已启用 DRAM 的 local_service 进程且使用磁盘时，配置为 `1`，直接使用目标整盘，无需分区：
 
 ```ini
-ubsio.disk.path = /dev/nvme0n1
+ubsio.disk.path = /dev/nvmexn1
 ubsio.standalone.device_count = 1
 ```
 
@@ -150,7 +128,7 @@ ubsio.standalone.device_count = 1
 
 ## ubsio.mem.size_in_gb
 
-`ubsio.mem.size_in_gb` 表示 UBSIO 可使用的本地内存池容量，单位为 GB。**该值需要结合 A2 / A3 场景和节点剩余内存规划，不能超过推理进程、Memcache 等业务进程占用后可留给 UBSIO 的内存空间。**
+`ubsio.mem.size_in_gb` 表示 UBSIO 可使用的本地内存池容量，单位为 GB。该值需要结合 A2 / A3 场景和节点剩余内存规划，不能超过推理进程、Memcache 等业务进程占用后可留给 UBSIO 的内存空间。
 
 ### A2
 
@@ -194,25 +172,25 @@ ubsio.wcache.evict_water_level = 0
 
 ---
 
-## ubsio.wcache.disk_evict_water_level
+## ubsio.bdm.batch_read.standalone.use_scratch_pool
 
-`ubsio.wcache.disk_evict_water_level` 是写缓存的磁盘淘汰水位，取值范围 `0` 到 `100`，表示写缓存磁盘容量使用到多少百分比后开始触发磁盘侧淘汰。
+`ubsio.bdm.batch_read.standalone.use_scratch_pool` 控制 standalone BatchGet 经 BDM 读盘时是否先将数据读入 scratch pool，再复制到上层 buffer。默认值为 `true`。
 
-该配置只在 `ubsio.disk.path` 非空时有实际意义。常见有盘配置如下：
+### A2
 
-```ini
-ubsio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvmexn1p4
-ubsio.wcache.disk_evict_water_level = 90
-```
-
-无盘模式下该项不会启用磁盘缓存层，可保留当前示例配置：
+A2 场景可以关闭 scratch pool，使 BDM 直接写入上层 buffer：
 
 ```ini
-ubsio.disk.path =
-ubsio.wcache.disk_evict_water_level = 90
+ubsio.bdm.batch_read.standalone.use_scratch_pool = false
 ```
 
-配置建议：磁盘空间充足时可使用较高水位，提高 SSD 缓存利用率；希望更早释放磁盘缓存空间时可适当降低该值。
+### A3
+
+A3 场景必须开启 scratch pool，不允许关闭：
+
+```ini
+ubsio.bdm.batch_read.standalone.use_scratch_pool = true
+```
 
 ---
 
@@ -246,7 +224,7 @@ chmod +x /path/to/partition_disks.sh
 ubsio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:...
 ```
 
-将实际输出的配置行按需写入 `ubsio.conf` 即可。
+将实际输出的配置行按需写入 `mmc-local.conf` 即可。
 
 | 参数                    | 说明                                                        |
 | --------------------- | --------------------------------------------------------- |
@@ -365,12 +343,10 @@ sudo rm -f /data/boostio_disk.img
 
 | 事项    | 说明                                     |
 | ----- | -------------------------------------- |
-| 磁盘独占  | UBSIO 独占配置的磁盘/分区，不可与其他服务共享   |
+| 磁盘独占  | UBSIO / BoostIO 独占配置的磁盘/分区，不可与其他服务共享   |
 | 物理盘隔离 | 同一物理盘的分区不会分配给同一 deviceId（算法自动打散）       |
 | 路径上限  | `ubsio.disk.path` 最多 64 条路径            |
 | 动态加盘  | standalone 模式不支持运行时加盘                  |
 | 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限    | 进程需对块设备有读写权限，建议 root 运行                |
 | 磁盘规格  | 读写带宽建议不低于 7GB/s                        |
-
-
