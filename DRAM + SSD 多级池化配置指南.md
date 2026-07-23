@@ -84,17 +84,19 @@ ubsio.standalone.device_count = 1
 这里“已启用 DRAM”是指 `ock.mmc.local_service.dram.size` 大于 `0`；“剩余内存”是指扣除系统预留、推理进程和 MemCache DRAM 池等占用后，可分配给 UBSIO 的节点内存。计算公式如下，结果向下取整：
 
 ```text
-ubsio.mem.size_in_gb = floor(节点可供 UBSIO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数)
+ubsio.mem.size_in_gb = min(1024, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
 ```
 
 <span style="color:red">**`ubsio.mem.size_in_gb` 不得低于 `5GB`。如果单个 UBSIO 进程可分配的内存不足 `5GB`，应先释放节点内存或减少已启用 DRAM 的 local_service 进程数，再配置该参数。**</span>
 
-例如，节点可供 UBSIO 使用的剩余内存为 `200GB`，共有 `4` 个 `ock.mmc.local_service.dram.size > 0` 的 local_service 进程：
+例如，节点可供 UBSIO 使用的剩余内存为 `200GB`，共有 `4` 个 `ock.mmc.local_service.dram.size > 0` 的 local_service 进程，则计算出的单进程配置上限为 `50GB`。对于 SSD 场景，推荐显式配置为 `10GB`：
 
 ```ini
-# floor(200 / 4) = 50
-ubsio.mem.size_in_gb = 50
+# floor(200 / 4) = 50，单进程配置上限为 50GB
+ubsio.mem.size_in_gb = 10
 ```
+
+对于 DRAM + SSD 多记场景，单进程配置 `10GB` 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值；配置值不得超过上述计算结果，同时需要调整 [`ubsio.wcache.evict_water_level`](#ubsiowcacheevict_water_level)。
 
 
 ---
