@@ -308,4 +308,4 @@ sudo rm -f /data/boostio_disk.img
 | 动态加盘  | standalone 模式不支持运行时加盘                  |
 | 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限    | 进程需对块设备有读写权限，建议 root 运行                |
-| 磁盘规格  | 读写带宽建议不低于 7GB/s                        |
+| 磁盘规格  | 随机读带宽建议不低于 7GB/s                        |
