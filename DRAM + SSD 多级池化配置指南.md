@@ -96,7 +96,7 @@ ubsio.mem.size_in_gb = min(1024, floor(节点可供 UBS IO 使用的剩余内存
 ubsio.mem.size_in_gb = 10
 ```
 
-对于 DRAM + SSD 多记场景，单进程配置 `10GB` 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值；配置值不得超过上述计算结果，同时需要调整 [`ubsio.wcache.evict_water_level`](#ubsiowcacheevict_water_level)。
+对于 DRAM + SSD 多级池化场景，单进程配置 `10GB` 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值；配置值不得超过上述计算结果，同时需要调整 [`ubsio.wcache.evict_water_level`](#ubsiowcacheevict_water_level)。
 
 
 ---
