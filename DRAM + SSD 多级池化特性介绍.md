@@ -76,7 +76,7 @@ ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmex
 # UBS IO 单进程内存池大小，单位 GB
 ubsio.mem.size_in_gb = 10
 
-# standalone device 数量
+# 参与本地缓存路径分配的数量，其值应与已启用 DRAM 的 local_service 进程数一致（即ock.mmc.local_service.dram.size 非 0 的进程数）
 ubsio.standalone.device_count = 8
 ```
 
