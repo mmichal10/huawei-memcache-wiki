@@ -266,10 +266,10 @@ sudo bash /path/to/partition_disks.sh \
 
 ```bash
 # 创建 1TB 镜像文件（count=1024，可根据需求调整）
-sudo dd if=/dev/zero of=/data/boostio_disk.img bs=1G count=1024 status=progress
+sudo dd if=/dev/zero of=/data/ubsio_disk.img bs=1G count=1024 status=progress
 
 # 挂载 loop 设备，默认开启 direct_io 直通；命令会输出实际分配的设备路径
-LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/boostio_disk.img)
+LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/ubsio_disk.img)
 echo "${LOOP_DEV}"
 # 示例输出：/dev/loop2
 
@@ -295,7 +295,7 @@ losetup -a
 sudo losetup -d /dev/loop2
 
 # 3. 删除镜像文件（可选）
-sudo rm -f /data/boostio_disk.img
+sudo rm -f /data/ubsio_disk.img
 ```
 
 ---
