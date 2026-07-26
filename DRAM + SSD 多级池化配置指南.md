@@ -173,8 +173,8 @@ ubsio.bdm.batch_read.standalone.use_scratch_pool = false
 **[partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/scripts/ubsio-boostio/partition_disks.sh)脚本下载：**
 
 ```bash
-wget -O /path/to/partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
-chmod +x /path/to/partition_disks.sh
+wget -O partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
+chmod +x partition_disks.sh
 ```
 
 脚本创建 GPT 分区表，在每块盘上创建相同数量、相同容量的分区，并输出 `ubsio.disk.path`。默认 dry-run，加 `--yes` 才写入。
@@ -234,7 +234,7 @@ ubsio.standalone.device_count = 1
 **`device_count = 4`：2 块盘，每块盘 4 个分区，共 8 个分区**
 
 ```bash
-sudo bash /path/to/partition_disks.sh \
+sudo bash partition_disks.sh \
     --parts 8 \
     --disk /dev/nvme0n1 \
     --disk /dev/nvme1n1 \
@@ -247,7 +247,7 @@ sudo bash /path/to/partition_disks.sh \
 **`device_count = 8`：1 块盘，8 个分区**
 
 ```bash
-sudo bash /path/to/partition_disks.sh \
+sudo bash partition_disks.sh \
     --parts 8 --disk /dev/nvme0n1 -c 8 --yes -f -w
 
 # 输出：
@@ -274,7 +274,7 @@ echo "${LOOP_DEV}"
 # 示例输出：/dev/loop2
 
 # 分区
-sudo bash /path/to/partition_disks.sh \
+sudo bash partition_disks.sh \
     --parts 4 --disk "${LOOP_DEV}" -c 4 --yes -f -w
 
 # 输出：
