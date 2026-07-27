@@ -62,8 +62,6 @@ source /usr/local/memcache_hybrid/set_env.sh
 
 ### 4.2 修改配置文件
 
-SSD 缓存涉及 `mmc-local.conf` 和 `mmc-meta.conf` 两个配置文件。
-
 #### 配置文件 `mmc-local.conf`：
 
 ```ini
@@ -98,21 +96,6 @@ ubsio.standalone.device_count = 8
 对于 SSD 场景，单进程配置 `10` GB 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值，同时需要调整 [`ubsio.wcache.evict_water_level`](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#ubsiowcacheevict_water_level)。
 
 UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
-
-#### 配置文件 `mmc-meta.conf`：
-
-```ini
-# 预取开关，Exist 检测到冷数据时是否异步回温到 DRAM
-ock.mmc.storage.prefetch.enabled = false
-```
-
-| 参数                                  | 含义    | 默认值     | 可选值              |
-| ----------------------------------- | ----- | ------- | ---------------- |
-| `ock.mmc.storage.prefetch.enabled` | 预取开关  | `false` | `true` / `false` |
-
-> **预取**：开启后，`Exist` 发现数据仅存在于 SSD 时会异步将其回温到 DRAM，减少后续 `Get` 的冷延迟。
->
-> MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
 
 #### 使用
 
