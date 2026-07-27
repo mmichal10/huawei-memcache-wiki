@@ -310,4 +310,4 @@ sudo rm -f /data/ubsio_disk.img
 | 动态加盘  | standalone 模式不支持运行时加盘                  |
 | 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
 | 权限    | 进程需对块设备有读写权限，建议 root 运行                |
-| 磁盘规格  | 随机读带宽建议不低于 7GB/s                        |
+| 磁盘规格  | 随机读带宽建议不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)                       |
