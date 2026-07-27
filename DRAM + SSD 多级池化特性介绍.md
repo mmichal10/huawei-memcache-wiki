@@ -97,6 +97,27 @@ ubsio.standalone.device_count = 8
 
 UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
 
+#### 配置文件 `mmc-meta.conf`：
+
+```ini
+## 'put' operation will trigger eviction when the threshold is exceeded
+ock.mmc.evict_threshold_high = 30
+
+## The target threshold of eviction, measured as a percentage of space usage
+ock.mmc.evict_threshold_low = 20
+
+ock.mmc.rewarm.dram_watermark = 70
+```
+
+| 参数                            | 含义                       | 配置值 |
+| ------------------------------- | -------------------------- | ------ |
+| `ock.mmc.evict_threshold_high`  | 触发淘汰的空间使用率高水位 | `30`   |
+| `ock.mmc.evict_threshold_low`   | 淘汰完成后的目标空间使用率 | `20`   |
+| `ock.mmc.rewarm.dram_watermark` | DRAM 回温水位               | `70`   |
+
+> MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
+
+
 #### 使用
 
 **部署样例参考：**
