@@ -265,8 +265,8 @@ sudo bash partition_disks.sh \
 创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本使用指导](#分区脚本使用指导) 中的 `partition_disks.sh`：
 
 ```bash
-# 创建 1TB 镜像文件（count=1024，可根据需求调整）
-sudo dd if=/dev/zero of=/data/ubsio_disk.img bs=1G count=1024 status=progress
+# 快速创建并预分配 1TB 镜像文件（容量可根据需求调整, 如 fallocate -l 500G /data/ubsio_disk.img）
+sudo fallocate -l 1T /data/ubsio_disk.img
 
 # 挂载 loop 设备，默认开启 direct_io 直通；命令会输出实际分配的设备路径
 LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/ubsio_disk.img)
