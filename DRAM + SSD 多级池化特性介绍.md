@@ -138,4 +138,4 @@ bash <install_path>/memcache_hybrid/latest/uninstall.sh
 - SSD 缓存依赖本地 NVMe 盘，需确保节点上有可用 SSD 设备
 - SSD 延迟（毫秒级）明显高于内存，对延迟极度敏感的实时推理场景建议优先扩容 DRAM
 - 启用 SSD 缓存需要系统中装有 ubs-io 运行时库
-- SSD 随机读带宽不低于 7GB/s
+- SSD 随机读带宽不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)
