@@ -39,6 +39,8 @@ pip install memcache_hybrid==1.1.2
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
+[memcache](https://pypi.org/project/memcache-hybrid/1.1.2/#files)
+[memfabric](https://pypi.org/project/memfabric-hybrid/1.1.2/#files)
 
 安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
 
