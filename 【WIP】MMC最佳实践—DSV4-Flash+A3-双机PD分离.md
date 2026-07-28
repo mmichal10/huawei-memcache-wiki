@@ -7,6 +7,24 @@
 DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和推理性能上均实现国内与开源领域的领先。相比 DeepSeek-V4-Pro，DeepSeek-V4-Flash 在世界知识储备方面稍逊一筹，但展现出了接近的推理能力。而由于模型参数和激活更小，相较之下 V4-Flash 能够提供更加快捷、经济的 API 服务。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
+### 测试
+
+
+使用aisbench前缀测试工具验证：
+工具使用文档：`https://github.com/rayn-zzz/aisbench_auto_tools_prefix/tree/main`
+
+case1: 90%前缀，输入token数128K，输出token数1，并发60，共240条请求，其中有15个不同的前缀，每16个请求共享一个前缀.
+
+`python3 aisbench_test.py --input_len 131072 --output_len 1 --data_num 240 --concurrency 60 --request_rate 0 --dataset_type prefix_cache --prefix_num 15 --repeat_rate 0.9 --prefix_test --dp 4`
+
+测试结果：
+
+| 是否开启memcache | mean ttft(ms) | mean tpot(ms) | HBM命中率 | DRAM命中率 |
+|--|--|--|--|--|
+| 否 | 51837.1 | / | 59.06% | / |
+| 是 |  32121.5 | / | 57.24% | 70.76% |
+
+
 ### 环境准备
 
 【硬件规格】：Atlas 800IA3 * 2
@@ -21,7 +39,7 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 #### vllm-ascend
 
-拉取vllm-ascend官方镜像
+拉取vllm-ascend v0.23.0rc1官方镜像
 
 ```shell
 docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
@@ -29,7 +47,7 @@ docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
 
 启动容器的命令可参考 [vllm-ascend 部署 DeepSeek-V4-Flash 官方指导文档](https://docs.vllm.ai/projects/ascend/zh-cn/latest/tutorials/models/DeepSeek-V4-Flash.html) 。
 
-<span style="color:#e60000;">**备注：** 当前版本的vllm-ascend在A3上开启memcache作为内存池化后端时存在已知兼容性问题</span>，需要在镜像中将以下代码修改，或者通过git补丁的形式合入以规避此问题。目前vllm-ascend仓库中已修复此问题，预计下个release版本正式解决。
+<span style="color:#e60000;">**备注：** 当前v0.23.0rc1版本的vllm-ascend在A3上开启memcache作为内存池化后端时存在已知兼容性问题</span>，需要在镜像中将以下代码修改，或者通过git补丁的形式合入以规避此问题。目前vllm-ascend仓库中已修复此问题，预计下个release版本正式解决。
 ```diff
 --- a/vllm_ascend/distributed/kv_transfer/kv_pool/ascend_store/pool_worker.py
 +++ b/vllm_ascend/distributed/kv_transfer/kv_pool/ascend_store/pool_worker.py
@@ -576,20 +594,5 @@ bash start_proxy.sh
 
 
 
-### 测试
 
-
-使用aisbench前缀测试工具验证：
-工具使用文档：`https://github.com/rayn-zzz/aisbench_auto_tools_prefix/tree/main`
-
-case1: 90%前缀，输入token数128K，输出token数1，并发60，共240条请求，其中有15个不同的前缀，每16个请求共享一个前缀.
-
-`python3 aisbench_test.py --input_len 131072 --output_len 1 --data_num 240 --concurrency 60 --request_rate 0 --dataset_type prefix_cache --prefix_num 15 --repeat_rate 0.9 --prefix_test --dp 4`
-
-测试结果：
-
-| 是否开启memcache | mean ttft(ms) | mean tpot(ms) | HBM命中率 | DRAM命中率 |
-|--|--|--|--|--|
-| 否 | 51837.1 | / | 59.06% | / |
-| 是 |  32121.5 | / | 57.24% | 70.76% |
 
