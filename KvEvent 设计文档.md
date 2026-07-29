@@ -1,7 +1,9 @@
 **作者 (Authors):** @Ascend/Memcache
 **创建日期 (Created):** 2026-07-13
 **更新日期 (Updated):** 2026-07-13
-**相关 Issue/PR:** <https://gitcode.com/Ascend/memcache/pull/334>
+**相关 Issue/PR:** 
+<https://gitcode.com/Ascend/memcache/pull/334>
+<https://gitcode.com/Ascend/memcache/pull/363>
 
 ***
 
