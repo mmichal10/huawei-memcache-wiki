@@ -3,7 +3,7 @@
 | 配置项                                                                                                     | 值类型 | 是否必填 | 默认值     | 有效范围                                  | 说明                                                                         |
 | ------------------------------------------------------------------------------------------------------- | --- | ---- | ------- | ------------------------------------- | -------------------------------------------------------------------------- |
 | [`ubsio.disk.path`](#ubsio.disk.path)                                                                   | 字符串 | 必填   | `空`     | 最多 64 个有效块设备路径，以英文冒号分隔                | 缓存盘或分区列表；部署时应显式配置有效路径，或留空表示仅使用内存缓存。                                        |
-| [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                                                         | 整数  | 必填   | `50`    | `0` 到 `1024`；不得超过系统可用内存               | UBSIO 单进程内存池容量，单位 GB。                                                      |
+| [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                                                         | 整数  | 必填   | `50`    | `0` 到 `3072`；不得超过系统可用内存               | UBSIO 单进程内存池容量，单位 GB。                                                      |
 | [`ubsio.standalone.device_count`](#ubsio.standalone.device_count)                                       | 整数  | 必填   | `0`     | `0` 到 `16`                            | 已启用 DRAM 的 local_service 进程数；`0` 表示保留旧逻辑。                                  |
 | [`ubsio.wcache.evict_water_level`](#ubsio.wcache.evict_water_level)                                     | 整数  | 必填   | `0`     | `0` 到 `100`                           | L2.5 写缓存内存淘汰水位，按 L2.5、L3 或 L2.5 + L3 场景配置。                                 |
 | `ubsio.wcache.disk_evict_water_level`                                                                   | 整数  | 可选   | `90`    | `0` 到 `100`                           | 写缓存磁盘淘汰水位，单位百分比。                                                           |
@@ -84,7 +84,7 @@ ubsio.standalone.device_count = 1
 这里“已启用 DRAM”是指 `ock.mmc.local_service.dram.size` 大于 `0`；“剩余内存”是指扣除系统预留、推理进程和 MemCache DRAM 池等占用后，可分配给 UBSIO 的节点内存。计算公式如下，结果向下取整：
 
 ```text
-ubsio.mem.size_in_gb = min(1024, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
+ubsio.mem.size_in_gb = min(3072, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
 ```
 
 <span style="color:red">**`ubsio.mem.size_in_gb` 不得低于 `5GB`。如果单个 UBSIO 进程可分配的内存不足 `5GB`，应先释放节点内存或减少已启用 DRAM 的 local_service 进程数，再配置该参数。**</span>
