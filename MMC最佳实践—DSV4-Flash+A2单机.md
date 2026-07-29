@@ -238,7 +238,7 @@ echo 409600 > /proc/sys/vm/nr_hugepages
 echo 409600 | sudo tee /proc/sys/vm/nr_hugepages
 ```
 
-tips：如果在容器或POD中使用，需要保证容器内映射了 `/dev/hugepages/`目录
+**tips：如果在容器或POD中使用，需要保证容器内映射了 `/dev/hugepages/`目录**
 
 
 #### 4. 测试
