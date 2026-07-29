@@ -11,14 +11,6 @@ for i in {0..7}; do npu-smi set -t custom-op-secverify-enable -i $i -d 1; done;
 for i in {0..7}; do npu-smi set -t custom-op-secverify-mode -i $i -d 0; done;
 ```
 
-## 2. 在推理启动脚本中增加如下命令
-
-在启动推理服务前执行：
-
-```bash
-chmod 744 /usr/local/Ascend/ascend-toolkit/latest/conf/ascend_package_load.ini
-```
-
 
 ## 2. 协议选择
 
