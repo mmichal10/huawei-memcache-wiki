@@ -100,20 +100,21 @@ UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置
 #### 配置文件 `mmc-meta.conf`：
 
 ```ini
-## 'put' operation will trigger eviction when the threshold is exceeded
-ock.mmc.evict_threshold_high = 30
+# 空间使用率达到高水位时，Put 操作触发数据淘汰
+ock.mmc.evict_threshold_high = 70
 
-## The target threshold of eviction, measured as a percentage of space usage
-ock.mmc.evict_threshold_low = 20
+# 数据淘汰完成后的目标空间使用率，即低水位
+ock.mmc.evict_threshold_low = 60
 
-ock.mmc.rewarm.dram_watermark = 70
+# DRAM 空间使用率低于该水位时，触发 SSD 数据回温至 DRAM
+ock.mmc.rewarm.dram_watermark = 95
 ```
 
 | 参数                            | 含义                       | 配置值 |
 | ------------------------------- | -------------------------- | ------ |
-| `ock.mmc.evict_threshold_high`  | 触发淘汰的空间使用率高水位 | `30`   |
-| `ock.mmc.evict_threshold_low`   | 淘汰完成后的目标空间使用率 | `20`   |
-| `ock.mmc.rewarm.dram_watermark` | DRAM 回温水位               | `70`   |
+| `ock.mmc.evict_threshold_high`  | 触发淘汰的空间使用率高水位 | `70`   |
+| `ock.mmc.evict_threshold_low`   | 淘汰完成后的目标空间使用率 | `60`   |
+| `ock.mmc.rewarm.dram_watermark` | DRAM 回温水位               | `95`   |
 
 > MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
 
