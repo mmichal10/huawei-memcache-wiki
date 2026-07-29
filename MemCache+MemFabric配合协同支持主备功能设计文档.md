@@ -1,6 +1,6 @@
 # MemCache MetaService 主备高可用协同设计
 
-**作者 (Authors):** liuao
+**作者 (Authors):** @Ascend/Memcache
 
 **创建日期 (Created):** 2026-07-29
 
