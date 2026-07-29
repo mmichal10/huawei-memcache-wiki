@@ -82,13 +82,13 @@ ubsio.standalone.device_count = 8
 | --------------------------------------- | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `false` | 默认关闭；设置为 `true` 后启用 SSD 多级池化                                                                                                                                                                                                              |
 | `ubsio.disk.path`                       | 本地 SSD 缓存盘或分区路径      | `空`     | 多个路径使用英文冒号分隔。**配置的磁盘或分区必须由 UBS IO 独占，且不能存在挂载点。**分区操作参考：[分区操作](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#%E5%88%86%E5%8C%BA%E6%93%8D%E4%BD%9C) |
-| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`1024` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。所有进程的配置总和不能超过节点扣除操作系统、推理服务和 MemCache DRAM 后可供 UBS IO 使用的剩余内存。                                                                                                                      |
+| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`3072` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。所有进程的配置总和不能超过节点扣除操作系统、推理服务和 MemCache DRAM 后可供 UBS IO 使用的剩余内存。                                                                                                                      |
 | `ubsio.standalone.device_count`         | standalone device 数量 | `0`     | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致                                                                                                                                                                           |
 
 `ubsio.mem.size_in_gb` 表示每个启用 DRAM 的 `local_service` 进程可使用的 UBS IO 内存池大小。单进程可配置上限的计算方式如下：
 
 ```text
-单进程可配置上限 = min(1024, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
+单进程可配置上限 = min(3072, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
 ```
 
 例如，节点可供 UBS IO 使用的剩余内存为 `200` GB，已启用 DRAM 的 `local_service` 进程数为 `4`，则单进程可配置上限为 `50` GB，推荐值 `10` GB 在有效范围内。如果计算出的上限小于 `5` GB，需要释放更多内存或减少进程数。
