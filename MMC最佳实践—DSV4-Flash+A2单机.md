@@ -210,6 +210,34 @@ python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 
 然后使用脚本拉起推理服务
 
+##### 3.1 在每个节点配置大页内存
+
+host_shm不依赖大页也可以拉起，但是走4K页性能远不如静态大页，建议使用静态大页的方式拉起服务，以获得最佳性能
+
+宿主机上通过如下命令查询大页配置，获取Hugepagesize，计算需要配置的大页数量
+
+```shell
+grep -i huge /proc/meminfo
+```
+
+计算方法为
+
+```
+total_hugepages_number = dram_size_per_rank * 8 / Hugepagesize
+```
+
+例如，每卡配置100GB内存，大页大小为2MB，则总共需要大页数量为 `100*8*1024/2=409600`。
+
+通过如下命令设置大页数量
+
+```shell
+echo 409600 > /proc/sys/vm/nr_hugepages
+```
+如果是非root用户可使用如下命令
+```shell
+echo 409600 | sudo tee /proc/sys/vm/nr_hugepages
+```
+
 
 
 #### 4. 测试
