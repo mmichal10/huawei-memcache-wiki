@@ -581,6 +581,7 @@ python3 memcache_standalone.py
 ##### 3.3 拉起VLLM推理服务
 
 需修改其中 <p_ip>和 <d_ip>为p、d节点的ip，如需修改端口请同步修改请求转发代理程序脚本`start_proxy.sh`.
+
 P节点：
 ```bash
 python launch_online_dp.py --dp-size 4 --tp-size 4 --dp-size-local 4 --dp-rank-start 0 --dp-address <p_ip> --dp-rpc-port 12321 --vllm-start-port 7100
