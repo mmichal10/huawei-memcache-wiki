@@ -373,37 +373,37 @@ vllm serve /root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V4-Flash-w8a8
     --enforce-eager \
     --additional-config '{"enable_cpu_binding": true, "enable_shared_expert_dp": true,  "enable_dsa_cp": true}' \
     --kv-transfer-config \
-  '{
-    "kv_connector": "MultiConnector",
-    "kv_role": "kv_producer",
-    "kv_connector_extra_config": {
-        "connectors": [
-            {
-                "kv_connector": "MooncakeHybridConnector",
-                "kv_role": "kv_producer",
-                "kv_port": "30000",
-                "kv_connector_extra_config": {
-                    "prefill": {
-                        "dp_size": 4,
-                        "tp_size": 4
-                    },
-                    "decode": {
-                        "dp_size": 16,
-                        "tp_size": 1
+    '{
+        "kv_connector": "MultiConnector",
+        "kv_role": "kv_producer",
+        "kv_connector_extra_config": {
+            "connectors": [
+                {
+                    "kv_connector": "MooncakeHybridConnector",
+                    "kv_role": "kv_producer",
+                    "kv_port": "30000",
+                    "kv_connector_extra_config": {
+                        "prefill": {
+                            "dp_size": 4,
+                            "tp_size": 4
+                        },
+                        "decode": {
+                            "dp_size": 16,
+                            "tp_size": 1
+                        }
+                    }
+                },
+                {
+                    "kv_connector": "AscendStoreConnector",
+                    "kv_role": "kv_producer",
+                    "kv_connector_extra_config": {
+                        "lookup_rpc_port":"0",
+                        "backend": "memcache"
                     }
                 }
-            },
-            {
-                "kv_connector": "AscendStoreConnector",
-                "kv_role": "kv_producer",
-                "kv_connector_extra_config": {
-                    "lookup_rpc_port":"0",
-                    "backend": "memcache"
-                }
-            }
-        ]
-    }
-}' 2>&1 | tee pd_p1.log
+            ]
+        }
+    }' 2>&1 | tee pd_p1.log
 ```
 
 ##### 2.3 D节点推理服务启动脚本 run_dp_template.sh
@@ -475,35 +475,35 @@ vllm serve /root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V4-Flash-w8a8
     --compilation-config '{"cudagraph_mode": "FULL_DECODE_ONLY"}' \
     --kv-transfer-config \
     '{
-    "kv_connector": "MultiConnector",
-    "kv_role": "kv_consumer",
-    "kv_connector_extra_config": {
-        "connectors": [
-        {
-                "kv_connector": "MooncakeHybridConnector",
-                "kv_role": "kv_consumer",
-                "kv_port": "30100",
-                "kv_connector_extra_config": {
-                    "prefill": {
-                        "dp_size": 4,
-                        "tp_size": 4
-                    },
-                    "decode": {
-                        "dp_size": 16,
-                        "tp_size": 1
+        "kv_connector": "MultiConnector",
+        "kv_role": "kv_consumer",
+        "kv_connector_extra_config": {
+            "connectors": [
+                {
+                    "kv_connector": "MooncakeHybridConnector",
+                    "kv_role": "kv_consumer",
+                    "kv_port": "30100",
+                    "kv_connector_extra_config": {
+                        "prefill": {
+                            "dp_size": 4,
+                            "tp_size": 4
+                        },
+                        "decode": {
+                            "dp_size": 16,
+                            "tp_size": 1
+                        }
+                    }
+                },
+                {
+                    "kv_connector": "AscendStoreConnector",
+                    "kv_role": "kv_consumer",
+                    "kv_connector_extra_config": {
+                        "lookup_rpc_port":"0",
+                        "backend": "memcache"
                     }
                 }
-            },
-            {
-                "kv_connector": "AscendStoreConnector",
-                "kv_role": "kv_consumer",
-                "kv_connector_extra_config": {
-                    "lookup_rpc_port":"0",
-                    "backend": "memcache"
-                }
-            }
-        ]
-    }
+            ]
+        }
     }' \
     --additional-config '{
         "ascend_compilation_config":{
