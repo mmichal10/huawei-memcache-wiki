@@ -80,7 +80,8 @@ kvevent广播写操作事件。在元数据写入或删除时通过ZMQ PUB发送
 CURVE 是 ZMQ 官方推荐的加密通讯机制，基于 NaCl 加密库，提供端到端加密和可选的客户端认证。
 
 - **加密算法**：Curve25519（密钥交换）+ XSalsa20-Poly1305（对称加密）
-- **密钥格式**：Z85 编码的 40 字符字符串（32 字节二进制）
+- **密钥格式**：Z85 编码的 40 字符字符串（32 字节二进制）。密钥对必须通过 ZMQ 原生接口 (zmq_curve_keypair()) 或底层 libsodium 库生成。这些接口内部调用操作系统的密码学安全伪随机数生成器 (CSPRNG)，确保密钥具备不可预测的高熵值。
+离线生成原则：密钥的生成过程在部署前的离线环境中完成，严禁在运行时动态生成或使用弱随机源。
 - **认证模式**：支持 server-only 认证（仅加密）或 server+client 双向认证（需 ZAP 协议）
 - **官方文档**：<https://libzmq.readthedocs.io/en/latest/zmq_setsockopt.html>
 
