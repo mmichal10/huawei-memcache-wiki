@@ -1,6 +1,6 @@
 ## 1. 简介
 
-MemCache 提供了开箱即用的 **Client 端指标看板**，覆盖各 Rank 的 PUT/GET 操作延时、数据传输带宽及 UBS IO  存储资源等核心运维指标。看板的指标数据来源于 Client 端内置的指标采集框架，通过 30s 周期 Push 上报至 Meta Service，经 `/metrics/client` 端点以 Prometheus 格式对外暴露。
+MemCache 提供了开箱即用的 **Client 端指标看板**，覆盖各 Rank 的 PUT/GET 操作延时、数据传输带宽及 UBS IO  存储资源等核心运维指标。看板的指标数据来源于 Client 端内置的指标采集框架，通过 30s 周期 Push 上报至 Meta Service，经 `/metrics` 端点以 Prometheus 格式对外暴露。
 
 > **前置依赖**：Prometheus + Grafana 的部署流程和基础对接方式，请先参考 [memcache 对接 Grafana + Prometheus 使用教程](https://gitcode.com/Ascend/memcache/wiki/memcache%E5%AF%B9%E6%8E%A5Grafana+Prometheus%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)。
 
@@ -9,7 +9,7 @@ MemCache 提供了开箱即用的 **Client 端指标看板**，覆盖各 Rank �
 
 ### 2.1 配置 Prometheus
 
-在已有 `prometheus.yml` 中添加指向 `/metrics/client` 端点的 scrape 配置：
+在 `prometheus.yml` 中添加指向 `/metrics` 端点的 scrape 配置：
 
 ```yaml
 scrape_configs:
@@ -17,7 +17,7 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['<meta_host>:<port>']
-    metrics_path: '/metrics/client'
+    metrics_path: '/metrics'
 ```
 
 ### 2.2 导入 Grafana
@@ -112,7 +112,7 @@ scrape_configs:
 
 **场景一：Client 传输延时偏高**
 
-1. 打开 **Get Latency** / **Put Latency** 面板（30s Window 行）
+1. 打开 **Get Latency** / **Put Latency** 面板（30s Window）
 2. 通过 Quantile 下拉框仅勾选 `P99` 和 `Avg`，观察尾延时是否持续走高
 3. 通过 Rank 下拉框逐节点勾选，区分全局劣化还是单节点异常
 4. P99 显著高于 P50：可能存在偶发大 key 操作或网络抖动
@@ -156,7 +156,7 @@ scrape_configs:
 **场景一：SSD 使用率持续增长**
 
 1. 打开 **SSD Capacity & Usage** 面板
-2. 观察 `used` 曲线增长速率是否异常（对比历史趋势）
+2. 观察 `used` 曲线增长速率是否异常
 3. 可能原因：
    - 写入流量突增，未能及时清理过期数据
    - SSD 盘故障导致可用容量缩减（结合 **Disk Count & Faults** 面板交叉确认）
