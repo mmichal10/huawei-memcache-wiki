@@ -5,6 +5,7 @@
 | [`ubsio.disk.path`](#ubsio.disk.path)                                                                   | 字符串 | 必填   | `空`     | 最多 64 个有效块设备路径，以英文冒号分隔                | 指定 UBS IO 用作本地 SSD 缓存的设备路径；支持整盘块设备、分区或 loop 设备。留空表示仅使用内存缓存。                 |
 | [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                                                         | 整数  | 必填   | `50`    | `0` 到 `3072`；不得超过系统可用内存               | UBSIO 单进程内存池容量，单位 GB。                                                      |
 | [`ubsio.standalone.device_count`](#ubsio.standalone.device_count)                                       | 整数  | 必填   | `0`     | `0` 到 `16`                            | 已启用 DRAM 的 local_service 进程数；`0` 表示保留旧逻辑。                                  |
+| `ubsio.standalone.force_new_disk`                                                                       | 布尔值 | 必填   | `false` | `true`、`false`                        | 控制是否将配置的 SSD 设备初始化为新磁盘。当前版本不支持故障恢复，应设置为 `true`。                            |
 | [`ubsio.wcache.evict_water_level`](#ubsio.wcache.evict_water_level)                                     | 整数  | 必填   | `0`     | `0` 到 `100`                           | L2.5 写缓存内存淘汰水位，按 L2.5、L3 或 L2.5 + L3 场景配置。                                 |
 | `ubsio.wcache.disk_evict_water_level`                                                                   | 整数  | 可选   | `90`    | `0` 到 `100`                           | 写缓存磁盘淘汰水位，单位百分比。                                                           |
 | `ubsio.bdm.io_engine`                                                                                   | 字符串 | 可选   | `sync`  | `sync`、`io_uring`                     | BDM I/O 引擎。                                                                |
@@ -21,13 +22,9 @@
 | `ubsio.net.tls.enable.switch`                                                                           | 布尔值 | 可选   | `false` | `true`、`false`                        | TLS 网络安全开关。单机本地部署通常保持为 `false`。                                            |
 | `ubsio.trace.enable`                                                                                    | 布尔值 | 可选   | `true`  | `true` 或 `false`                      | 启用或禁用 HTrace 采集。单机模式会初始化 tracer 模块。                                        |
 | `ubsio.cache.qos.enable`                                                                                | 布尔值 | 可选   | `false` | `true`、`false`                        | Cache QoS 和过载控制开关。                                                         |
-| `ubsio.rcache.evict_water_level`                                                                        | 整数  | 可选   | `90`    | `0` 到 `100`                           | 读缓存淘汰水位。内存和磁盘读缓存淘汰阈值使用同一个值。                                                |
-| `ubsio.cache.mem_read_write_ratio`                                                                      | 字符串 | 可选   | `0:10`  | 两个 `0` 到 `10` 的整数，和为 `10`             | 内存读缓存与写缓存资源配比。                                                             |
-| `ubsio.cache.disk_read_write_ratio`                                                                     | 字符串 | 可选   | `0:10`  | 两个 `0` 到 `10` 的整数，和为 `10`             | 磁盘读缓存与写缓存资源配比。                                                             |
 | `ubsio.work.io.timeout`                                                                                 | 整数  | 可选   | `60`    | `60` 到 `300`                          | 通过单机 runtime config 传给 SDK 的 I/O 超时时间，单位为秒。                                |
 | `ubsio.batchget.thread.num`                                                                             | 整数  | 可选   | `32`    | `8` 到 `512`                           | MirrorServer BatchGet executor 线程数。                                        |
 | `ubsio.cli_tools.enable`                                                                                | 布尔值 | 可选   | `false` | `true` 或 `false`                      | 启用 CLI agent 诊断能力。使用 `cli_client --attach` 连接 `bio_console` 时应设为 `true`。   |
-| `ubsio.underfs.file_system_type`                                                                        | 字符串 | 可选   | `none`  | `ceph`、`hdfs`、`none`                  | UnderFS 后端类型；单机本地部署使用 `none`。                                              |
 
 # 详细配置项说明
 
