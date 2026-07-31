@@ -157,7 +157,7 @@ lease expired after read.
 
 **解决方案**
 
-通过修改meta的配置项：[ock.mmc.meta.lease_ttl_ms](https://gitcode.com/Ascend/memcache/blob/develop/docs/memcache_config.md#metaservice-config)，适当调大即可解决。
+通过修改meta的配置项：ock.mmc.meta.lease_ttl_ms，适当调大即可解决，比如设置 50000。
 
 ## 7. 内存池初始化报错: AutoRanking failed
 **问题现象**
