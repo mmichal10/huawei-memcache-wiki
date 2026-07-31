@@ -68,22 +68,26 @@ source /usr/local/memcache_hybrid/set_env.sh
 # 启用 SSD 缓存
 ock.mmc.local_service.storage.enabled = true
 
-# 本地 SSD 缓存盘或分区路径，多个路径使用英文冒号分隔；必须由 UBS IO 独占，且不能存在挂载点
-ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
+# 配置 UBS IO 用作本地 SSD 缓存的设备路径，支持整盘块设备、分区或 loop 设备；多个路径使用英文冒号分隔；配置的设备必须由 UBS IO 独占，且不能存在挂载点
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2p1:/dev/loopX
 
 # UBS IO 单进程内存池大小，单位 GB
 ubsio.mem.size_in_gb = 10
 
 # 参与本地缓存路径分配的数量，其值应与已启用 DRAM 的 local_service 进程数一致（即ock.mmc.local_service.dram.size 非 0 的进程数）
 ubsio.standalone.device_count = 8
+
+# 强制将配置的 SSD 设备初始化为新磁盘
+ubsio.standalone.force_new_disk = true
 ```
 
-| 参数                                      | 含义                   | 默认配置    | 说明                                                                                                                                                                                                                                        |
-| --------------------------------------- | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `false` | 默认关闭；设置为 `true` 后启用 SSD 多级池化                                                                                                                                                                                                              |
-| `ubsio.disk.path`                       | 本地 SSD 缓存盘或分区路径      | `空`     | 多个路径使用英文冒号分隔。**配置的磁盘或分区必须由 UBS IO 独占，且不能存在挂载点。**分区操作参考：[分区操作](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#%E5%88%86%E5%8C%BA%E6%93%8D%E4%BD%9C) |
-| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`3072` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。所有进程的配置总和不能超过节点扣除操作系统、推理服务和 MemCache DRAM 后可供 UBS IO 使用的剩余内存。                                                                                                                      |
-| `ubsio.standalone.device_count`         | standalone device 数量 | `0`     | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致                                                                                                                                                                           |
+| 参数                                      | 含义                   | 默认配置    | 说明                                                                                                                          |
+| --------------------------------------- | -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `false` | 默认关闭；设置为 `true` 后启用 SSD 多级池化                                                                                                |
+| `ubsio.disk.path`                       | UBS IO 本地 SSD 缓存设备路径 | `空`     | 指定 UBS IO 用作本地 SSD 缓存的设备路径，支持整盘块设备、分区或 loop 设备；多个路径使用英文冒号分隔。<span style="color:red">**配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span> |
+| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`3072` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。所有进程的配置总和不能超过节点扣除操作系统、推理服务和 MemCache DRAM 后可供 UBS IO 使用的剩余内存。        |
+| `ubsio.standalone.device_count`         | standalone device 数量 | `0`     | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致                                                             |
+| `ubsio.standalone.force_new_disk`       | 是否强制初始化为新磁盘          | `false` | 设置为 `true` 时，UBS IO 将配置的 SSD 设备作为新磁盘初始化，不恢复已有元数据。当前版本不支持故障恢复，因此需设置为 `true`。                                                 |
 
 `ubsio.mem.size_in_gb` 表示每个启用 DRAM 的 `local_service` 进程可使用的 UBS IO 内存池大小。单进程可配置上限的计算方式如下：
 

@@ -2,7 +2,7 @@
 
 | 配置项                                                                                                     | 值类型 | 是否必填 | 默认值     | 有效范围                                  | 说明                                                                         |
 | ------------------------------------------------------------------------------------------------------- | --- | ---- | ------- | ------------------------------------- | -------------------------------------------------------------------------- |
-| [`ubsio.disk.path`](#ubsio.disk.path)                                                                   | 字符串 | 必填   | `空`     | 最多 64 个有效块设备路径，以英文冒号分隔                | 缓存盘或分区列表；部署时应显式配置有效路径，或留空表示仅使用内存缓存。                                        |
+| [`ubsio.disk.path`](#ubsio.disk.path)                                                                   | 字符串 | 必填   | `空`     | 最多 64 个有效块设备路径，以英文冒号分隔                | 指定 UBS IO 用作本地 SSD 缓存的设备路径；支持整盘块设备、分区或 loop 设备。留空表示仅使用内存缓存。                 |
 | [`ubsio.mem.size_in_gb`](#ubsio.mem.size_in_gb)                                                         | 整数  | 必填   | `50`    | `0` 到 `3072`；不得超过系统可用内存               | UBSIO 单进程内存池容量，单位 GB。                                                      |
 | [`ubsio.standalone.device_count`](#ubsio.standalone.device_count)                                       | 整数  | 必填   | `0`     | `0` 到 `16`                            | 已启用 DRAM 的 local_service 进程数；`0` 表示保留旧逻辑。                                  |
 | [`ubsio.wcache.evict_water_level`](#ubsio.wcache.evict_water_level)                                     | 整数  | 必填   | `0`     | `0` 到 `100`                           | L2.5 写缓存内存淘汰水位，按 L2.5、L3 或 L2.5 + L3 场景配置。                                 |
@@ -14,7 +14,7 @@
 | `ubsio.bdm.batch_read.window_bytes_mb`                                                                  | 整数  | 可选   | `64`    | `1` 到 `1024`                          | BatchGet 经 BDM 读盘时单窗口字节数上限，单位 MB。                                          |
 | `ubsio.bdm.batch_read.pipeline_depth`                                                                   | 整数  | 可选   | `4`     | `1` 到 `64`                            | BatchGet 经 BDM 读盘时允许同时在途的窗口数。                                              |
 | `ubsio.bdm.batch_read.temp_pool_mb`                                                                     | 整数  | 可选   | `0`     | `0` 到 `65535`                         | BDM 批量读独立临时缓冲池大小，单位 MB；`0` 表示按需申请。                                         |
-| [`ubsio.bdm.batch_read.standalone.use_scratch_pool`](#ubsio.bdm.batch_read.standalone.use_scratch_pool) | 布尔值 | 可选   | `true`  | `true`、`false`                        | standalone BatchGet 是否先读入 scratch pool；A3 必须开启。                     |
+| [`ubsio.bdm.batch_read.standalone.use_scratch_pool`](#ubsio.bdm.batch_read.standalone.use_scratch_pool) | 布尔值 | 可选   | `true`  | `true`、`false`                        | standalone BatchGet 是否先读入 scratch pool；A3 必须开启。                            |
 | `ubsio.log.level`                                                                                       | 字符串 | 可选   | `info`  | `error`、`warn`、`info`、`debug`、`trace` | 日志输出级别。                                                                    |
 | `ubsio.segment.size_in_mb`                                                                              | 整数  | 可选   | `4`     | `1` 到 `16`                            | 缓存 segment 大小。单机内存池 block、BDM chunk 和 SDK data-message block 都使用该大小，单位 MB。 |
 | `ubsio.sdkmem.size_in_mb`                                                                               | 整数  | 可选   | `0`     | `0` 到 `4194304`                       | SDK data-message 内存池大小，单位 MB；`0` 表示不预申请。                                   |
@@ -35,17 +35,11 @@
 
 ### 配置含义与示例
 
-`ubsio.disk.path` 用于指定三级池化缓存层使用的块设备或分区，决定是否启用本地 SSD 缓存层。可配置整盘、已有分区或 loop 设备；多个路径使用英文冒号（`:`）分隔，最多 **64** 条。**留空表示无盘模式，仅使用 `ubsio.mem.size_in_gb` 配置的本地内存池，重启后缓存数据不持久化。**
+`ubsio.disk.path` 用于指定 UBS IO 用作本地 SSD 缓存的设备路径。支持整盘块设备、已有分区或 loop 设备；多个路径使用英文冒号（`:`）分隔，最多 **64** 条。<span style="color:red">**配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span> **留空表示无盘模式，仅使用 `ubsio.mem.size_in_gb` 配置的本地内存池，重启后缓存数据不持久化。**
 
 ```ini
-# 整盘
-ubsio.disk.path = /dev/nvmexn1
-
-# 多个分区
-ubsio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2
-
-# loop 设备
-ubsio.disk.path = /dev/loopx
+# 同时配置整盘、分区和 loop 设备
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2p1:/dev/loopX
 
 # 无盘模式
 ubsio.disk.path =
@@ -57,24 +51,23 @@ ubsio.disk.path =
 `ubsio.standalone.device_count` 表示参与本地缓存路径分配的 device 数量。**为简化表述，下文使用 `device_count` 代指该配置项。其值应与已启用 DRAM 的 local_service 进程数一致；这里“已启用 DRAM”是指 `ock.mmc.local_service.dram.size` 非 `0`。**
 
 - `0`：兼容旧逻辑。每个 deviceId 按 `ubsio.disk.path` 的路径下标选择设备，例如 `deviceId = 1` 选择第 2 条路径。
-- `1`：直接配置目标整盘，无需分区。
-- 大于 `1`：需要执行[分区操作](#分区操作)，并按配置的 device 数量对 `ubsio.disk.path` 路径做均衡分配。每个 deviceId 至少分配 1 个分区，分区总数不得小于 `device_count`。建议每块盘切分为 `device_count` 个相同容量的分区，即分区总数为 `device_count × 盘数`。
+- 大于 `0`：在 `ubsio.disk.path` 中配置目标整盘、已有分区或 loop 设备。
 
 示例：
-- 有 4 个已启用 DRAM 的 local_service 进程时，`device_count` 配置为 `4`。2 块盘共切出 8 个分区时，每个 deviceId 分配 2 个分区。
+
+- 有 `4` 个已启用 DRAM 的 local_service 进程、使用两块目标盘时：
 
 ```ini
-ubsio.disk.path = /dev/nvmexn1p1:/dev/nvmexn1p2:/dev/nvmexn1p3:/dev/nvme0n1p4:/dev/nvmeyn1p1:/dev/nvmeyn1p2:/dev/nvmeyn1p3:/dev/nvmeyn1p4
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmeyn1
 ubsio.standalone.device_count = 4
 ```
 
-- 只有 1 个已启用 DRAM 的 local_service 进程且使用磁盘时，配置为 `1`，直接使用目标整盘，无需分区：
+- 只有 `1` 个已启用 DRAM 的 local_service 进程、使用一块目标盘时：
 
 ```ini
 ubsio.disk.path = /dev/nvmexn1
 ubsio.standalone.device_count = 1
 ```
-
 ---
 
 ## ubsio.mem.size_in_gb
@@ -157,141 +150,80 @@ ubsio.bdm.batch_read.standalone.use_scratch_pool = false
 
 # 其他
 
-## 分区操作
+## 设备配置
 
-推荐使用 `partition_disks.sh` 进行分区，具体用法见[分区脚本使用指导](#分区脚本使用指导)。
-
-分区操作统一按 `device_count` 规划；该值应与已启用 DRAM 的 local_service 进程数一致。
-- `device_count = 1` 时直接配置目标整盘，无需分区；
-- 大于 `1` 时，每个 deviceId 至少分配 1 个分区，分区总数不得小于 `device_count`。
-建议每块盘切分为 `device_count` 个相同容量的分区，即分区总数为 `device_count × 盘数`。
-
-### 分区脚本使用指导
-
-> <span style="color:red">**⚠️ 高危操作：选错磁盘将造成不可逆的数据丢失。请务必在执行前通过 `lsblk` 反复确认目标磁盘路径。**</span>
-
-**[partition_disks.sh](https://gitcode.com/openeuler/ubs-io/blob/develop/scripts/ubsio-boostio/partition_disks.sh)脚本下载：**
-
-```bash
-wget -O partition_disks.sh https://raw.gitcode.com/openeuler/ubs-io/blobs/b81de180c6a15059a28155f17c8c96f502ef70cf/partition_disks.sh
-chmod +x partition_disks.sh
-```
-
-脚本创建 GPT 分区表，在每块盘上创建相同数量、相同容量的分区，并输出 `ubsio.disk.path`。默认 dry-run，加 `--yes` 才写入。
-
-执行 `partition_disks.sh` 后会输出可直接使用的配置行，例如：
-
-```ini
-ubsio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:...
-```
-
-将实际输出的配置行按需写入 `mmc-local.conf` 即可。
-
-| 参数                    | 说明                                                        |
-| --------------------- | --------------------------------------------------------- |
-| `-n, --parts N`       | 总分区数，建议配置为 `device_count × 盘数`；最大不超过 64              |
-| `-d, --disk PATH`     | 磁盘路径；多块磁盘时重复配置                                           |
-| `-c, --dev-cnt N`     | device 数，应与 `device_count` 一致                 |
-| `-y, --yes`           | 实际写入分区表                                                   |
-| `-f, --force`         | 覆盖已有分区表                                                   |
-| `-w, --wipe-metadata` | 擦除旧文件系统签名和 BDM 头                                          |
+将目标整盘、已有分区或 loop 设备的路径写入 `ubsio.disk.path`。
 
 ### 场景一：有盘部署（推荐）
 
-**背景：** 单节点一块或多块 NVMe 盘，分区总数需提前规划，每个分区作为一个本地缓存路径。
+单节点有一块或多块 NVMe 盘时，可直接配置目标盘；也可以配置已有分区，但设备必须由 UBS IO 独占且不能存在挂载点。
 
-#### 1. 确认磁盘状态
+#### 1. 确认设备状态
 
-通过以下命令确认哪些磁盘为可用裸盘（无分区、无挂载、无文件系统签名）。
+通过以下命令确认目标设备路径、类型和挂载状态：
 
 ```bash
-# 1. 列出所有磁盘，确认哪些是裸盘（无分区即为裸盘）
-lsblk
+lsblk -o NAME,TYPE,SIZE,FSTYPE,MOUNTPOINTS
 
-# 输出示例：
-# NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-# nvme0n1     259:0    0   3.5T  0 disk              # <-- 裸盘，可用
-# nvme1n1     259:1    0   3.5T  0 disk              # <-- 裸盘，可用
-# nvme2n1     259:2    0   1.8T  0 disk
-# +-nvme2n1p1 259:3    0   1.8T  0 part /data        # <-- 已分区挂载，不可用
-
-# 2. 确认目标盘为裸盘（以 /dev/nvme0n1 为例，替换为实际磁盘）
-lsblk /dev/nvme0n1                    # 应无分区
-mount | grep nvme0n1                  # 应无挂载
+# 检查目标设备是否存在挂载点，以 /dev/nvme0n1 为例
+lsblk /dev/nvme0n1
+findmnt /dev/nvme0n1
 ```
+
+<span style="color:red">**⚠️ 配置前请反复确认目标设备路径。配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span>
 
 #### 2. 典型场景
 
-以下示例按推荐值配置：单盘时 `--parts = device_count`；多盘时 `--parts = device_count × 盘数`。
-
-**`device_count = 1`：直接使用目标盘，不分区**
+有 `4` 个已启用 DRAM 的 local_service 进程并使用两块目标盘时，配置如下：
 
 ```ini
-ubsio.disk.path = /dev/nvme0n1
-ubsio.standalone.device_count = 1
+ubsio.disk.path = /dev/nvme0n1:/dev/nvme1n1
+ubsio.standalone.device_count = 4
 ```
 
-**`device_count = 4`：2 块盘，每块盘 4 个分区，共 8 个分区**
+使用已有分区时，配置对应路径：
 
-```bash
-sudo bash partition_disks.sh \
-    --parts 8 \
-    --disk /dev/nvme0n1 \
-    --disk /dev/nvme1n1 \
-    -c 4 --yes -f -w
-
-# 输出：
-# ubsio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme1n1p1:/dev/nvme1n1p2:/dev/nvme1n1p3:/dev/nvme1n1p4
-```
-
-**`device_count = 8`：1 块盘，8 个分区**
-
-```bash
-sudo bash partition_disks.sh \
-    --parts 8 --disk /dev/nvme0n1 -c 8 --yes -f -w
-
-# 输出：
-# ubsio.disk.path = /dev/nvme0n1p1:/dev/nvme0n1p2:/dev/nvme0n1p3:/dev/nvme0n1p4:/dev/nvme0n1p5:/dev/nvme0n1p6:/dev/nvme0n1p7:/dev/nvme0n1p8
+```ini
+ubsio.disk.path = /dev/nvme2n1p1
+ubsio.standalone.device_count = 4
 ```
 
 ---
 
 ### 场景二：模拟盘部署（loop 设备方案）
 
-无可用裸盘时，可用 `dd` + `losetup --find --show` 创建 loop 块设备模拟，由系统自动选择空闲 loop 设备，默认开启 direct_io 直通模式，并按 `device_count` 规划分区。
+无可用物理盘时，可用 `fallocate` 和 `losetup --find --show` 创建 loop 块设备模拟盘，由系统自动选择空闲 loop 设备，并开启 direct_io 直通模式。创建后将 loop 设备路径配置到 `ubsio.disk.path`。
 
-> <span style="color:red">**⚠️ 高危操作：创建 loop 设备前，建议先确认当前 loop 设备占用情况；不要手动复用已被占用的 `/dev/loopN`，否则可能导致数据丢失。**</span>
-
-创建 1TB 镜像，并自动分配空闲 loop 设备；分区步骤使用 [分区脚本使用指导](#分区脚本使用指导) 中的 `partition_disks.sh`：
+> <span style="color:red">**⚠️ 创建 loop 设备前，请先确认当前 loop 设备占用情况；不要手动复用已被占用的 `/dev/loopN`，否则可能导致数据丢失。**</span>
 
 ```bash
-# 快速创建并预分配 1TB 镜像文件（容量可根据需求调整, 如 fallocate -l 500G /data/ubsio_disk.img）
+# 创建并预分配 1TB 镜像文件，容量可按需调整
 sudo fallocate -l 1T /data/ubsio_disk.img
 
-# 挂载 loop 设备，默认开启 direct_io 直通；命令会输出实际分配的设备路径
+# 创建 loop 设备并输出系统实际分配的设备路径
 LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/ubsio_disk.img)
 echo "${LOOP_DEV}"
 # 示例输出：/dev/loop2
+```
 
-# 分区
-sudo bash partition_disks.sh \
-    --parts 4 --disk "${LOOP_DEV}" -c 4 --yes -f -w
+将实际输出的 loop 设备路径写入 `mmc-local.conf`：
 
-# 输出：
-# ubsio.disk.path = /dev/loop2p1:/dev/loop2p2:/dev/loop2p3:/dev/loop2p4
+```ini
+ubsio.disk.path = /dev/loop2
+ubsio.standalone.device_count = 4
 ```
 
 ---
 
 ### 取消 loop 设备
 
-> <span style="color:red">**⚠️ 注意： 仅在确认不再需要 loop 模拟盘时执行，卸载后缓存数据将丢失。**</span>
+> <span style="color:red">**⚠️ 仅在确认不再需要 loop 模拟盘且相关服务已经停止时执行，卸载后缓存数据将丢失。**</span>
 
 ```bash
 # 1. 查看当前 loop 设备及其关联文件
 losetup -a
 
-# 2. 卸载 loop 设备（替换为上面 losetup --find --show 输出的设备）
+# 2. 卸载 loop 设备，替换为实际设备路径
 sudo losetup -d /dev/loop2
 
 # 3. 删除镜像文件（可选）
@@ -302,12 +234,12 @@ sudo rm -f /data/ubsio_disk.img
 
 ### 注意事项
 
-| 事项    | 说明                                     |
-| ----- | -------------------------------------- |
-| 磁盘独占  | UBSIO 独占配置的磁盘/分区，不可与其他服务共享             |
-| 物理盘隔离 | 同一物理盘的分区不会分配给同一 deviceId（算法自动打散）       |
-| 路径上限  | `ubsio.disk.path` 最多 64 条路径            |
-| 动态加盘  | standalone 模式不支持运行时加盘                  |
-| 复用磁盘  | 不同 deviceId 会写入 BDM disk head，不匹配将拒绝恢复 |
-| 权限    | 进程需对块设备有读写权限，建议 root 运行                |
-| 磁盘规格  | 随机读带宽建议不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)                       |
+| 事项 | 说明 |
+| --- | --- |
+| 设备独占 | UBS IO 独占配置的整盘、分区或 loop 设备，不可与其他服务共享 |
+| 挂载限制 | 配置的设备不能存在挂载点 |
+| 路径上限 | `ubsio.disk.path` 最多配置 64 条路径 |
+| 动态加盘 | standalone 模式不支持运行时加盘 |
+| 复用设备 | 不同 deviceId 会写入 BDM disk head，不匹配时将拒绝恢复 |
+| 权限 | 进程需要对块设备具有读写权限，建议使用 root 用户运行 |
+| 磁盘规格 | 随机读带宽建议不低于 7GB/s，压测方法见[磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md) |
