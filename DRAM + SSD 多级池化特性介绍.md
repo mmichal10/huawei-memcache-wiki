@@ -65,37 +65,37 @@ source /usr/local/memcache_hybrid/set_env.sh
 #### 配置文件 `mmc-local.conf`：
 
 ```ini
-# 启用 SSD 缓存
+# 启用 SSD 池化特性开关
 ock.mmc.local_service.storage.enabled = true
 
-# 配置 UBS IO 用作本地 SSD 缓存的设备路径，支持整盘块设备、分区或 loop 设备；多个路径使用英文冒号分隔；配置的设备必须由 UBS IO 独占，且不能存在挂载点
-ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2p1:/dev/loopX
+# 配置 UBS IO 用作本地 SSD 缓存的块设备路径，支持整盘、分区或 loop 设备；多个路径使用英文冒号分隔；配置的设备必须由 UBS IO 独占，且不能存在挂载点
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
 
-# UBS IO 单进程内存池大小，单位 GB
+# UBS IO 单进程内存池大小，单位 GB。典型配置：A3分离模式配置为80GB。其他情况下配置为10GB。
 ubsio.mem.size_in_gb = 10
 
-# 参与本地缓存路径分配的数量，其值应与已启用 DRAM 的 local_service 进程数一致（即ock.mmc.local_service.dram.size 非 0 的进程数）
+# 一次VLLM启动中，启用了SSD池化开关的memcache local_service进程数量。例如A3分离模式固定填1，其他情况均填写VLLM进程数量。
 ubsio.standalone.device_count = 8
 
 # 强制将配置的 SSD 设备初始化为新磁盘
 ubsio.standalone.force_new_disk = true
 ```
 
-| 参数                                      | 含义                   | 默认配置    | 说明                                                                                                                          |
-| --------------------------------------- | -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `false` | 默认关闭；设置为 `true` 后启用 SSD 多级池化                                                                                                |
-| `ubsio.disk.path`                       | UBS IO 本地 SSD 缓存设备路径 | `空`     | 指定 UBS IO 用作本地 SSD 缓存的设备路径，支持整盘块设备、分区或 loop 设备；多个路径使用英文冒号分隔。<span style="color:red">**配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span> |
-| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`3072` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。所有进程的配置总和不能超过节点扣除操作系统、推理服务和 MemCache DRAM 后可供 UBS IO 使用的剩余内存。        |
-| `ubsio.standalone.device_count`         | standalone device 数量 | `0`     | 与 `ock.mmc.local_service.dram.size` 非 `0` 的 local_service 进程数一致                                                             |
+| 参数                                      | 含义                   | 默认配置    | 说明                                                                                                                                                                                                                                        |
+| --------------------------------------- | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ock.mmc.local_service.storage.enabled` | SSD 缓存开关             | `false` | 默认关闭；设置为 `true` 后启用 SSD 多级池化                                                                                                                                                                                                              |
+| `ubsio.disk.path`                       | UBS IO 本地 SSD 缓存设备路径 | `空`     | 指定 UBS IO 用作本地 SSD 缓存的设备路径，支持整盘、分区或 loop 设备；多个路径使用英文冒号分隔。<span style="color:red">**配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span> |
+| `ubsio.mem.size_in_gb`                  | UBS IO 单进程内存池大小      | `50`    | 取值范围为 `0`～`3072` 的整数；SSD 场景至少配置 `5` GB，推荐显式配置为 `10` GB。单机UBSIO占用内存总量为单进程内存池大小 乘以 启用了SSD池化的进程数。UBSIO占用内存总量要 **小于** 节点减去操作系统固定内存、推理服务活动内存和 MemCache DRAM 后的剩余内存。典型配置：A3分离模式配置为80GB。其他情况下配置为10GB。 |
+| `ubsio.standalone.device_count`         | UBSIO进程总数 | `0`     | 启用了SSD池化开关的memcache local_service进程数量，A3分离模式只有独立进程会启用SSD池化开关，因此固定填1，其他情况所有VLLM进程都应该启动SSD池化，因此填VLLM进程数量。  |
 | `ubsio.standalone.force_new_disk`       | 是否强制初始化为新磁盘          | `false` | 设置为 `true` 时，UBS IO 将配置的 SSD 设备作为新磁盘初始化，不恢复已有元数据。当前版本不支持故障恢复，因此需设置为 `true`。                                                 |
 
-`ubsio.mem.size_in_gb` 表示每个启用 DRAM 的 `local_service` 进程可使用的 UBS IO 内存池大小。单进程可配置上限的计算方式如下：
+`ubsio.mem.size_in_gb` 表示每个启用 SSD池化 的 `local_service` 进程创建的 UBS IO 内存池大小。单进程可配置上限的计算方式如下：
 
 ```text
 单进程可配置上限 = min(3072, floor(节点可供 UBS IO 使用的剩余内存（GB） / 已启用 DRAM 的 local_service 进程数))
 ```
 
-例如，节点可供 UBS IO 使用的剩余内存为 `200` GB，已启用 DRAM 的 `local_service` 进程数为 `4`，则单进程可配置上限为 `50` GB，推荐值 `10` GB 在有效范围内。如果计算出的上限小于 `5` GB，需要释放更多内存或减少进程数。
+例如，节点可供 UBS IO 使用的剩余内存为 `200` GB，已启用 SSD池化 的 `local_service` 进程数为 `4`，则单进程可配置上限为 `50` GB，推荐值 `10` GB 在有效范围内。如果计算出的上限小于 `5` GB，需要释放更多内存或减少进程数。
 
 对于 SSD 场景，单进程配置 `10` GB 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值，同时需要调整 [`ubsio.wcache.evict_water_level`](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#ubsiowcacheevict_water_level)。
 
@@ -110,15 +110,15 @@ ock.mmc.evict_threshold_high = 70
 # 数据淘汰完成后的目标空间使用率，即低水位
 ock.mmc.evict_threshold_low = 60
 
-# DRAM 空间使用率超过该水位时，触发 SSD 数据回温至 DRAM
+# DRAM 空间使用率达到该水位时，淘汰时会快速删除数据释放内存，降低内存占用压力。
 ock.mmc.rewarm.dram_watermark = 95
 ```
 
 | 参数                            | 含义                       | 默认配置 | 说明                                                                                                  |
 | ------------------------------- | -------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
 | `ock.mmc.evict_threshold_high`  | 触发淘汰的空间使用率高水位 | `90`     | 取值范围为 `1`～`99` 的整数；空间使用率达到该水位时，`Put` 操作触发数据淘汰。单次 `Put` 的数据量超过容量的 1% 时，无法触发淘汰 |
-| `ock.mmc.evict_threshold_low`   | 淘汰完成后的目标空间使用率 | `80`     | 取值范围为 `1`～`98` 的整数；数据淘汰至该水位后停止                                                 |
-| `ock.mmc.rewarm.dram_watermark` | DRAM 回温水位              | `95`     | 取值范围为 `0`～`100` 的整数；DRAM 空间使用率超过该水位时，触发 SSD 数据回温至 DRAM                  |
+| `ock.mmc.evict_threshold_low`   | 淘汰完成后的目标空间使用率 | `80`     | 取值范围为 `1`～`98` 的整数；数据淘汰至该水位后停止   |
+| `ock.mmc.rewarm.dram_watermark` | DRAM 高压水位    | `95`     | 取值范围为 `0`～`100` 的整数；DRAM 空间使用率达到该水位时，淘汰时会快速删除数据释放内存，降低内存占用压力。 |
 
 > MemCache 仅控制 SSD 的启用开关和回温策略，SSD 的具体容量、淘汰水位等由 UBS IO 参数控制。
 
@@ -143,4 +143,4 @@ bash <install_path>/memcache_hybrid/latest/uninstall.sh
 - SSD 缓存依赖本地 NVMe 盘，需确保节点上有可用 SSD 设备
 - SSD 延迟（毫秒级）明显高于内存，对延迟极度敏感的实时推理场景建议优先扩容 DRAM
 - 启用 SSD 缓存需要系统中装有 ubs-io 运行时库
-- SSD 随机读带宽不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)
+- SSD 大IO随机读带宽不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)
