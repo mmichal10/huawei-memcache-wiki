@@ -218,8 +218,8 @@ ubsio.standalone.device_count = 4
 假设A800在两个计算节点机器A，B 上挂载路径均为 /data/A800/。则创建2个1TB容量文件以及配置loop模拟盘方式为：
 ```bash
 # 创建并预分配 1TB 镜像文件，容量可按需调整
-dd if=/dev/zero of=/data/A800/disk0.img bs=1MB count=1000000 status=progress conv=fsync
-dd if=/dev/zero of=/data/A800/disk1.img bs=1MB count=1000000 status=progress conv=fsync
+truncate -s 1T /data/A800/disk0.img
+truncate -s 1T /data/A800/disk1.img
 
 # 创建 loop 设备并输出系统实际分配的设备路径，在A节点上执行。
 LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/A800/disk0.img)
