@@ -557,7 +557,7 @@ vllm serve /home/weights/GLM5.1-W8A8 \
                     "kv_port": "30100",
                     "kv_connector_extra_config": {
                         "use_ascend_direct": true,
-                        "prefill": {"dp_size": 2, "tp_size": 16},
+                        "prefill": {"dp_size": 4, "tp_size": 8},
                         "decode": {"dp_size": 8, "tp_size": 4}
                     }
                 },
@@ -652,7 +652,7 @@ vllm serve /home/weights/GLM5.1-W8A8 \
                     "kv_port": "30100",
                     "kv_connector_extra_config": {
                         "use_ascend_direct": true,
-                        "prefill": {"dp_size": 2, "tp_size": 16},
+                        "prefill": {"dp_size": 4, "tp_size": 8},
                         "decode": {"dp_size": 8, "tp_size": 4}
                     }
                 },
