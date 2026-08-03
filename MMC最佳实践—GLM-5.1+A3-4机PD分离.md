@@ -747,7 +747,7 @@ python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
 ##### 5.2 拉起MemCache独立进程
-在每个节点上准备如下脚本，命名为memcache-standalone.py。
+在每个节点上准备如下脚本，命名为memcache_standalone.py。
 
 ```python
 import time
