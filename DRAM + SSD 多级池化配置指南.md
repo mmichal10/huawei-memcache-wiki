@@ -151,7 +151,7 @@ ubsio.bdm.batch_read.standalone.use_scratch_pool = false
 
 将目标整盘、已有分区或 loop 设备的路径写入 `ubsio.disk.path`。
 
-### 场景一：有盘部署（推荐）
+### 场景一：DRAM + 空闲本地SSD盘（推荐）
 
 单节点有一块或多块 NVMe 盘时，可直接配置目标盘；也可以配置已有分区，但设备必须由 UBS IO 独占且不能存在挂载点。
 
@@ -167,7 +167,7 @@ lsblk /dev/nvme0n1
 findmnt /dev/nvme0n1
 ```
 
-<span style="color:red">**⚠️ 配置前请反复确认目标设备路径。配置的设备必须由 UBS IO 独占，且不能存在挂载点。**</span>
+<span style="color:red">**⚠️ 配置前请反复确认目标设备路径。配置的设备必须由 UBS IO 独占，且不能存在挂载点和已有的可用数据**</span>
 
 #### 2. 典型场景
 
@@ -187,7 +187,7 @@ ubsio.standalone.device_count = 4
 
 ---
 
-### 场景二：模拟盘部署（loop 设备方案）
+### 场景二：DRAM + 无本地空闲SSD盘 + SSD盘有剩余容量可用 （loop 设备方案）
 
 无可用物理盘时，可用 `fallocate` 和 `losetup --find --show` 创建 loop 块设备模拟盘，由系统自动选择空闲 loop 设备，并开启 direct_io 直通模式。创建后将 loop 设备路径配置到 `ubsio.disk.path`。
 
@@ -209,7 +209,35 @@ echo "${LOOP_DEV}"
 ubsio.disk.path = /dev/loop2
 ubsio.standalone.device_count = 4
 ```
+---
+### 场景三：DRAM + 远程存储 （loop 设备方案）
+使用DRAM + 远程网络文件系统挂载（例如A800）场景时，可在远程存储挂载点路径下创建文件并配置为loop块设备模拟盘的方式，使用远程存储容量放置kvcache数据。为达到较高性能，远程存储网络带宽建议不低于200GE。
+> <span style="color:red"><strong>⚠️ 创建 loop 设备前，请先确认当前 loop 设备占用情况；不要手动复用已被占用的 <code>/dev/loopN</code>，否则可能导致数据丢失。</strong></span><br>
+> <span style="color:red"><strong>⚠️ 如果有多个 A2/A3/A5 机器共用一个 A800，需要创建多个文件，每个文件分别配置为不同机器上的 loop 盘；多个机器不能使用远程存储上的同一个文件。</strong></span>
 
+假设A800在两个计算节点机器A，B 上挂载路径均为 /data/A800/。则创建2个1TB容量文件以及配置loop模拟盘方式为：
+```bash
+# 创建并预分配 1TB 镜像文件，容量可按需调整
+dd if=/dev/zero of=/data/A800/disk0.img bs=1MB count=1000000 status=progress conv=fsync
+dd if=/dev/zero of=/data/A800/disk1.img bs=1MB count=1000000 status=progress conv=fsync
+
+# 创建 loop 设备并输出系统实际分配的设备路径，在A节点上执行。
+LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/A800/disk0.img)
+echo "${LOOP_DEV}"
+# 示例输出：/dev/loop2
+
+# 创建 loop 设备并输出系统实际分配的设备路径，在B节点上执行。
+LOOP_DEV=$(sudo losetup --find --show --direct-io=on /data/A800/disk1.img)
+echo "${LOOP_DEV}"
+# 示例输出：/dev/loop3
+```
+```
+# 将实际输出的 loop 设备路径写入 `mmc-local.conf`，A节点上配置文件。
+ubsio.disk.path = /dev/loop2
+
+# 将实际输出的 loop 设备路径写入 `mmc-local.conf`，B节点上配置文件。
+ubsio.disk.path = /dev/loop3
+```
 ---
 
 ### 取消 loop 设备
@@ -227,7 +255,6 @@ sudo losetup -d /dev/loop2
 sudo rm -f /data/ubsio_disk.img
 ```
 
----
 
 ### 注意事项
 
@@ -235,8 +262,8 @@ sudo rm -f /data/ubsio_disk.img
 | --- | --- |
 | 设备独占 | UBS IO 独占配置的整盘、分区或 loop 设备，不可与其他服务共享 |
 | 挂载限制 | 配置的设备不能存在挂载点 |
-| 路径上限 | `ubsio.disk.path` 最多配置 64 条路径 |
+| 路径上限 | `ubsio.disk.path` 最多配置 16 条路径 |
 | 动态加盘 | standalone 模式不支持运行时加盘 |
 | 复用设备 | 不同 deviceId 会写入 BDM disk head，不匹配时将拒绝恢复 |
 | 权限 | 进程需要对块设备具有读写权限，建议使用 root 用户运行 |
-| 磁盘规格 | 随机读带宽建议不低于 7GB/s，压测方法见[磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md) |
+| 磁盘规格 | 配置的全部本地SSD盘总和随机读带宽建议不低于 7GB/s，远程存储网络带宽建议不低于200GE。压测方法见[磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md) |
