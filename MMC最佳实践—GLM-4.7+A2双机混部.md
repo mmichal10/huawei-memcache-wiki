@@ -61,6 +61,8 @@ MemCache由MetaService和LocalService两个组件构成，其中LocalService集�
 
 ###### MetaService 配置文件
 
+任选一个节点作为MetaService启动节点，将配置中ock.mmc.meta_service_url、ock.mmc.meta_service.config_store_url修改为节点IP，保存为mmc-meta.conf
+
 ```ini
 ## IP 需要修改为启动节点IP
 ock.mmc.meta_service_url = tcp://127.0.0.1:5000
@@ -78,6 +80,8 @@ ock.mmc.log_level = info
 
 
 ###### LocalService 配置文件
+
+在每个节点上准备mmc-local.conf配置文件，根据实际情况修改IP和内存容量
 
 ```ini
 ## 配置为MetaService启动节点IP
