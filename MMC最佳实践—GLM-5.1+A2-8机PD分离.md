@@ -12,7 +12,7 @@
 
 【硬件规格】：A2 * 8
 
-【驱动固件】：最低要求为25.5.1
+【驱动固件】：最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
 
 【模型权重】：GLM-5.1-w8a8
 

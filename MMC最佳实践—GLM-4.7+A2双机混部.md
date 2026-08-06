@@ -12,7 +12,7 @@ GLM-4.7 系列是智谱的高智能模型，面向 **Agentic Coding** 场景强�
 
 【硬件配置】Atlas 800T A2 双机16卡
 
-【NPU驱动固件】25.5.1
+【NPU驱动固件】最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
 
 【CANN软件】CANN 8.5
 
