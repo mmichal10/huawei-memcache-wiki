@@ -621,3 +621,5 @@ SGLang 多轮对话测试工具（高子孟）
 
 2. 由于A2服务器运行GLM-5.1存在显存紧张问题，如遇到测试发现使能MMC后性能反而劣化，可以适当调低gpu-memory-utilization到0.85左右。
 
+3. 有关内存申请问题，可以查看[DEVICE_RDMA内存申请详细说明](https://gitcode.com/Ascend/memfabric_hybrid/wiki/DEVICE_RDMA%20%E5%86%85%E5%AD%98%E7%94%B3%E8%AF%B7.md)。
+
