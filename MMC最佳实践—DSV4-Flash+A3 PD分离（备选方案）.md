@@ -21,6 +21,7 @@
 
 
 ### 测试结果
+![memcache_ttft_compare.png](https://raw.gitcode.com/user-images/assets/7672915/255f3c7b-2962-4423-8718-c0b361e0d70d/memcache_ttft_compare.png 'memcache_ttft_compare.png')
 
 【测试工具】aisbench
 
