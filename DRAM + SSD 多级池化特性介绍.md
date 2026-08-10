@@ -97,7 +97,7 @@ ubsio.standalone.force_new_disk = true
 
 例如，节点可供 UBS IO 使用的剩余内存为 `200` GB，已启用 SSD池化 的 `local_service` 进程数为 `4`，则单进程可配置上限为 `50` GB，推荐值 `10` GB 在有效范围内。如果计算出的上限小于 `5` GB，需要释放更多内存或减少进程数。
 
-对于 SSD 场景，单进程配置 `10` GB 通常已经足够，无需配置过大。仅在需要使用 L2.5 能力时考虑增大该值，同时需要调整 [`ubsio.wcache.evict_water_level`](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#ubsiowcacheevict_water_level)。
+对于 MemCache 分离部署场景，单进程建议配置为 `50` GB；其他场景建议配置为 `10` GB。需要使用 L2.5 能力时，可根据实际需求增大该值，同时需要调整 [`ubsio.wcache.evict_water_level`](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#ubsiowcacheevict_water_level)。
 
 UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
 
