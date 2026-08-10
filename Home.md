@@ -27,7 +27,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 #### 其他
 - [MemCache+vLLM+A3分离部署案例](MemCache+vLLM+A3分离部署案例.md)
-- [DDR-SSD二级池化配置使用指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E7%89%B9%E6%80%A7%E4%BB%8B%E7%BB%8D.md)
+- [DDR-SSD多级池化配置使用指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E7%89%B9%E6%80%A7%E4%BB%8B%E7%BB%8D.md)
 - [池化使能950DT和950PR的UB和UBoE](https://gitcode.com/Ascend/memcache/wiki/%E6%B1%A0%E5%8C%96%E4%BD%BF%E8%83%BD950DT%E5%92%8C950PR%E7%9A%84UB%E5%92%8CUBoE.md)
 
 ## 快速开始
