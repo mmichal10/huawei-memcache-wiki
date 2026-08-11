@@ -6,7 +6,7 @@
 
 MemCache通过以下配置实现拓扑感知：
 
-- `tag`：标识当前rank所属的HCCS可达域。
+- `tag`：标识当前rank所属的相同传输可达域。
 - `tag_op_info`：描述不同tag之间可使用的数据传输方式。
 - `tag_affinity_enabled`：控制随机分配时是否优先选择同tag的rank。
 - `tag_affinity_high_watermark`：可选的tag高水位；达到水位后，随机分配优先选择其他tag。
@@ -25,14 +25,14 @@ MemCache通过以下配置实现拓扑感知：
 
 ### 2.1 tag
 
-`tag`表示一个HCCS可达域。处于同一HCCS可达域的rank应配置相同的tag，不同HCCS可达域应配置不同的tag。
+`tag`表示一个相同传输协议可达域。处于同一相同传输可达域的rank应配置相同的tag，不同可达域应配置不同的tag。
 
 例如：
 
-| HCCS可达域 | rank | tag |
+| 可达域 | rank | tag |
 |---|---|---|
-| HCCS域0 | rank 0、rank 1 | `TAG_0` |
-| HCCS域1 | rank 2、rank 3 | `TAG_1` |
+| 传输协议0可达域0 | rank 0、rank 1 | `TAG_0` |
+| 传输协议1可达域1 | rank 2、rank 3 | `TAG_1` |
 
 tag支持字母、数字和下划线，长度不超过30字节。tag为空时，MemFabric使用内部默认tag，以兼容原有单一传输协议场景。
 
@@ -174,7 +174,7 @@ tag拓扑路由和tag亲和分别解决两个问题：
 
 各LocalService在现有配置中设置自己的tag，并配置一致的完整路由表。
 
-HCCS域0中的rank：
+域0中的rank：
 
 ```ini
 ock.mmc.local_service.protocol = device_sdma
@@ -182,7 +182,7 @@ ock.mmc.local_service.tag = TAG_0
 ock.mmc.local_service.tag_op_info = TAG_0:DEVICE_SDMA:TAG_0,TAG_0:DEVICE_RDMA:TAG_1,TAG_1:DEVICE_RDMA:TAG_0,TAG_1:DEVICE_SDMA:TAG_1
 ```
 
-HCCS域1中的rank：
+域1中的rank：
 
 ```ini
 ock.mmc.local_service.protocol = device_sdma
@@ -229,13 +229,13 @@ local_config.tag = "TAG_0"
 local_config.tag_op_info = tag_routes
 ```
 
-不同HCCS可达域只需要修改`local_config.tag`，`tag_op_info`应保持一致。容量、服务地址和HBM大小等其他配置仍需根据实际环境设置。
+不同可达域只需要修改`local_config.tag`，`tag_op_info`应保持一致。容量、服务地址和HBM大小等其他配置仍需根据实际环境设置。
 
 ## 5. 生效条件
 
 要使tag拓扑路由和亲和分配按预期生效，需要满足以下条件：
 
-- 同一HCCS可达域内的rank使用相同tag，不同可达域使用不同tag。
+- 同一传输协议可达域内的rank使用相同tag，不同可达域使用不同tag。
 - 同一个BM内所有rank使用一致的`tag_op_info`。
 - `tag_op_info`覆盖实际可能发生传输的tag组合。
 - LocalService重新创建BM后，新的tag和路由配置才会生效。
@@ -298,7 +298,7 @@ Affinity allocate, currentRank=0, currentTag=TAG_0, selectedRank=1, selectedTag=
 
 ## 9. 配置与使用注意事项
 
-- tag表示HCCS可达关系，应按实际硬件拓扑划分，不能只按业务角色或节点名称划分。
+- tag表示统一传输协议可达关系，应按实际硬件拓扑划分，不能只按业务角色或节点名称划分。
 - 同一个rank挂载不同介质时必须使用相同tag，否则MetaService会拒绝挂载。
 - tag亲和不能替代容量规划；同tag域容量不足时仍会尝试其他tag。
 - 高水位只改变`RandomAssign`中的候选顺序，不会把已经分配的数据迁移到其他tag。
