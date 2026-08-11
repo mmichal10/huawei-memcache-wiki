@@ -41,13 +41,19 @@ pip install memfabric_hybrid==1.2.0
 pip install memcache_hybrid==1.2.0
 ```
 
-安装后路径：
+MemCache 的安装位置会随 Python 版本、虚拟环境和安装方式变化，使用以下命令动态获取配置目录：
 
-| 内容                      | 路径                                                            |
-| ----------------------- | ------------------------------------------------------------- |
-| UBS IO 运行时库             | `<install_path>/memcache_hybrid/latest/{arch}-linux/lib64/`   |
-| 配置文件（`mmc-meta.conf`）  | `<install_path>/memcache_hybrid/latest/config/mmc-meta.conf`  |
-| 配置文件（`mmc-local.conf`） | `<install_path>/memcache_hybrid/latest/config/mmc-local.conf` |
+```bash
+MMC_CONFIG_DIR="$(python3 -c 'from pathlib import Path; import memcache_hybrid; print(Path(memcache_hybrid.__file__).resolve().parent / "config")')"
+echo "$MMC_CONFIG_DIR"
+```
+
+配置文件路径分别为：
+
+| 内容                      | 路径                              |
+| ------------------------- | --------------------------------- |
+| 配置文件（`mmc-meta.conf`）  | `$MMC_CONFIG_DIR/mmc-meta.conf`   |
+| 配置文件（`mmc-local.conf`） | `$MMC_CONFIG_DIR/mmc-local.conf`  |
 
 ### 3.2 修改配置文件
 
@@ -123,7 +129,7 @@ A3：[MemCache+vLLM+A3分离部署案例](https://gitcode.com/Ascend/memcache/wi
 #### 卸载
 
 ```bash
-bash <install_path>/memcache_hybrid/latest/uninstall.sh
+pip uninstall memcache_hybrid
 ```
 
 
