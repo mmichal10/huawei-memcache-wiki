@@ -11,7 +11,6 @@ for i in {0..7}; do npu-smi set -t custom-op-secverify-enable -i $i -d 1; done;
 for i in {0..7}; do npu-smi set -t custom-op-secverify-mode -i $i -d 0; done;
 ```
 
-
 ## 2. 协议选择
 
 ### 在 950 Pod机型中
@@ -32,4 +31,12 @@ device_urma：使用的是die0的8个出框口
 device_uboe：使用是die1的1个参数面口
 
 
+## FAQ
 
+1. 推理报错 device_urma launch kernel AclrtSynchronizeStream failed, ret: 507018
+
+![image.png](https://raw.gitcode.com/user-images/assets/7672915/5e10fbbf-71a7-4131-a113-296895fba2ab/image.png 'image.png')
+
+```
+PrintAicpuErrorInfo:AI CPU kernel execution failed, device_id=1, stream_id=280, task_pos=0, fault op_name=, soName=libcann_hybm_kernel.so, funcName=HybmBatchWrite, kernelName=HybmBatchWrite
+```
