@@ -29,27 +29,16 @@ SSD 缓存是 MemCache 新增的第三级存储特性，通过对接外部 UBS I
 
 用户在调用 `Put` / `Get` 接口时无需关心数据实际驻留在哪一层。
 
-## 3. 编译
+## 3. 部署
 
-基础编译安装流程参见 [run包编译、安装及使用](./install_run.md)。当前默认以 RELEASE 模式编译并开启 UBS IO，直接执行以下命令即可：
-
-### run 包
-
-#### 编译
+### 3.1 安装
 
 ```bash
-bash script/build_and_pack_run.sh --build_mode RELEASE --build_ubsio ON # 追加 --build_ubsio ON
-```
+# memfabric_hybrid 安装
+pip install memfabric_hybrid==1.2.0
 
-构建过程中，CMake 自动从 [ubs-io](https://gitcode.com/openeuler/ubs-io) 仓库的 `openEuler-24.03-LTS-SP4` 分支拉取源码并编译 UBS IO，相关产物随 run 包一起打包。
-
-## 4. 部署
-
-### 4.1 安装
-
-```bash
-bash memcache_hybrid-{version}_linux_{arch}.run
-source /usr/local/memcache_hybrid/set_env.sh
+# memcache_hybrid 安装（UBSIO 已集成在 MemCache 中，无需单独安装）
+pip install memcache_hybrid==1.2.0
 ```
 
 安装后路径：
@@ -60,7 +49,7 @@ source /usr/local/memcache_hybrid/set_env.sh
 | 配置文件（`mmc-meta.conf`）  | `<install_path>/memcache_hybrid/latest/config/mmc-meta.conf`  |
 | 配置文件（`mmc-local.conf`） | `<install_path>/memcache_hybrid/latest/config/mmc-local.conf` |
 
-### 4.2 修改配置文件
+### 3.2 修改配置文件
 
 #### 配置文件 `mmc-local.conf`：
 
@@ -138,7 +127,7 @@ bash <install_path>/memcache_hybrid/latest/uninstall.sh
 ```
 
 
-## 5. 限制与注意事项
+## 4. 限制与注意事项
 
 - SSD 缓存依赖本地 NVMe 盘，需确保节点上有可用 SSD 设备
 - SSD 延迟（毫秒级）明显高于内存，对延迟极度敏感的实时推理场景建议优先扩容 DRAM
