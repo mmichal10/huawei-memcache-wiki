@@ -139,3 +139,41 @@ pip uninstall memcache_hybrid
 - SSD 延迟（毫秒级）明显高于内存，对延迟极度敏感的实时推理场景建议优先扩容 DRAM
 - 启用 SSD 缓存需要系统中装有 ubs-io 运行时库
 - SSD 大IO随机读带宽不低于 7GB/s，压测方法见 [磁盘带宽压测指南](https://gitcode.com/zhangjialee/ubs-io/wiki/%E7%A3%81%E7%9B%98%E5%B8%A6%E5%AE%BD%E5%8E%8B%E6%B5%8B%E6%8C%87%E5%8D%97.md)
+
+## 5. FAQ
+#### 1. 启动初始化发现有ubsio相关报错怎么处理？
+UBS IO 日志默认位于：/var/log/ubsio/bio${PID}.log，常见问题如下： <br>
+1、/dev/loop 设备不存在或日志显示无权限访问： <br>
+vllm通常在容器中启动，/dev/loop设备需要在宿主机上创建，宿主机创建之后，容器需要重启或者重建才可以发现存在/dev/loop设备。 <br>
+2、device_count 填写错误，导致gather通信阶段超时失败： <br>
+在memcache的A3分离部署模式下，即memcache和VLLM分开启动的模式，device_count配置固定填1，其他情况填写VLLM进程的个数。
+[MemCache+vLLM+A3分离部署案例](https://gitcode.com/Ascend/memcache/wiki/MemCache+vLLM+A3%E5%88%86%E7%A6%BB%E9%83%A8%E7%BD%B2%E6%A1%88%E4%BE%8B.md)
+
+#### 2. 宿主机loop块设备怎么映射到容器中访问？
+##### 使用docker：
+1、使用特权容器（即创建容器时使用 --privileged=true），在宿主机创建loop设备之后重启容器即可，执行：docker restart <容器名> <br>
+2、使用非特权容器，需要重建容器，在创建容器时 添加 --device=/dev/loop0:/dev/loop1:rwm，把设备添加到容器中。
+##### 使用nerdctl：
+nerdctl不像docker可以restart时更新OCI spec，因此需要重建容器，创建新容器的时候添加--device参数，示例： <br>
+```
+nerdctl -n default run -d \
+  --name <容器> \
+  --privileged \
+  --device /dev/loop0:/dev/loop1:rwm
+```
+
+#### 3. 多级池化对于memcache内存压力更高，如何设置内存水位。
+启用多级池化后，建议在 MemCache DRAM 中预留足够空间，承接本地 NPU HBM KV Cache 的集中写入。ock.mmc.evict_threshold_high 到 100% 之间的剩余空间，应能够覆盖单节点A2/A3/A5机器的本地 NPU HBM KV Cache 物理总容量。计算公式为：<br>
+```
+M × (100 - H) / 100 ≥ K 
+M：单节点 MemCache DRAM 总容量；
+K：单节点 NPU HBM KV Cache 物理总容量；
+H：ock.mmc.evict_threshold_high，单位为百分比。
+```
+例如npu kv缓存池为120GB，memcache单节点总内存大小为400GB，高水位需要设置为70%，低水位可以设置为50%。<br>
+
+如何获取 本地 NPU HBM KV Cache 容量？<br>
+vLLM-Ascend 启动时通常会输出。该值是单个 NPU Rank，也就是单卡的HBM KV Cache 容量大小：<br>
+`(Worker_TP0 ...) Available KV cache memory: 26.22 GiB`<br>
+单节点 NPU HBM KV Cache池容量为：<br>
+`单节点卡数×单卡的HBM KV Cache 容量`
