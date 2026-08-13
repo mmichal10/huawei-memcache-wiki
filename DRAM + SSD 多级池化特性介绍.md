@@ -64,7 +64,7 @@ echo "$MMC_CONFIG_DIR"
 ock.mmc.local_service.storage.enabled = true
 
 # 配置 UBS IO 用作本地 SSD 缓存的块设备路径，支持整盘、分区或 loop 设备；多个路径使用英文冒号分隔；配置的设备必须由 UBS IO 独占，且不能存在挂载点
-ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2:/dev/nvmexn3:/dev/nvmexn4:/dev/nvmexn5:/dev/nvmexn6:/dev/nvmexn7:/dev/nvmexn8
+ubsio.disk.path = /dev/nvmexn1:/dev/nvmexn2p1:/dev/loopX
 
 # UBS IO 单进程内存池大小，单位 GB。典型配置：A3分离模式配置为80GB。其他情况下配置为10GB。
 ubsio.mem.size_in_gb = 10
