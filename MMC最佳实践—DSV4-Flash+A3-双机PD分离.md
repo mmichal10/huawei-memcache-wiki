@@ -187,9 +187,9 @@ if __name__ == "__main__":
     store = DistributedObjectStore()
     res = store.init(0)
     if res != 0:
-        print(f"Failed to initialize memcache, res = {res}")
+        print(f"Failed to initialize memcache, res = {res}", flush=True)
         exit(1)
-    print("Successfully initialized memcache. ")
+    print("Successfully initialized memcache. ", flush=True)
 
     while True:
         time.sleep(1)
