@@ -352,8 +352,13 @@ spec:
           # 【启动脚本】容器启动后由 Bash 执行的脚本路径。
           command: ["/bin/bash", "/opt/memcache-k8s/bootstrap.sh"]
           securityContext:
-            # 【特权模式】允许访问 NPU、原始块设备及宿主机驱动。
-            privileged: true
+            # 【非特权模式】以 root 用户运行，但不授予特权模式和 Linux capabilities。
+            privileged: false
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+            runAsGroup: 0
+            capabilities:
+              drop: ["ALL"]
           resources:
             # 申请并限制使用 8 个 Ascend 910 设备。
             limits:
