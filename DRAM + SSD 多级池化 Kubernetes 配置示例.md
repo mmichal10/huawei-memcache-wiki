@@ -29,6 +29,156 @@ PVC 全部 Bound，StatefulSet Pod 和容器启动
 Local Static Provisioner：负责“扫描固定目录的软链接，自动发现并注册已有本地磁盘”。
 StatefulSet：负责“申请这些磁盘，并把它们作为裸块设备交给推理容器使用”。
 
+## 使用步骤
+
+下面以“一个目标节点、两个块设备、一个 StatefulSet 副本”为例。两个 PVC 各申请 `900Gi`，因此应准备两个容量均不小于 `900Gi` 的块设备。
+
+### 第一步：在目标节点准备两个块设备
+
+可以直接使用 UBSIO 独占的空闲物理盘，也可以使用 loop 设备。两种方式只选择一种。
+
+参考：[DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md#%E5%9C%BA%E6%99%AF%E4%B8%80dram--%E7%A9%BA%E9%97%B2%E6%9C%AC%E5%9C%B0ssd%E7%9B%98%E6%8E%A8%E8%8D%90)。loop 设备请查看指南中的“场景二：无本地空闲 SSD 盘”。
+
+### 第二步：给目标节点添加标签
+
+以下命令在可以执行 `kubectl` 的管理节点上运行：
+
+```bash
+# 查看节点名称
+kubectl get nodes -o wide
+
+# 将 <NODE_NAME> 替换为第一步准备了块设备的节点名称，例如k8s-node1。
+kubectl label node <NODE_NAME> memcache.io/ubsio-node=true --overwrite
+kubectl label node <NODE_NAME> accelerator=huawei-Ascend910 --overwrite
+
+# 验证标签
+kubectl get node <NODE_NAME> \
+  -o jsonpath='{.metadata.labels.memcache\.io/ubsio-node}{"\n"}{.metadata.labels.accelerator}{"\n"}'
+```
+
+预期输出：
+
+```text
+true
+huawei-Ascend910
+```
+
+`memcache.io/ubsio-node=true` 控制 Local Static Provisioner 是否在该节点运行；两个标签同时存在时，该节点才满足 StatefulSet 的 `nodeSelector`。
+
+### 第三步：创建扫描目录并执行local-static-provisioner.yaml
+
+先在目标节点创建空扫描目录。该操作在应用第一个 YAML 前完成。
+
+```bash
+sudo install -d -m 0755 /mnt/local-pv/memcache-ubsio
+```
+
+然后在管理节点执行：
+
+```bash
+kubectl apply -f local-static-provisioner.yaml
+
+kubectl -n memcache-local-storage rollout status \
+  daemonset/local-static-provisioner --timeout=5m
+
+kubectl -n memcache-local-storage get pod -o wide
+```
+
+确认 `local-static-provisioner` Pod 已运行在 `<NODE_NAME>`。此时扫描目录还是空的，因此尚未出现 UBSIO Local PV 是正常现象。
+
+### 第四步：把块设备软链接到扫描目录
+
+以下命令在目标节点执行。把 `DEVICE0`、`DEVICE1` 替换为第一步确认的实际设备路径：
+
+```bash
+DEVICE0=/dev/loop2
+DEVICE1=/dev/loop3
+DISCOVERY_DIR=/mnt/local-pv/memcache-ubsio
+
+# 先确认设备存在且确实是块设备
+test -b "${DEVICE0}"
+test -b "${DEVICE1}"
+
+# 不使用 -f；如果目标名称已存在，命令应直接失败，避免覆盖已有入口。
+sudo ln -s "${DEVICE0}" "${DISCOVERY_DIR}/memcache-ubsio0"
+sudo ln -s "${DEVICE1}" "${DISCOVERY_DIR}/memcache-ubsio1"
+```
+如果使用物理盘，只需把变量改为实际设备：
+
+```bash
+DEVICE0=/dev/nvme0n1
+DEVICE1=/dev/nvme1n1
+```
+
+回到管理节点，确认 Provisioner 已创建两个 `Available` Local PV。
+
+```bash
+kubectl get pv -l memcache.io/pool=ubsio -o wide
+```
+
+如果没有生成两个 PV，检查 Provisioner 日志：
+
+```bash
+kubectl -n memcache-local-storage logs \
+  daemonset/local-static-provisioner --tail=200
+```
+
+### 第五步：填写启动脚本并执行statefulset.yaml
+
+应用 `statefulset.yaml` 前至少完成以下修改和检查：
+
+1. 将 ConfigMap 中的占位 `bootstrap.sh` 和 `start_meta.py` 替换为实际启动逻辑；
+2. 实际脚本需要启动推理服务，并在 `8100` 端口提供 `/health`；
+3. 如果使用 `8500` 作为 Meta Service 或指标端口，实际进程也必须监听该端口；
+4. UBSIO 必须使用容器内设备路径例如/dev/memcache-ubsio0:/dev/memcache-ubsio1，不要填写宿主机的 `/dev/loopN` 或 `/dev/nvmeNn1`；
+5. 确认推理镜像、Ascend 驱动目录、`/home` 目录和 8 个 NPU 资源在目标节点可用。
+
+UBSIO 磁盘路径的精确配置项名称是 `ubsio.disk.path`。本例应配置为：
+
+```ini
+ubsio.disk.path = /dev/memcache-ubsio0:/dev/memcache-ubsio1
+```
+
+其中两个路径必须分别与以下 YAML 字段完全一致：
+
+```text
+StatefulSet.spec.template.spec.containers[0].volumeDevices[0].devicePath
+StatefulSet.spec.template.spec.containers[0].volumeDevices[1].devicePath
+```
+
+完成修改后执行：
+
+```bash
+kubectl apply -f statefulset.yaml
+
+kubectl -n memcache-inference rollout status \
+  statefulset/memcache-minimax --timeout=30m
+
+kubectl -n memcache-inference get statefulset,pod,pvc -o wide
+kubectl get pv -l memcache.io/pool=ubsio -o wide
+```
+
+预期结果：
+
+- StatefulSet 为 `1/1`；
+- Pod `memcache-minimax-0` 为 `Running` 且 Ready；
+- 两个 PVC 均为 `Bound`；
+- 两个 Local PV 均为 `Bound`；
+- 容器内存在两个原始块设备。
+
+验证容器内设备路径和实际容量：
+
+```bash
+kubectl -n memcache-inference exec memcache-minimax-0 -- \
+  ls -l /dev/memcache-ubsio0 /dev/memcache-ubsio1
+
+kubectl -n memcache-inference exec memcache-minimax-0 -- \
+  blockdev --getsize64 /dev/memcache-ubsio0
+
+kubectl -n memcache-inference exec memcache-minimax-0 -- \
+  blockdev --getsize64 /dev/memcache-ubsio1
+```
+
 #### 关键参数含义（可根据实际情况修改）
 | 参数 | 当前配置值 | YAML 索引位置 | 含义 |
 | --- | --- | --- | --- |
