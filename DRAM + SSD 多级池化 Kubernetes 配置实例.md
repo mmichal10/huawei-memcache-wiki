@@ -49,7 +49,7 @@ StatefulSet：负责“申请这些磁盘，并把它们作为裸块设备交给
 | 容器启动脚本 | `/opt/memcache-k8s/bootstrap.sh` | `StatefulSet.spec.template.spec.containers[0].command[1]`；脚本内容位于 `ConfigMap.data.bootstrap.sh` | 推理容器启动后由 Bash 执行的脚本。该文件通过 `memcache-minimax-bootstrap` ConfigMap 挂载到 `/opt/memcache-k8s`。当前为占位脚本，不会启动推理服务。 |
 | Meta Service 启动脚本 | `/opt/memcache-k8s/start_meta.py` | 脚本内容位于 `ConfigMap.data.start_meta.py`；挂载目录位于 `StatefulSet.spec.template.spec.containers[0].volumeMounts[2].mountPath` | 文件路径由挂载目录 `/opt/memcache-k8s` 和 ConfigMap 键 `start_meta.py` 组合得到。当前为占位脚本，且不会被 Kubernetes 自动执行；需要由 `bootstrap.sh` 或其他命令主动调用。 |
 | 推理容器镜像 | `quay.io/ascend/vllm-ascend:v0.21.0rc1-openeuler` | `spec.template.spec.containers[0].image` | `inference` 容器使用的 vLLM Ascend 镜像。 |
-| 推理容器特权模式 | `privileged: true` | `spec.template.spec.containers[0].securityContext.privileged` | 推理容器以特权模式运行，可以访问原始块设备、NPU 设备和宿主机驱动文件。权限很高，生产环境应评估能否缩小权限。 |
+| 推理容器特权模式 | `privileged: false` | `spec.template.spec.containers[0].securityContext.privileged` | 推理容器可以按照非特权模式运行。 |
 ### local-static-provisioner.yaml
 
 ```yaml
