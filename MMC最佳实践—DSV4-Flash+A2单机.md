@@ -204,7 +204,7 @@ export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packag
 首先需要拉起MetaService元数据管理服务
 
 ```shell
-export MMC_META_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hybrid/config/mmc-meta.conf
+export MMC_META_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
