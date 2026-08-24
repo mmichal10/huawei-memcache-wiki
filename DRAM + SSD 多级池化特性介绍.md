@@ -177,3 +177,13 @@ vLLM-Ascend 启动时通常会输出。该值是单个 NPU Rank，也就是单�
 `(Worker_TP0 ...) Available KV cache memory: 26.22 GiB`<br>
 单节点 NPU HBM KV Cache池容量为：<br>
 `单节点卡数×单卡的HBM KV Cache 容量`
+
+#### 4. 如何判断进程是否启动了 SSD 池化？
+
+在进程本次启动日志中搜索 `boostio` 关键字即可：
+
+```bash
+grep -i "boostio" <进程日志文件>
+```
+
+如果能过滤到 `boostio` 相关日志，说明该进程启动了 SSD 池化；如果没有相关日志，则说明该进程未启动 SSD 池化。
