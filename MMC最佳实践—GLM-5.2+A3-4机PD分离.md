@@ -229,10 +229,11 @@ nohup python3 /data/deploy_glm5.2_dp32tp1/memcache.py >> /data/mmc-log/run_mmc-l
 
 **注意**：独立进程启动脚本执行完后，不要着急拉起GLM-5.2的vllm serve服务，查看/data/mmc-log/run_mmc-local.log日志，待4台节点均出现如下日志时，说明4台节点独立进程占用内存正常。若出现内存分配失败的报错，则需要调低ock.mmc.local_service.dram.size配置，重新拉起独立进程，直到4个独立进程均成功拉起。
 
-![image](./0a838853-8792-4ae0-a574-ff795d44b0cb.png)
-也可以通过http://<P0_node_ip>:8000/metrics页面快速访问确认总kv pool大小
+```
+Successfully initialized memcache.
+```
 
-![image](./26bf805d-1f78-4373-b94d-c5e481ba242d.png)
+也可以通过http://<P0_node_ip>:8000/metrics/summary页面快速访问确认总kv pool大小
 
 # 部署GLM-5.2高性能服务
 
