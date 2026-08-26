@@ -18,6 +18,9 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 - [DSV4-Flash+A2单机案例](MMC最佳实践—DSV4-Flash+A2单机.md)
 - [DSV4-Flash+A3 *2机PD分离案例](MMC最佳实践—DSV4-Flash+A3-双机PD分离.md)
 
+#### GLM-5.2
+- [GLM-5.2+A3*4机PD分离案例](MMC最佳实践—GLM-5.2+A3-4机PD分离.md)
+
 #### GLM-5.1
 - [GLM-5.1+A3*4机PD分离案例](MMC最佳实践—GLM-5.1+A3-4机PD分离.md)
 - [GLM-5.1+A2*8机PD分离案例](MMC最佳实践—GLM-5.1+A2-8机PD分离.md)
