@@ -34,12 +34,12 @@ scrape_configs:
 
 | 面板 | 对应操作 | 说明 |
 |------|----------|------|
-| **Get Latency** | Get 操作 | Client 端 30 秒窗口内 Get 操作的延迟分位数（P50 / P90 / P99 / Avg），单位秒 |
-| **Get Bytes** | Get 操作 | Client 端 30 秒窗口内 Get 操作的传输字节数（totalBytes） |
-| **Get Bandwidth** | Get 操作 | Client 端 30 秒窗口内 Get 操作的瞬时带宽（B/s） |
-| **Put Latency** | Put 操作 | Client 端 30 秒窗口内 Put 操作的延迟分位数（P50 / P90 / P99 / Avg），单位秒 |
-| **Put Bytes** | Put 操作 | Client 端 30 秒窗口内 Put 操作的传输字节数（totalBytes） |
-| **Put Bandwidth** | Put 操作 | Client 端 30 秒窗口内 Put 操作的瞬时带宽（B/s） |
+| **Get Latency** | BatchGet 操作 | Client 端 30 秒窗口内 BatchGet 操作的延迟分位数（P50 / P90 / P99 / Avg），单位秒 |
+| **Get Bytes** | BatchGet 操作 | Client 端 30 秒窗口内 BatchGet 操作的传输字节数（totalBytes） |
+| **Get Bandwidth** | BatchGet 操作 | Client 端 30 秒窗口内 BatchGet 操作的瞬时带宽（B/s） |
+| **Put Latency** | BatchPut 操作 | Client 端 30 秒窗口内 BatchPut 操作的延迟分位数（P50 / P90 / P99 / Avg），单位秒 |
+| **Put Bytes** | BatchPut 操作 | Client 端 30 秒窗口内 BatchPut 操作的传输字节数（totalBytes） |
+| **Put Bandwidth** | BatchPut 操作 | Client 端 30 秒窗口内 BatchPut 操作的瞬时带宽（B/s） |
 
 每个延迟面板按 `rank` × `quantile` 维度展示多条曲线：**P50 / P90 / P99 / Avg**，带宽面板按 `rank` 维度展示。可通过 Rank 筛选聚焦特定节点，通过 Quantile 筛选不同分布曲线。
 
@@ -53,7 +53,7 @@ scrape_configs:
 | **Cumulative Bytes** | 累计传输字节数 | 进程启动以来总传输字节数 |
 | **Cumulative Bandwidth** | 生命周期平均带宽 | 生命周期平均吞吐率（B/s） |
 
-累计面板按 `rank` × `operation` 维度展示（put / get），支持 `$rank` 过滤。
+累计面板按 `rank` × `operation` 维度展示（batch_put / batch_get），支持 `$rank` 过滤。
 
 ### 3.3 UBS IO Storage
 
