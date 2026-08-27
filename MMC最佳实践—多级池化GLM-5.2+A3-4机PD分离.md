@@ -23,6 +23,7 @@
 | SSD 容量 | 仅 SSD 池化方案需要；单机提供 3.5 TB 独占可用容量，四机物理合计 14 TB |
 
 > SSD 池化使用的整盘、分区或 loop 块设备必须由 UBS IO 独占。配置前应确认设备没有挂载点和需要保留的数据；设备路径以各节点现场检查结果为准。
+（具体操作可查https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md）
 
 ## 环境准备
 
