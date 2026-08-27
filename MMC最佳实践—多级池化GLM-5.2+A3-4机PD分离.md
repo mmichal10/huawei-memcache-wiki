@@ -1,10 +1,13 @@
-概述
-MemCache 是针对AI推理场景设计的高性能分布式KVCache缓存系统，针对昇腾超节点、服务器的实现了精细化性能调优，提供较好的High Availability能力，同时对接到vllm-ascend、sglang、mindie等开源推理框架。
+# 概述
+
+[MemCache](https://gitcode.com/Ascend/memcache) 是针对AI推理场景设计的高性能分布式KVCache缓存系统，针对昇腾超节点、服务器的实现了精细化性能调优，提供较好的High Availability能力，同时对接到vllm-ascend、sglang、mindie等开源推理框架。
 
 GLM-5.2 是面向长任务时代的旗舰模型。支持真正可用的1M上下文，实测可承载项目级工程上下文，长程任务执行更稳定、工程规范遵循更可靠，开发场景成功率进一步提升。一次任务即可完成“从需求到多端可部署产物”的完整开发链路。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
-部署准备
-前置要求
+# 部署准备
+
+## 前置要求
+
 【硬件规格】：Atlas 800I A3 * 4
 
 【驱动固件】：>=25.5.1
@@ -13,11 +16,16 @@ GLM-5.2 是面向长任务时代的旗舰模型。支持真正可用的1M上下�
 
 【OS内核版本】>=5.10
 
-环境准备
-GLM-5.2-w4a8c8权重下载地址： https://modelscope.cn/models/Eco-Tech/GLM-5.2-w4a8c8
+## 环境准备
 
-拉取vllm镜像： docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1 以下保存为start-docker.sh脚本
+GLM-5.2-w4a8c8权重下载地址：
+[*https://modelscope.cn/models/Eco-Tech/GLM-5.2-w4a8c8*](https://modelscope.cn/models/Eco-Tech/GLM-5.2-w4a8c8)
 
+拉取vllm镜像：
+``docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1``
+以下保存为start-docker.sh脚本
+
+```
 #!/bin/bash
 IMAGES_ID="$1"
 NAME="$2"
@@ -56,26 +64,38 @@ docker run --name "${NAME}" -it -d --net=host --shm-size=500g \
     -e http_proxy="$http_proxy" \
     -e https_proxy="$https_proxy" \
     "${IMAGES_ID}"
+```
 
-执行以下命令创建容器 bash start-docker.sh 611962961cde glm5.2-memcache 执行以下命令进入创建完成的容器 docker exec -it glm5.2-memcache bash
+执行以下命令创建容器
+`bash start-docker.sh 611962961cde glm5.2-memcache`
+执行以下命令进入创建完成的容器
+`docker exec -it glm5.2-memcache bash`
 
-MemCache配置与启动
-修改MemCache配置文件
-步骤一：获取配置文件路径
+# MemCache配置与启动
+
+## 修改MemCache配置文件
+
+**步骤一：获取配置文件路径**
 
 启动时MetaService、LocalService的配置由各自配置文件导入，默认配置文件在memcache的whl包config目录下。
 
+```
 # 获取python路径
 which python
 /usr/local/python3.12.13/bin/python
 则配置文件路径为：
 /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf
 /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf
+```
 
-步骤二：修改配置文件 假设计划在P0节点（IP记为P0_node_ip）拉起MetaService，需将P0节点mmc-meta.conf、mmc-local.conf配置文件做如下修改，然后将mmc-local.conf配置文件拷贝到另外P1、D0、D1节点相同位置（4个节点配置一致）。
+**步骤二：修改配置文件**
+假设计划在P0节点（IP记为**P0_node_ip**）拉起MetaService，需将P0节点mmc-meta.conf、mmc-local.conf配置文件做如下修改，然后将mmc-local.conf配置文件拷贝到另外P1、D0、D1节点相同位置（4个节点配置一致）。
 
-修改MetaService 配置文件： vim /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf 进行如下内容修改：
+修改MetaService 配置文件：
+`vim /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf`
+进行如下内容修改：
 
+```
 ## Meta service start-up url
 ock.mmc.meta_service_url = tcp://<P0_node_ip>:5000
 ## IP 需要修改为MetaService启动节点IP
@@ -90,9 +110,14 @@ ock.mmc.meta_service.metrics_url = http://<P0_node_ip>:8000
 
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
+```
 
-注意：以上3处 127.0.0.1 需改为启动meta_service服务节点IP。 修改LocalService 配置文件： vim /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf 进行如下内容修改：
+注意：以上3处 127.0.0.1 需改为启动meta_service服务节点IP。
+**修改LocalService 配置文件：**
+`vim /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf`
+进行如下内容修改：
 
+```
 ## Meta service start-up url
 ## Keep consistent with the same name configuration in mmc-meta.conf
 ock.mmc.meta_service_url = tcp://<P0_node_ip>:5000                      
@@ -119,11 +144,13 @@ ock.mmc.local_service.dram.size = 0GB
 
 ock.mmc.local_service.max.dram.size = 1024GB                                
 ## 新增配置
+```
 
 注意：其中2处 127.0.0.1 需改为启动meta_service服务节点IP
 
-所有节点清理缓存空间
-若部署服务前已reboot重启过节点，则可跳过此步骤。
+## 所有节点清理缓存空间
+
+**若部署服务前已reboot重启过节点，则可跳过此步骤。**
 
 系统缓存空间中可能占用了部分memcache可用内存地址，执行free -h命令可查看系统缓存空间占用情况，需执行以下命令清理缓存，给memcache分配更多的可用空间。注意：若出现之前拉起模型服务速度快，清理缓存后拉起模型服务的速度变慢属于正常现象，因为缓存中的模型权重被清空，需重新加载，时间变长。
 
@@ -131,37 +158,50 @@ echo 3 > /proc/sys/vm/drop_caches
 
 清理完成后，可执行free -h查看buff/cache值是否降低。
 
-或通过脚本扫描可用空间，请参考以下链接 memfabric-hybrid - Wiki - AtomGit
+或通过脚本扫描可用空间，请参考以下链接
+[memfabric-hybrid - Wiki - AtomGit](https://gitcode.com/Ascend/memfabric_hybrid/wiki/FAQ.md#2-%E8%B0%83%E7%94%A8halmemcreate%E8%BF%94%E5%9B%9E%E9%94%99%E8%AF%AF%E7%A0%81-6)
 
-启动主进程
+## 启动主进程
+
 注意：本操作只需在MetaService启动节点上执行，启动一个MetaService服务即可，不需指定具体目录执行。
 
+```
 export MMC_META_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf
 #启动mmc-meta
 nohup python3 -c "from memcache_hybrid import MetaService; MetaService.main()" >> /data/mmc-log/run_meta_service.log 2>&1 &
+```
 
-所有节点启动独立进程占用memcache可用空间
-注意：四台节点均执行以下步骤，每台节点拉起一个独立进程。
+## 所有节点启动独立进程占用memcache可用空间
 
-步骤一：复制一份mmc-local配置文件​，用于memcache独立进程启动使用，并修改其申请的内存容量。
+**注意：四台节点均执行以下步骤，每台节点拉起一个独立进程。**
 
+**步骤一**：**复制一份mmc-local配置文件**​，用于memcache独立进程启动使用，并修改其申请的内存容量。
+
+```
 mkdir -p /data/glm-5.2-start
 cp /usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-local.conf /data/deploy_glm5.2_dp32tp1/mmc-local.conf
+```
 
-步骤二：对拷贝后的mmc-local.conf做出如下修改：
+**步骤二**：对拷贝后的mmc-local.conf做出如下修改：
 
+```
 vim /data/deploy_glm5.2_dp32tp1/mmc-local.conf
+```
 
 修改配置：
 
+```
 ock.mmc.local_service.dram.size = 600GB
+```
 
-说明：每个节点根据实际情况进行设置，最终可用kv pool空间为4台A3节点设置的dram.size空间总和，如4台节点都设置为600GB，则最终可用池化空间为600GB * 4 = 2400GB。每台节点占用空间可以不同。 步骤三：新建独立进程启动脚本。
+说明：每个节点根据实际情况进行设置，最终可用kv pool空间为4台A3节点设置的dram.size空间总和，如4台节点都设置为600GB，则最终可用池化空间为600GB * 4 = 2400GB。每台节点占用空间可以不同。
+**步骤三**：新建独立进程启动脚本。
 
-vim /data/deploy_glm5.2_dp32tp1/memcache.py
+`vim /data/deploy_glm5.2_dp32tp1/memcache.py`
 
 脚本内容：
 
+```
 import time
 
 from memcache_hybrid import DistributedObjectStore
@@ -177,21 +217,29 @@ if __name__ == "__main__":
 
     while True:
         time.sleep(1)
+```
 
-步骤四：启动独立进程。
+**步骤四**：启动独立进程。
 
+```
 export MMC_LOCAL_CONFIG_PATH=/data/deploy_glm5.2_dp32tp1/mmc-local.conf
 #启动独立进程
 nohup python3 /data/deploy_glm5.2_dp32tp1/memcache.py >> /data/mmc-log/run_mmc-local.log 2>&1 &
+```
 
-注意：独立进程启动脚本执行完后，不要着急拉起GLM-5.2的vllm serve服务，查看/data/mmc-log/run_mmc-local.log日志，待4台节点均出现如下日志时，说明4台节点独立进程占用内存正常。若出现内存分配失败的报错，则需要调低ock.mmc.local_service.dram.size配置，重新拉起独立进程，直到4个独立进程均成功拉起。
+**注意**：独立进程启动脚本执行完后，不要着急拉起GLM-5.2的vllm serve服务，查看/data/mmc-log/run_mmc-local.log日志，待4台节点均出现如下日志时，说明4台节点独立进程占用内存正常。若出现内存分配失败的报错，则需要调低ock.mmc.local_service.dram.size配置，重新拉起独立进程，直到4个独立进程均成功拉起。
 
+```
 Successfully initialized memcache.
+```
 
 也可以通过http://<P0_node_ip>:8000/metrics/summary页面快速访问确认总kv pool大小
 
-部署GLM-5.2高性能服务
-所有的节点容器中准备脚本launch_online_dp.py
+# 部署GLM-5.2高性能服务
+
+## 所有的节点容器中准备脚本launch_online_dp.py
+
+```
 import argparse
 import multiprocessing
 import os
@@ -289,10 +337,13 @@ if __name__ == "__main__":
 
     for process in processes:
         process.join()
+```
 
-在所有的节点容器中准备部署脚本run_dp_template.sh
+## 在所有的节点容器中准备部署脚本run_dp_template.sh
+
 P节点
 
+```
 nic_name="bond0" # change to your own nic name
 local_ip="100.xx.xx.xx" # change to your own ip
 
@@ -374,9 +425,11 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
 D节点
 
+```
 nic_name="eth-bond4" # change to your own nic name
 local_ip="100.xx.xx.xx" # change to your own ip
 
@@ -456,48 +509,62 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
-依次在每个节点上启动推理服务
+## 依次在每个节点上启动推理服务
+
 Prefill1 Node0启动，创建p0-run.sh文件运行，需要修改高亮的地方为实际的ip和端口：
 
+```
 nohup python launch_online_dp.py \
   --dp-size 4 --tp-size 8 --dp-size-local 2 \
   --dp-rank-start 0 --dp-address <P0_node_ip> \
   --dp-rpc-port 10521 --vllm-start-port 6700 \
   >> launch_dp_output.log 2>&1 &
+```
 
 Prefill1 Node1启动，创建p1-run.sh文件运行，需要修改高亮的：
 
+```
 nohup python launch_online_dp.py \
   --dp-size 4 --tp-size 8 --dp-size-local 2 \
   --dp-rank-start 2 --dp-address <P0_node_ip> \
   --dp-rpc-port 10521 --vllm-start-port 6700 \
   >> launch_dp_output.log 2>&1 &
+```
 
 Decode1 Node0启动，创建d0-run.sh文件运行，需要修改高亮的：
 
+```
 nohup python launch_online_dp.py \
   --dp-size 32 --tp-size 1 --dp-size-local 16 \
   --dp-rank-start 0 --dp-address <D0_node_ip> \
   --dp-rpc-port 10521 --vllm-start-port 6700 \
   >> launch_dp_output.log 2>&1 &
+```
 
 Decode1 Node1启动，创建d1-run.sh文件运行，需要修改高亮的：
 
+```
 nohup python launch_online_dp.py \
   --dp-size 32 --tp-size 1 --dp-size-local 16 \
   --dp-rank-start 16 --dp-address <D0_node_ip> \
   --dp-rpc-port 10521 --vllm-start-port 6700 \
   >> launch_dp_output.log 2>&1 &
+```
 
-通过proxy对外提供服务ip和端口
+## 通过proxy对外提供服务ip和端口
+
 脚本从容器中的/vllm-workspace路径下的版本文件中中获取：
 
+```
 root@localhost:/vllm-workspace# find -name load_balance_proxy_server_example.py
 ./vllm-ascend/examples/disaggregated_prefill_v1/load_balance_proxy_server_example.py
+```
 
 创建start_proxy.sh脚本，拉起代理转发服务，脚本内容如下：
 
+```
 #!/bin/bash
 
 # 取消代理设置
@@ -553,15 +620,20 @@ nohup python load_balance_proxy_server_example.py \
       6700 6701 6702 6703 6704 6705 6706 6707 6708 6709 6710 6711 6712 6713 6714 6715 \
       6700 6701 6702 6703 6704 6705 6706 6707 6708 6709 6710 6711 6712 6713 6714 6715 \
     >> start_proxy.log 2>&1 &
+```
 
-创建好脚本后，执行以下命令拉起代理服务： bash start_proxy.sh
+创建好脚本后，执行以下命令拉起代理服务：
+`bash start_proxy.sh`
 
-部署GLM-5.2长序列（1M）服务
+# 部署GLM-5.2长序列（1M）服务
+
 脚本launch_online_dp.py参考前一节高性能服务
 
-所有节点部署脚本配置
+## 所有节点部署脚本配置
+
 P0节点配置
 
+```
 nic_name="bond0"
 local_ip="<P0_node_ip>"
 node_p0_ip="<P0_node_ip>"
@@ -646,9 +718,11 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
 P1节点配置
 
+```
 nic_name="bond0"
 local_ip="<P1_node_ip>"
 node_p0_ip="<P0_node_ip>"
@@ -733,9 +807,11 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
 D0节点配置
 
+```
 nic_name="eth-bond4"
 local_ip="<D0_node_ip>"
 node_d0_ip="<D0_node_ip>"
@@ -820,9 +896,11 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
 D1节点配置
 
+```
 nic_name="eth-bond4"
 local_ip="<D1_node_ip>"
 node_d0_ip="<D0_node_ip>"
@@ -907,13 +985,21 @@ vllm serve /data/GLM-5.2-w4a8c8 \
             ]
         }
     }'
+```
 
-依次在每个节点上启动推理服务
-将前一节的四个启动脚本创建成对应的**-run.sh文件，四台机器各自执行： nohup bash p0-run.sh >> launch_dp_output.log 2>&1 & nohup bash p1-run.sh >> launch_dp_output.log 2>&1 & nohup bash d0-run.sh >> launch_dp_output.log 2>&1 & nohup bash d1-run.sh >> launch_dp_output.log 2>&1 &
+## 依次在每个节点上启动推理服务
 
-通过proxy对外提供服务ip和端口
+将前一节的四个启动脚本创建成对应的**-run.sh文件，四台机器各自执行：
+`nohup bash p0-run.sh >> launch_dp_output.log 2>&1 &`
+`nohup bash p1-run.sh >> launch_dp_output.log 2>&1 &`
+`nohup bash d0-run.sh >> launch_dp_output.log 2>&1 &`
+`nohup bash d1-run.sh >> launch_dp_output.log 2>&1 &`
+
+## 通过proxy对外提供服务ip和端口
+
 创建start_proxy.sh脚本，拉起代理转发服务，脚本内容如下：
 
+```
 #!/bin/bash
 
 # 取消代理设置
@@ -929,18 +1015,25 @@ nohup python /vllm-workspace/vllm-ascend/examples/disaggregated_prefill_v1/load_
   --decoder-hosts <D0_node_ip> \
   --decoder-ports 9900 \
     >> start_proxy.log 2>&1 &
+```
 
-创建好脚本后，执行以下命令拉起代理服务： bash start_proxy.sh
+创建好脚本后，执行以下命令拉起代理服务：
+`bash start_proxy.sh`
 
-性能测试
+# 性能测试
+
 在四机A3集群上，基于GLM5.2-w4a8c8量化模型、PD分离架构（2节点组成Prefill + 2节点 Decode）基于高性能服务配置，对MemCache前缀缓存进行了4组场景的性能测试。有缓存测试数据的前缀数量种类是并发数量一半，90%前缀重复，--dp 4预热前缀测试，模拟多用户多种前缀AI Coding场景。主要结果如下
 
-场景	Input Len	实际 并发	有无缓存	TTFT(ms)	TTFT降幅	输出吞吐(token/s)	输出吞吐提升
-64K × 20CC	65536	17.71	无缓存	23,405	/	436.3	/
-64K × 20CC	65536	18.46	有缓存	4,140	82.3%	787.5	80.5%
-64K × 30CC	65536	26.48	无缓存	40,191	/	466.5	/
-64K × 30CC	65536	27.11	有缓存	4,980	87.6%	1155.3	147.7%
-128K × 10CC	131072	9.16	无缓存	35,017	/	173.3	/
-128K × 10CC	131072	9.15	有缓存	5,775	83.5%	367.6	112.1%
-128K × 20CC	131072	17.64	无缓存	83,090	/	177.9	/
-128K × 20CC	131072	17.97	有缓存	12,235	85.3%	558.8	214.1%
+| 场景         | Input Len | 实际 并发 | 有无缓存   | TTFT(ms) | TTFT降幅 | 输出吞吐(token/s) | 输出吞吐提升 |
+| ------------ | --------- | --------- | ---------- | -------- | -------- | ----------------- | ------------ |
+| 64K × 20CC   | 65536     | 17.71     | 无缓存     | 23,405   | /        | 436.3             | /            |
+| 64K × 20CC   | 65536     | 18.46     | **有缓存** | 4,140    | 82.3%    | 787.5             | 80.5%        |
+| 64K   × 30CC | 65536     | 26.48     | 无缓存     | 40,191   | /        | 466.5             | /            |
+| 64K  × 30CC  | 65536     | 27.11     | **有缓存** | 4,980    | 87.6%    | 1155.3            | 147.7%       |
+| 128K × 10CC  | 131072    | 9.16      | 无缓存     | 35,017   | /        | 173.3             | /            |
+| 128K × 10CC  | 131072    | 9.15      | **有缓存** | 5,775    | 83.5%    | 367.6             | 112.1%       |
+| 128K  × 20CC | 131072    | 17.64     | 无缓存     | 83,090   | /        | 177.9             | /            |
+| 128K  × 20CC | 131072    | 17.97     | **有缓存** | 12,235   | 85.3%    | 558.8             | 214.1%       |
+
+作者：张贵楠、宋灿、寇希栋
+
