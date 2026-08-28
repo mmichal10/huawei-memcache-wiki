@@ -8,15 +8,17 @@
 
 
 
-### 环境准备
+### 环境说明
 
 【硬件规格】：A2 * 8
 
-【驱动固件】：最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
-
 【模型权重】：GLM-5.1-w8a8
 
-**注意：使用命令 `getconf PAGESIZE` 查询系统页大小，结果为4K方可使用memcache。若查询结果为64K，需要考虑更换OS。**
+<span style="color:#e60000;">注意：采用本文的部署方案必须满足以下底软要求</span>
+
+【NPU驱动固件】：最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
+
+【OS PAGESIZE】：使用命令 `getconf PAGESIZE` 查询系统页大小，结果为4K方可使用memcache。若查询结果为64K，需要考虑更换OS。
 
 
 

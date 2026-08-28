@@ -5,14 +5,18 @@
 GLM-4.7 系列是智谱的高智能模型，面向 **Agentic Coding** 场景强化了编码能力、长程任务规划与工具协同，并在多个公开基准的当期榜单中取得开源模型中的出色表现。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
+#### 环境说明
+【硬件规格】Atlas 800T A2 双机16卡
+
+<span style="color:#e60000;">注意：采用本文的部署方案必须满足以下底软版本要求</span>
+
+【NPU驱动固件】最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
+
+
 
 #### 部署
 
 本文部署以 [GLM-4.7_vLLM-ascend](https://ai.gitcode.com/Ascend-SACT/GLM-4.7_vLLM-ascend/tree/main) 中提供的环境和脚本为基线
-
-【硬件配置】Atlas 800T A2 双机16卡
-
-【NPU驱动固件】最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)
 
 【CANN软件】CANN 8.5
 

@@ -7,7 +7,7 @@
 DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和推理性能上均实现国内与开源领域的领先。相比 DeepSeek-V4-Pro，DeepSeek-V4-Flash 在世界知识储备方面稍逊一筹，但展现出了接近的推理能力。而由于模型参数和激活更小，相较之下 V4-Flash 能够提供更加快捷、经济的 API 服务。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
-### 测试
+### 测试结果
 
 
 使用aisbench前缀测试工具验证：
@@ -25,15 +25,19 @@ case1: 90%前缀，输入token数128K，输出token数1，并发60，共240条�
 | 是 |  32121.5 | / | 57.24% | 70.76% |
 
 
-### 环境准备
+### 环境说明
 
 【硬件规格】：Atlas 800IA3 * 2
 
-【驱动固件】：>=25.5.1
+【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
+
+<span style="color:#e60000;">注意：采用本文的部署方案必须满足以下底软版本要求</span>
+
+【NPU驱动固件】>=25.5.1
 
 【L1 1520 CC】>=1.5.0
 
-【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
+【OS 内核版本】>=5.10
 
 
 

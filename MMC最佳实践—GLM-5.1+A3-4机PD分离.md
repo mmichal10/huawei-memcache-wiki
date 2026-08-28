@@ -33,23 +33,25 @@
 2. **实际并发显著提升**：缓存命中后模型侧实际并发从6提升至24，服务承载能力翻倍
 
 
-### 部署
+### 环境说明
 
-本文采用的部署方案基于 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html) 修改。
+【硬件规格】Atlas 900 A3 SuperPoD 四机64卡
 
-【硬件配置】Atlas 900 A3 SuperPoD 四机64卡
+【部署配置】2P2D （Prefill TP8 DP4，Decode TP4 DP8）
 
-【推理框架】vLLM
-
-【部署规格】2P2D （Prefill TP8 DP4，Decode TP4 DP8）
-
-**注意：采用本文的部署方案必须满足以下底软版本要求**
+<span style="color:#e60000;">注意：采用本文的部署方案必须满足以下底软要求</span>
 
 【操作系统内核版本】>=5.10.0
 
 【NPU驱动固件】>=25.5.1
 
 【L1 1520 CC】>=1.5.0
+
+
+### 部署
+
+本文采用的部署方案基于 [vllm-ascend部署GLM-5.1官方指导文档](https://docs.vllm.ai/projects/vllm-ascend-cn/zh-cn/latest/tutorials/models/GLM5.html) 修改。
+
 
 
 #### 1. 拉取vllm-ascend官方镜像

@@ -8,11 +8,9 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 
 
-### 环境准备
+### 环境说明
 
 【硬件规格】：A2 * 1
-
-【驱动固件】：25.5.3（最低要求为25.5.1 [下载地址](https://www.hiascend.com/hardware/firmware-drivers/old/community?product=4&model=32&cann=All&driver=Ascend+HDK+25.5.1)）
 
 【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
 

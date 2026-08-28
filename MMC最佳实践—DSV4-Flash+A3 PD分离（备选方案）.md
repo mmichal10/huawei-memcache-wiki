@@ -9,6 +9,8 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 ### 环境说明
 
+【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
+
 **注意：由于MemCache在A3上的优选方案（基于HCCS传输的多机池化）对交换机CC包、NPU驱动固件和操作系统内核均有要求，某些客户局点难以完成升级，本案例中采用了MemCache备选方案（基于PCIE传输的单机L2池化），消解了底软不兼容的问题。**
 
 【OS内核版本】：无特殊要求
@@ -30,10 +32,6 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 
 ### 部署
-
-#### 0. 下载权重
-
-使用ModelScope下载权重[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)。
 
 #### 1. 拉取vllm-ascend官方镜像
 
