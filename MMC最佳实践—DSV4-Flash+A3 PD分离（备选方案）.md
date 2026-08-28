@@ -2,7 +2,8 @@
 
 [MemCache](https://gitcode.com/Ascend/memcache) 是针对AI推理场景设计的高性能分布式KVCache缓存系统，针对昇腾超节点、服务器的实现了精细化性能调优，提供较好的High Availability能力，同时对接到vllm-ascend、sglang、mindie等开源推理框架。
 
-**DeepSeek-V4-Flash-0731** 是 **DeepSeek-V4-Flash** 的官方正式版本，取代了预览版，并大幅增强了智能体（agentic）能力。尽管 DeepSeek-V4-Flash-0731 激活的参数量远小于 DeepSeek-V4-Pro（预览版），但其整体上可与当前最强的闭源模型相媲美。
+DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和推理性能上均实现国内与开源领域的领先。相比 DeepSeek-V4-Pro，DeepSeek-V4-Flash 在世界知识储备方面稍逊一筹，但展现出了接近的推理能力。而由于模型参数和激活更小，相较之下 V4-Flash 能够提供更加快捷、经济的 API 服务。
+使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
 
@@ -20,14 +21,19 @@
 
 ### 测试结果
 
-【测试工具】：aisbench
 【硬件规格】：Atlas 900 A3 SuperPoD 四机64卡
+
+【测试工具】：aisbench
 
 ![memcache_ttft_compare.png](https://raw.gitcode.com/user-images/assets/7672915/919887de-21f6-43e2-8e46-ea8f34f2687f/memcache_ttft_compare.png 'memcache_ttft_compare.png')
 
 
 
 ### 部署
+
+#### 0. 下载权重
+
+使用ModelScope下载权重[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)。
 
 #### 1. 拉取vllm-ascend官方镜像
 
