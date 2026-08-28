@@ -49,7 +49,7 @@ pip install memcache_hybrid==1.1.2
 
 
 
-### 运行
+### 部署
 
 #### 1. 修改 Memcache 配置文件
 
