@@ -1,11 +1,11 @@
-#### 概述
+### 概述
 
 [MemCache](https://gitcode.com/Ascend/memcache) 是针对AI推理场景设计的高性能分布式KVCache缓存系统，针对昇腾超节点、服务器的实现了精细化性能调优，提供较好的High Availability能力，同时对接到vllm-ascend、sglang、mindie等开源推理框架。
 
 GLM-4.7 系列是智谱的高智能模型，面向 **Agentic Coding** 场景强化了编码能力、长程任务规划与工具协同，并在多个公开基准的当期榜单中取得开源模型中的出色表现。使用MemCache作为vLLM KV Pool后端，可以实现高效的KV Cache存储和请求间复用，从而大幅优化长文本、高复用（prefix cache）场景下的TTFT和吞吐水平。
 
 
-#### 环境说明
+### 环境说明
 【硬件规格】Atlas 800T A2 双机16卡
 
 <span style="color:#e60000;">注意：采用本文的部署方案必须满足以下底软版本要求</span>
@@ -14,7 +14,7 @@ GLM-4.7 系列是智谱的高智能模型，面向 **Agentic Coding** 场景强�
 
 
 
-#### 部署
+### 部署
 
 本文部署以 [GLM-4.7_vLLM-ascend](https://ai.gitcode.com/Ascend-SACT/GLM-4.7_vLLM-ascend/tree/main) 中提供的环境和脚本为基线
 
@@ -34,7 +34,7 @@ vllm_ascend                       0.14.0rc2.dev68+gf55ded242 /vllm-workspace/vll
 
 
 
-##### 1. 安装MF
+#### 1. 安装MF
 
 在线安装：
 
@@ -51,7 +51,7 @@ pip install memcache_hybrid==1.1.0
 
 
 
-##### 2. 修改配置文件
+#### 2. 修改配置文件
 
 MemCache由MetaService和LocalService两个组件构成，其中LocalService集成到推理框架中随推理进程一同启动，负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
@@ -111,7 +111,7 @@ ock.mmc.local_service.dram.size = 80GB
 
 
 
-##### 3. 准备vLLM服务启动脚本
+#### 3. 准备vLLM服务启动脚本
 
 node0
 
@@ -281,7 +281,7 @@ export MMC_LOCAL_CONFIG_PATH=/usr/local/lib/python3.11/site-packages/memcache_hy
 
 
 
-##### 4. 拉起服务
+#### 4. 拉起服务
 
 首先需要拉起MetaService元数据管理服务
 
@@ -294,7 +294,7 @@ python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 
 
 
-#### 测试
+### 测试
 
 推荐使用vLLM官方多轮会话测试工具 [vllm/benchmarks/multi_turn/README.md at main · vllm-project/vllm](https://github.com/vllm-project/vllm/blob/main/benchmarks/multi_turn/README.md)
 
@@ -360,7 +360,7 @@ python benchmark_serving_multi_turn.py \
 
 
 
-#### 指标观察
+### 指标观察
 
 收集vLLM日志中的如下指标数据，可以绘制出运行指标变化趋势
 
