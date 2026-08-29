@@ -40,10 +40,10 @@ case1: 90%前缀，输入token数128K，输出token数1，并发60，共240条�
 【OS 内核版本】>=5.10
 
 
+### 部署
 
-#### vllm-ascend
 
-拉取vllm-ascend v0.23.0rc1官方镜像
+#### 1. 拉取vllm-ascend官方镜像
 
 ```shell
 docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
@@ -66,7 +66,7 @@ docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
 ```
 
 
-#### memcache
+#### 2. 安装MemCache
 
 vllm-ascend官方镜像中**已安装v1.1.2版本**的memcache及其配套。如需手动安装参考如下：
 
@@ -85,9 +85,7 @@ pip install memcache_hybrid==1.1.2
 安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
 
 
-### 部署
-
-#### 1. 修改 Memcache 配置文件
+#### 3. 修改 MemCache 配置文件
 
 MemCache由MetaService和LocalService两个组件构成，其中LocalService负责内存申请、数据读写和传输；MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
@@ -201,11 +199,11 @@ if __name__ == "__main__":
 
 更多配置可以参考[官方配置文档](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md).
 
-#### 2. 准备推理服务启动相关脚本
+#### 4. 准备推理服务启动相关脚本
 
 本节展示了在Atlas 800 A3 双节点环境下，以1P1D配置部署DeepSeek-V4-Flash以获得更优性能的指南。
 
-##### 2.1 在每个节点上准备脚本 launch_online_dp.py
+##### 4.1 在每个节点上准备脚本 launch_online_dp.py
 
 ```python
 import argparse
@@ -307,7 +305,7 @@ if __name__ == "__main__":
         process.join()
 ```
 
-##### 2.2 P节点推理服务启动脚本 run_dp_template.sh
+##### 4.2 P节点推理服务启动脚本 run_dp_template.sh
 
 ```bash
 unset ftp_proxy
@@ -410,7 +408,7 @@ vllm serve /root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V4-Flash-w8a8
     }' 2>&1 | tee pd_p1.log
 ```
 
-##### 2.3 D节点推理服务启动脚本 run_dp_template.sh
+##### 4.3 D节点推理服务启动脚本 run_dp_template.sh
 
 ```bash
 unset ftp_proxy
@@ -521,7 +519,7 @@ vllm serve /root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V4-Flash-w8a8
 
 ```
 
-##### 2.4 请求转发代理程序脚本
+##### 4.4 请求转发代理程序脚本
 在任一节点上准备以下文件：
 
 从vllm-ascend仓库中获取代理程序[load_balance_proxy_server_example.py](https://github.com/vllm-project/vllm-ascend/blob/main/examples/disaggregated_prefill_v1/load_balance_proxy_server_example.py)
@@ -563,9 +561,9 @@ python load_balance_proxy_server_example.py \
 ```
 
 
-#### 3. 拉起服务
+#### 4. 拉起服务
 
-##### 3.1 拉起MetaService服务
+##### 5.1 拉起MetaService服务
 
 在任一节点拉起MetaService元数据管理服务，配置文件路径修改为实际路径
 ```bash
@@ -573,7 +571,7 @@ export MMC_META_CONFIG_PATH=/xxx/mmc-meta.conf
 python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
 ```
 
-##### 3.2 拉起LocalService独立进程
+##### 5.2 拉起LocalService独立进程
 
 在所有节点拉起LocalService独立进程，配置文件路径修改为实际路径
 ```bash
@@ -582,7 +580,7 @@ python3 memcache_standalone.py
 ```
 等待所有节点都启动成功（看到打印"Successfully initialized memcache. "）后再进行下一步。
 
-##### 3.3 拉起VLLM推理服务
+##### 5.3 拉起VLLM推理服务
 
 需修改其中 <p_ip>和 <d_ip>为p、d节点的ip，如需修改端口请同步修改请求转发代理程序脚本`start_proxy.sh`.
 
@@ -596,7 +594,7 @@ D节点：
 python launch_online_dp.py --dp-size 16 --tp-size 1 --dp-size-local 16 --dp-rank-start 0 --dp-address <d_ip> --dp-rpc-port 12321 --vllm-start-port 7100
 ```
 
-##### 3.4 拉起请求转发代理程序脚本
+##### 5.4 拉起请求转发代理程序脚本
 在任一节点拉起
 ```bash
 bash start_proxy.sh
