@@ -15,10 +15,10 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 【模型权重】：[DeepSeek-V4-Flash-w8a8-mtp](https://www.modelscope.cn/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp)
 
 
+### 部署
 
-#### vllm-ascend
 
-拉取vllm-ascend官方镜像
+#### 1. 拉取vllm-ascend官方镜像
 
 ```shell
 docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
@@ -27,7 +27,7 @@ docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
 启动容器的命令可参考 [vllm-ascend 部署 DeepSeek-V4-Flash 官方指导文档](https://docs.vllm.ai/projects/ascend/zh-cn/latest/tutorials/models/DeepSeek-V4-Flash.html) 。
 
 
-#### memcache
+#### 2. 安装MemCache
 
 vllm-ascend官方镜像中已安装v1.1.2版本的memcache及其配套。如需手动安装参考如下：
 
@@ -47,9 +47,7 @@ pip install memcache_hybrid==1.1.2
 
 
 
-### 部署
-
-#### 1. 修改 Memcache 配置文件
+#### 3. 修改 MemCache 配置文件
 
 MemCache由MetaService和LocalService两个组件构成，其中LocalService集成到推理框架中随推理进程一同启动，负责内存申请、数据读写和传输，MetaService作为独立进程启动，通过TCP与LocalService建立连接，负责元数据管理、数据淘汰、主备切换（高可用等功能）。
 
@@ -110,7 +108,7 @@ ock.mmc.local_service.dram.size = 80GB
 
 
 
-#### 2. 准备vLLM启动脚本
+#### 4. 准备vLLM启动脚本
 
 ```shell
 export OMP_PROC_BIND=false
@@ -197,18 +195,9 @@ export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packag
 
 
 
-#### 3. 拉起服务
+#### 5. 拉起服务
 
-首先需要拉起MetaService元数据管理服务
-
-```shell
-export MMC_META_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf
-python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
-```
-
-然后使用脚本拉起推理服务
-
-##### 3.1 在每个节点配置大页内存
+##### 5.1 在每个节点配置大页内存
 
 host_shm不依赖大页也可以拉起，但是走4K页性能远不如静态大页，建议使用静态大页的方式拉起服务，以获得最佳性能
 
@@ -239,7 +228,17 @@ echo 409600 | sudo tee /proc/sys/vm/nr_hugepages
 **tips：如果在容器或POD中使用，需要保证容器内映射了 `/dev/hugepages/`目录**
 
 
-#### 4. 测试
+##### 5.2 拉起MetaService元数据管理服务
+
+```shell
+export MMC_META_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packages/memcache_hybrid/config/mmc-meta.conf
+python3 -c "from memcache_hybrid import MetaService; MetaService.main()"
+```
+
+##### 5.3 使用脚本拉起推理服务
+
+
+### 测试
 
 
 使用aisbench前缀测试工具验证：
