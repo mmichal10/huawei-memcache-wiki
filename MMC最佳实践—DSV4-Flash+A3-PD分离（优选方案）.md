@@ -561,7 +561,7 @@ python load_balance_proxy_server_example.py \
 ```
 
 
-#### 4. 拉起服务
+#### 5. 拉起服务
 
 ##### 5.1 拉起MetaService服务
 
