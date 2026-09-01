@@ -27,6 +27,8 @@ HCCS总线上DRAM地址范围是固定的，而部分服务器的DRAM地址空�
 
 https://support.huawei.com/enterprise/zh/atlas-computing/atlas-900-a3-superpod-pid-261207247/software/269547276?idAbsPath=fixnode01|23710424|251366513|22892968|252309113|261207247
 
+下载 Atlas-900-A3-SuperPoD-BIOS_32.85.zip 并解压
+
 ###### 3.2 通过iBMC升级BIOS补丁
 
 **步骤1：登录iBMC管理页面**
