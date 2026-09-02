@@ -64,11 +64,16 @@ vllm_ascend                              0.18.0rc1              /vllm-workspace/
 
 #### 1. 安装MF
 
-在线安装：
+vllm-ascend官方镜像中已安装memcache及其配套，可通过如下方式查询已有版本：
+```shell
+pip list | grep mem
+```
+
+目前推荐的稳定版本为1.1.5，安装命令为：
 
 ```shell
-pip install memfabric_hybrid==1.1.2
-pip install memcache_hybrid==1.1.2
+pip install memfabric_hybrid==1.1.5
+pip install memcache_hybrid==1.1.5
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。

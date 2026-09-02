@@ -29,19 +29,25 @@ docker pull quay.io/ascend/vllm-ascend:v0.23.0rc1
 
 #### 2. 安装MemCache
 
-vllm-ascend官方镜像中已安装v1.1.2版本的memcache及其配套。如需手动安装参考如下：
+vllm-ascend官方镜像中已安装memcache及其配套，可通过如下方式查询已有版本：
+```shell
+pip list | grep mem
+```
+
+目前推荐的稳定版本为1.1.5，安装命令为：
 
 ```shell
-pip install memfabric_hybrid==1.1.2
-pip install memcache_hybrid==1.1.2
+pip install memfabric_hybrid==1.1.5
+pip install memcache_hybrid==1.1.5
 ```
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
 
 下载链接：
 
-[memcache](https://pypi.org/project/memcache-hybrid/1.1.2/#files)
-[memfabric](https://pypi.org/project/memfabric-hybrid/1.1.2/#files)
+[memfabric](https://pypi.org/project/memfabric-hybrid/#history)
+
+[memcache](https://pypi.org/project/memcache-hybrid/#history)
 
 安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
 
