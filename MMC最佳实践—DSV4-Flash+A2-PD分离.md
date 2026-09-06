@@ -26,7 +26,7 @@ DeepSeek-V4 拥有百万字超长上下文，在 Agent 能力、世界知识和�
 
 ### 测试结果
 
-
+![ttft_compare.png](https://raw.gitcode.com/user-images/assets/7672915/f57f146e-c0be-4bda-ab7a-fefb6571d1cc/ttft_compare.png 'ttft_compare.png')
 
 详细数据：
 
