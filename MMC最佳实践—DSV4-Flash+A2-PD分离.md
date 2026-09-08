@@ -144,7 +144,7 @@ ock.mmc.local_service.dram.size = 50GB
 
 #### 4. 准备推理服务相关脚本
 
-##### 4.1 在每个节点准备脚本`run_dp_template.sh`。
+##### 4.1 在每个节点准备脚本`launch_online_dp.py`。
 
 ```python
 import argparse
