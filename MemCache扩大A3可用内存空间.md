@@ -65,7 +65,7 @@ lsmem
 
 **方法2：检查MemCache可申请空间**
 
-获取[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本，扫描MemCache可申请使用的DRAM空间大小。
+获取[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/master/src/smem/python/memfabric_hybrid/memfabric_hybrid/mem_scan.py)脚本，扫描MemCache可申请使用的DRAM空间大小。
 
 ```bash
 python3 mem_scan.py

@@ -29,7 +29,7 @@ A3 环境中，由于[地址交集](https://gitcode.com/Ascend/memfabric_hybrid/
 echo 3 > /proc/sys/vm/drop_caches
 ```
 
-运行[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/master/script/mem_scan.py)脚本扫描可用的物理内存：
+运行[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/master/src/smem/python/memfabric_hybrid/memfabric_hybrid/mem_scan.py)脚本扫描可用的物理内存：
 
 `python3 mem_scan.py`
 

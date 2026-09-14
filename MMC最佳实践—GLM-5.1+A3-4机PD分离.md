@@ -146,7 +146,7 @@ ock.mmc.local_service.max.dram.size = 1024GB
 
 ###### 准备提供内存的 LocalService 配置文件
 
-运行[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/develop/script/mem_scan.py)脚本扫描可用的物理内存：
+运行[mem_scan.py](https://gitcode.com/Ascend/memfabric_hybrid/blob/master/src/smem/python/memfabric_hybrid/memfabric_hybrid/mem_scan.py)脚本扫描可用的物理内存：
 
 `python3 mem_scan.py`
 
