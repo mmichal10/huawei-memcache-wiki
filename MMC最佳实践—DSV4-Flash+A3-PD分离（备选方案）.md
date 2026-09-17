@@ -137,7 +137,7 @@ ock.mmc.log_level = info
 ## The maximum supported rank count; once ranks are connected, no further modifications are allowed — a meta restart is required
 ock.mmc.local_service.world_size = 256
 
- ## 卡侧ROCE网络传输为A2典型配置
+## 使用基于共享内存的池化方案
 ock.mmc.local_service.protocol = host_shm
 
 ## 每卡配置24GB内存，可根据环境实际共享内存容量调整（df -h查询）
