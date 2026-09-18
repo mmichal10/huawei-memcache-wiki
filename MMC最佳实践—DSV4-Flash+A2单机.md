@@ -162,7 +162,8 @@ vllm serve /home/weights/DeepSeek-V4-Flash-w8a8-mtp \
         "kv_connector_extra_config": {
             "backend": "memcache",
             "mooncake_rpc_port":"0"
-        }
+        },
+        "kv_load_failure_policy": "recompute"
     }' \
     --additional-config '
     {
@@ -195,7 +196,8 @@ export MMC_LOCAL_CONFIG_PATH=/usr/local/python3.12.13/lib/python3.12/site-packag
         "kv_role": "kv_both",
         "kv_connector_extra_config": {
             "backend": "memcache"
-        }
+        },
+        "kv_load_failure_policy": "recompute"
     }'
 ```
 
