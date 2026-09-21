@@ -23,7 +23,7 @@ scrape_configs:
 ### 2.2 导入 Grafana
 
 1. 添加上述 Prometheus 为数据源
-2. 导入预置 Dashboard：[example/metrics/memcache_dashboard_client_metrics.json](https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashboard_client_metrics.json)
+2. 导入预置 Dashboard：[example/metrics/memcache_dashboard_client_metrics.json](https://gitcode.com/Ascend/memcache/blob/master/example/metrics/memcache_dashboard_client_metrics.json)
 
 
 ## 3. 看板概览
