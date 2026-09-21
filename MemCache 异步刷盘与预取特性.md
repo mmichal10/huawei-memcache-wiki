@@ -2,9 +2,9 @@
 
 ## 1. 特性概述
 
-MemCache 三级缓存架构中，DRAM→SSD 淘汰和 SSD→DRAM 回温是数据冷热分层的两条核心路径。本次更新在这两条路径上分别引入了**异步刷盘**和**预取**机制：
+MemCache 三级缓存架构中，DRAM→SSD 刷盘和 SSD→DRAM 回温是数据冷热分层的两条核心路径。本特性在这两条路径上分别引入了**异步刷盘**和**预取**机制：
 
-- **异步刷盘**：DRAM 淘汰时不再同步等待 SSD 写入完成，而是将待淘汰数据放入后台自动刷入 SSD。上层 `put` / `put_batch` 请求不受 SSD 写入延迟影响。
+- **异步刷盘**：数据写入 DRAM 后，由后台线程按批次异步刷入 SSD，水位控制只用于淘汰，不决定是否刷盘。上层 `put` / `put_batch` 请求不受 SSD 写入延迟影响。
 - **预取**：通过 `is_exist` / `batch_is_exist` 接口探测到数据仅在 SSD 时，主动触发 SSD→DRAM 回温。回温完成后，后续 `get` / `get_batch` 可获得接近原生 DRAM 命中的访问时延。
 
 两项特性均依赖 SSD 池化开关（`ock.mmc.local_service.storage.enabled = true`），对上层应用完全透明，无需修改调用代码。
@@ -13,12 +13,14 @@ MemCache 三级缓存架构中，DRAM→SSD 淘汰和 SSD→DRAM 回温是数据
 
 ### 2.1 异步刷盘
 
-数据写入 DRAM 后，当空间使用率达到高水位时，系统触发淘汰。淘汰的数据会在后台自动刷入 SSD，`put` / `put_batch` 请求无需等待 SSD 写入完成即可返回。数据刷入 SSD 后自动注册到缓存元数据，后续 `get` / `get_batch` 会根据淘汰情况从 DRAM 或 SSD 读取。
+数据写入 DRAM 后，后台线程会按批次异步刷入 SSD，`put` / `put_batch` 请求无需等待 SSD 写入完成即可返回。刷盘成功后，SSD 副本会注册到缓存元数据，后续 `get` / `get_batch` 会根据数据所在层级从 DRAM 或 SSD 读取。
 
 
 ### 2.2 预取
 
 预取在 `is_exist` / `batch_is_exist` 接口中触发。当检查发现某个 key 的数据仅存在于 SSD（DRAM/HBM 上无可读副本）时，系统主动将其从 SSD 回温到 DRAM。
+
+
 
 批量 `batch_is_exist` 会将所有命中 SSD 的 key 一次性聚合提交，提升回温效率。
 
@@ -70,7 +72,12 @@ ock.mmc.evict_threshold_low = 80
 
 ## 5. 使用示例
 
-异步刷盘和预取对上层应用完全透明，无需修改任何调用代码：
+推荐用法是先在 `mmc-local.conf` 中启用 SSD 池化，再在 Python 侧配置业务内存并正常读写：
+
+```ini
+# mmc-local.conf
+ock.mmc.local_service.storage.enabled = true
+```
 
 ```python
 from memcache_hybrid import DistributedObjectStore, LocalConfig
@@ -80,7 +87,7 @@ config.dram_size = "400GB"
 store = DistributedObjectStore()
 store.setup(config)
 
-# 批量读写，水位满后自动异步刷 SSD，is_exist / batch_is_exist 自动触发预取
+# 批量读写，写入 DRAM 后异步刷 SSD，is_exist / batch_is_exist 自动触发预取
 keys = ["key1", "key2", "key3"]
 values = [b"data" * 1024 for _ in keys]
 store.put_batch(keys, values)
