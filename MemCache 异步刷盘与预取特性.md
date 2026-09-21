@@ -91,8 +91,6 @@ data = store.get_batch(keys)
 
 - 异步刷盘和预取均依赖 `ock.mmc.local_service.storage.enabled = true`，未启用 SSD 时无效
 - 预取仅在 `is_exist` / `batch_is_exist` 接口中触发，`get` / `get_batch` 接口不触发预取（只做被动回温）
-- 单次 `put` 数据量超过 DRAM 容量的 1% 时无法触发淘汰，数据直接写入 DRAM 等待下次淘汰周期
-- 预取不会主动探测 SSD IO 负载，大量并发预取可能造成 SSD IO 竞争
 - 预取失败不影响正确性，后续 `get` / `get_batch` 仍可通过被动回温获取数据
 
 ## 7. FAQ
