@@ -175,7 +175,7 @@ http://141.61.39.235:3000/
 
 
 ```
-https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashboard_graph.json
+https://gitcode.com/Ascend/memcache/blob/master/example/metrics/memcache_dashboard_graph.json
 ```
 
  效果展示图
@@ -189,7 +189,7 @@ https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashbo
 模板2：
 
 ```
-https://gitcode.com/Ascend/memcache/blob/develop/example/metrics/memcache_dashboard_math.json
+https://gitcode.com/Ascend/memcache/blob/master/example/metrics/memcache_dashboard_math.json
 ```
 
  效果展示图
