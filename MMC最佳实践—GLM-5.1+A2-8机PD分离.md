@@ -514,7 +514,7 @@ python load_balance_proxy_server_example.py \
         6721 6722 \
         6721 6722 \
         6721 6722 \
-        6721 6722 \
+        6721 6722
 ```
 
 
