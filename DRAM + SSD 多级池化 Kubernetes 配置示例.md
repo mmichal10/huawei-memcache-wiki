@@ -178,6 +178,44 @@ kubectl -n memcache-inference exec memcache-minimax-0 -- \
 kubectl -n memcache-inference exec memcache-minimax-0 -- \
   blockdev --getsize64 /dev/memcache-ubsio1
 ```
+### local-pods-demo.yaml配置注意事项：
+1.pod默认shm只有64M，local-pods-demo.yaml需添加宿主机的shm映射
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    volumeMounts:
+    - name: shm
+      mountPath: /dev/shm
+  volumes:
+  - name: shm
+    hostPath:
+      path: /dev/shm
+      type: Directory
+```
+2.pod内存配置
+memory需大于ubsio.mem.size_in_gb * ubsio.standalone.device_count + vllm活动内存
+如：ubsio.mem.size_in_gb=10，ubsio.standalone.device_count=8，vllm活动内存40G，memory至少要大于120G
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    resources:
+        requests:
+              memory: "200Gi"
+        limits:
+              memory: "200Gi"
+```
 
 #### 关键参数含义（可根据实际情况修改）
 | 参数 | 当前配置值 | YAML 索引位置 | 含义 |
