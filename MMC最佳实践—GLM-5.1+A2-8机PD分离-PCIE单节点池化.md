@@ -583,6 +583,7 @@ pip3 install ais_bench_benchmark[full]
 ```
 
 2. 配置aisbench_auto_tools_prefix工具
+
 克隆 [rayn-zzz/aisbench_auto_tools_prefix](https://github.com/rayn-zzz/aisbench_auto_tools_prefix) 仓库并按照README说明配置config.py
 
 注意：本次测试中开启了前缀预热功能，需要配置POD_INFO字段，示例如下：
