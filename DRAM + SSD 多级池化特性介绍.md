@@ -96,7 +96,7 @@ ubsio.standalone.force_new_disk = true
 
 UBS IO 详细配置项及参数说明，请参见 [DRAM + SSD 多级池化配置指南](https://gitcode.com/Ascend/memcache/wiki/DRAM%20+%20SSD%20%E5%A4%9A%E7%BA%A7%E6%B1%A0%E5%8C%96%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97.md)。
 
-#### 配置文件 `mmc-meta.conf`（最新release/1.2.1版本为例）：
+#### 配置文件 `mmc-meta.conf`（最新1.2.1版本为例）：
 
 ```ini
 # 空间使用率达到高水位时，Put 操作触发数据淘汰
