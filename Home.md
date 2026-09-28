@@ -26,7 +26,8 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 #### GLM-5.1
 - [GLM-5.1+A3*4机PD分离案例](MMC最佳实践—GLM-5.1+A3-4机PD分离.md)
-- [GLM-5.1+A2*8机PD分离案例](MMC最佳实践—GLM-5.1+A2-8机PD分离.md)
+- [GLM-5.1+A2*8机PD分离案例-ROCE多节点池化（优选方案）](MMC最佳实践—GLM-5.1+A2-8机PD分离-ROCE多节点池化.md)
+- [GLM-5.1+A2*8机PD分离案例-PCIE单节点池化（备选方案）](MMC最佳实践—GLM-5.1+A2-8机PD分离-PCIE单节点池化.md)
 
 #### GLM-4.7
 - [GLM-4.7+A2双机混部案例](MMC最佳实践—GLM-4.7+A2双机混部.md)
