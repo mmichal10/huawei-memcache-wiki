@@ -12,6 +12,7 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 - [元数据HA原理](怎么部署一个memcache的HA集群.md)
 - [集群的扩缩容](集群的扩缩容.md)
+- [UBSIO Kubernetes CSI Raw Block：StatefulSet + volumeClaimTemplates](UBSIO-K8s-CSI-Raw-Block解决方案.md)
 
 ## 案例库
 #### DSV4
