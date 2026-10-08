@@ -10,7 +10,8 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 ## 特性介绍
 
-- [元数据HA原理](怎么部署一个memcache的HA集群.md)
+- [元数据HA原理（K8s Lease 方案）](怎么部署一个memcache的HA集群.md)
+- [元数据HA原理（etcd 方案，推荐）](怎么部署一个memcache的HA集群-etcd方案.md)
 - [集群的扩缩容](集群的扩缩容.md)
 - [UBSIO Kubernetes CSI Raw Block：StatefulSet + volumeClaimTemplates](UBSIO-K8s-CSI-Raw-Block解决方案.md)
 
@@ -41,7 +42,8 @@ MemCache Hybrid 项目文档首页，聚焦版本规划、特性介绍、案例�
 
 ## 快速开始
 
-- [怎么部署一个memcache的HA集群](怎么部署一个memcache的HA集群.md)  
+- [怎么部署一个memcache的HA集群（K8s Lease 方案）](怎么部署一个memcache的HA集群.md)  
+- [怎么部署一个memcache的etcd HA集群（推荐）](怎么部署一个memcache的etcd HA集群.md)  
 - [怎么对接Grafana+Prometheus进行状态监控](memcache对接Grafana+Prometheus使用教程.md)
 
 ## 版本分支规则

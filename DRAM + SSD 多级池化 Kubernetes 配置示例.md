@@ -1,5 +1,7 @@
 本文介绍如何通过两个 Kubernetes 配置文件，在指定节点上发现UBSIO 可以使用的本地块设备、将其注册为 PV，并由 StatefulSet 申请这些 PV 后启动一个 MiniMax 推理 Pod。
 
+> **MetaService 部署形态说明**：本示例中 Meta Service 以单实例随推理 Pod 启动（见 ConfigMap 中的 start_meta.py），使用固定端口，不涉及主备高可用。如需部署 MetaService 主备高可用，请参考《怎么部署一个memcache的HA集群-etcd方案》（etcd 方案，Pod 方式部署见其第 4 章）；注意 etcd 方案下 MetaService 端口由选举动态分配，本示例中固定端口的假设不再适用。请勿使用旧的 K8S Lease 方案。
+
 ## 总体架构
 
 整个方案由两个文件协作完成：
@@ -129,9 +131,10 @@ kubectl -n memcache-local-storage logs \
 
 1. 将 ConfigMap 中的占位 `bootstrap.sh` 和 `start_meta.py` 替换为实际启动逻辑；
 2. 实际脚本需要启动推理服务，并在 `8100` 端口提供 `/health`；
-3. 如果使用 `8500` 作为 Meta Service 或指标端口，实际进程也必须监听该端口；
+3. 如果使用 `8500` 作为 Meta Service 或指标端口，实际进程也必须监听该端口（本条仅适用于单实例部署；若 MetaService 采用 etcd 主备高可用部署，其端口由选举动态分配，`8500` 只能保留作指标端口）；
 4. UBSIO 必须使用容器内设备路径例如/dev/memcache-ubsio0:/dev/memcache-ubsio1，不要填写宿主机的 `/dev/loopN` 或 `/dev/nvmeNn1`；
-5. 确认推理镜像、Ascend 驱动目录、`/home` 目录和 8 个 NPU 资源在目标节点可用。
+5. 确认推理镜像、Ascend 驱动目录、`/home` 目录和 8 个 NPU 资源在目标节点可用；
+6. 若 MetaService 采用 etcd 主备高可用部署，Pod 挂载的 mmc-local.conf 中 `config_store_url` 必须与 MetaService 侧配置相同的 `etcd://` 地址（详见《怎么部署一个memcache的HA集群-etcd方案》）。
 
 UBSIO 磁盘路径的精确配置项名称是 `ubsio.disk.path`。本例应配置为：
 
