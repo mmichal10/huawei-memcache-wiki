@@ -1,6 +1,6 @@
 # etcd后端MetaService主备高可用验证流程
 
-本说明用于介绍如何在etcd后端下，验证MetaService的主备高可用流程。本方案不依赖K8S的Service/Lease资源，裸机进程部署即可完成验证；如业务运行在K8S集群中，也可以用Pod方式部署MetaService（参见第4章）。在生产环境中，用户可以进行参考配置MetaService的主备高可用。
+本说明用于介绍如何在etcd后端下，验证MetaService的主备高可用流程。支持裸机进程部署，也支持在K8S集群中以Pod方式部署MetaService（参见第4章）。在生产环境中，用户可以进行参考配置MetaService的主备高可用。
 
 原理机制：基于etcd的租约（Lease）和分布式锁，实现MetaService的选主功能：
 * 租约（Lease）：每个MetaService以服务端模式接入etcd后端，Leader节点将自身地址注册到etcd（key带TTL约5秒，Leader自动续约）。Leader故障后租约过期，地址key自动删除，集群感知主节点失效。
@@ -240,15 +240,7 @@ python3 /usr/local/memcache_hybrid/latest/aarch64-linux/script/ha/test-mmc-meta-
 
 ### 4. 在Kubernetes集群中以Pod方式部署（可选）
 
-本章介绍业务运行在K8S集群中时，如何用Pod方式部署etcd高可用方案的MetaService。etcd模式下选主完全由MetaService进程内的HaConfigStore完成（租约+分布式锁），K8S只负责拉起和维持进程，**不参与选主**。因此与旧K8S方案相比，所需的K8S资源大幅简化：
-
-| 旧K8S方案必需的资源 | 本方案是否需要 | 替代物 |
-|---|---|---|
-| Lease（meta-lease-lock） | 不需要 | etcd租约（TTL 5s，自动续约/过期） |
-| ClusterIP Service | 不需要 | LocalService从etcd动态发现Leader地址 |
-| account-role（RBAC授权） | 不需要 | 进程不再操作K8S Lease资源 |
-| Pod标签 role=master | 不需要 | 主备状态在etcd中，与Pod标签无关 |
-| initContainer改写配置IP | 不需要 | config_store_url为静态etcd地址，无需按PodIP改写 |
+本章介绍业务运行在K8S集群中时，如何用Pod方式部署etcd高可用方案的MetaService。etcd模式下选主完全由MetaService进程内的HaConfigStore完成（租约+分布式锁），K8S只负责拉起和维持进程，**不参与选主**，因此无需为选主创建任何额外的K8S资源（如Service、RBAC授权、角色标签等）。
 
 前置条件：
 * 所有MetaService Pod和LocalService Pod均可访问etcd服务端点
@@ -266,7 +258,7 @@ etcd是本方案的选主依据，其可用性直接决定高可用能力，可�
 
 #### 4.2 创建MetaService主备Pod
 
-样例yaml改自旧方案的meta-pods-demo.yaml：删除了serviceAccountName、role标签、Lease相关环境变量和改写config_store_url的initContainer，仅保留metrics_url按PodIP改写（供探针使用）。**样例仅作参考，存在安全风险，不能直接用于生产环境，用户可以参考样例进行修改定制**
+样例yaml提供MetaService主备Pod的完整定义，使用时需将镜像、安装包等占位内容替换为实际值。**样例仅作参考，存在安全风险，不能直接用于生产环境，用户可以参考样例进行修改定制**
 
 ```yaml
 # meta-pods-etcd-demo.yaml：etcd方案MetaService主备Pod定义
@@ -284,9 +276,9 @@ spec:
   template:
     metadata:
       labels:
-        app: meta-service   # 不再需要role标签，主备状态在etcd中
+        app: meta-service   # 主备状态在etcd中，与Pod标签无关
     spec:
-      # etcd方案不再操作Lease资源，无需serviceAccountName
+      # 进程不操作K8S资源，无需serviceAccountName
       terminationGracePeriodSeconds: 10
       hostNetwork: true     # 注册进etcd的是Pod IP，hostNetwork下即宿主机IP，客户端直连更简单
       dnsPolicy: ClusterFirstWithHostNet
@@ -349,7 +341,7 @@ spec:
               mountPath: /usr/local/Ascend/driver
             - name: firmware
               mountPath: /usr/local/Ascend/firmware
-            # NPU设备挂载与旧方案相同，此处省略，请参考旧方案meta-pods-demo.yaml补全
+            # NPU设备挂载：请根据节点实际NPU数量补全（davinci0~N、davinci_manager等设备文件，type: CharDevice）
       initContainers:
         - name: change-pod-ip
           image: 127.0.0.1:5000/memcache:1028
@@ -373,10 +365,10 @@ spec:
           hostPath:
             path: /home
             type: Directory
-        # 其余volumes与旧方案meta-pods-demo.yaml相同，此处省略
+        # 其余volumes：请根据节点实际环境补全NPU设备等hostPath挂载
 ```
 
-LocalService客户端的Pod定义可直接复用旧方案的local-pods-demo.yaml，仅要求其挂载的mmc-local.conf中config_store_url已按第2章改为etcd://地址。
+LocalService客户端以Pod方式部署时，参考test/k8s_deploy目录下的local-pods-demo.yaml，仅要求其挂载的mmc-local.conf中config_store_url已按第2章改为etcd://地址。
 
 创建并确认：
 ```shell
@@ -450,7 +442,7 @@ etcdctl --endpoints=http://10.0.0.1:12335 get /memfabric_hybrid/config_store/dat
 etcdctl --endpoints=http://10.0.0.1:12335 get /memfabric_hybrid/config_store/data/alive_rank_list
 ```
 
-注：MetaService的HTTP接口（/health、/role等）中主备角色信息来源于K8S选主器，etcd模式下role字段可能显示unknown，**不能**作为主备判断依据，请以etcd查询结果和日志为准。
+注：etcd模式下MetaService HTTP接口（/health、/role等）中的主备角色字段可能显示unknown，**不能**作为主备判断依据，请以etcd查询结果和日志为准。
 
 #### 5.2 测试MemCache功能正常
 ```shell
