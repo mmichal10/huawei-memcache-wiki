@@ -80,7 +80,7 @@ pip install memcache_hybrid==1.1.5
 
 安装其他非正式发布版可以直接源码编译安装，参考官方文档即可
 
-[memcache/doc/install_run.md](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md)
+[memcache/docs/zh/install_run.md](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/install_run.md)
 
 
 
@@ -184,7 +184,7 @@ ock.mmc.local_service.dram.size = 600GB
 ock.mmc.local_service.max.dram.size = 1024GB
 ```
 
-更多配置可以参考官方文档 https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md
+更多配置可以参考官方文档 https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md
 
 
 #### 4. 准备推理服务启动相关脚本

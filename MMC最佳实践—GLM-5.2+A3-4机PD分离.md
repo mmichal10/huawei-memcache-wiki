@@ -94,7 +94,7 @@ pip install memcache_hybrid==1.1.5
 
 [memcache](https://pypi.org/project/memcache-hybrid/#history)
 
-安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
+安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/install_run.md) 即可。
 
 ## 修改MemCache配置文件
 

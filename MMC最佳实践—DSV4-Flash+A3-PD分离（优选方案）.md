@@ -88,7 +88,7 @@ pip install memcache_hybrid==1.1.5
 
 [memcache](https://pypi.org/project/memcache-hybrid/#history)
 
-安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
+安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/install_run.md) 即可。
 
 
 #### 3. 修改 MemCache 配置文件
@@ -124,7 +124,7 @@ ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
 
-## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
+## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md)
 ```
 
 
@@ -157,7 +157,7 @@ ock.mmc.local_service.dram.size = 100GB
 ## max DRAM space usage
 ock.mmc.local_service.max.dram.size = 1024GB
 
-## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
+## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md)
 ```
 
 分离部署模式每个节点需准备两份配置文件，分别给独立LocalService进程以及和VLLM推理进程集成的Client使用。其中独立LocalService进程负责贡献内存。VLLM集成的Client进程负责数据读写和传输等。两份配置文件区别如下，其他字段须保持一致：
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         time.sleep(1)
 ```
 
-更多配置可以参考[官方配置文档](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md).
+更多配置可以参考[官方配置文档](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md).
 
 #### 4. 准备推理服务启动相关脚本
 

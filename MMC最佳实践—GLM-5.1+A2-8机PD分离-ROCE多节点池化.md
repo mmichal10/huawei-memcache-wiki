@@ -48,7 +48,7 @@ pip install memcache_hybrid==1.1.5
 
 如果因网络原因无法在线安装，可以在 [PyPI · The Python Package Index](https://pypi.org/) 下载安装包离线安装。
 
-安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/doc/install_run.md) 即可。
+安装其他非正式发布版可以直接源码编译安装，参考 [官方编译文档](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/install_run.md) 即可。
 
 
 #### 3. 准备MemCache配置文件
@@ -79,7 +79,7 @@ ock.mmc.meta_service.metrics_url = http://127.0.0.1:8000
 ## Log level: debug, info, warn, error
 ock.mmc.log_level = info
 
-## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
+## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md)
 ```
 
 
@@ -108,7 +108,7 @@ ock.mmc.local_service.protocol = device_rdma
 ock.mmc.local_service.dram.size = 100GB
 ock.mmc.local_service.max.dram.size = 1024GB
 
-## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_config.md)
+## For more configuration options and advanced parameters, please refer to the official documentation: [MemCache Configuration Guide](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_config.md)
 ```
 
 

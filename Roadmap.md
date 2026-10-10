@@ -19,6 +19,6 @@ MemCache在2026年H1阶段的目标是增强在多级缓存方面的能力、持
 
 ### <span style="color:#0066cc;">可维测</span>
 
-- [x] [**130**] Meta Service支持基于[restful](https://gitcode.com/Ascend/memcache/blob/master/doc/memcache_restful_api.md)进行集群管理、数据查询和指标查询，支持对接Prometheus和Grafana
+- [x] [**130**] Meta Service支持基于[restful](https://gitcode.com/Ascend/memcache/blob/master/docs/zh/memcache_restful_api.md)进行集群管理、数据查询和指标查询，支持对接Prometheus和Grafana
 
 ---
