@@ -47,7 +47,7 @@ HCCS总线上DRAM地址范围是固定的，而部分服务器的DRAM地址空�
 
 ###### 3.3 重启服务器
 
-BIOS补丁升级完成后，需要重启服务器，**并将MSD Base Address Adjust选项设为enable**，使新的DRAM地址空间配置生效。
+BIOS补丁升级完成后，需要重启服务器，**并将Advance/Memory Configuration/MSD Base Address Adjust选项设为enable**，使新的DRAM地址空间配置生效。
 
 ##### 4 验证方法
 
