@@ -159,7 +159,13 @@ ock.mmc.local_service.max.dram.size = 1024GB
 echo 3 > /proc/sys/vm/drop_caches
 ```
 
-如仍然较少，可能是内存碎片导致的，需要重启环境恢复。
+如扫描结果仍然较少，可能是内存碎片导致的，可通过如下命令触发内存规整：
+
+```shell
+echo 1 /proc/sys/vm/compact_memory
+```
+
+如扫描结果仍然较少，可以重启环境。
 
 假设在上一步中扫描得知环境上至少有600GB可用内存，将如下配置中IP替换为MetaService节点IP，在每个节点上保存为mmc-local-standalone.conf
 ```ini

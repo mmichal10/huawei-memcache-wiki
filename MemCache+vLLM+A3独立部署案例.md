@@ -35,6 +35,14 @@ echo 3 > /proc/sys/vm/drop_caches
 
 ![image.png](https://raw.gitcode.com/user-images/assets/7672916/348c0854-4efb-4803-8222-f6bf19589fa1/image.png 'image.png')
 
+如果扫描到的sdma可用内存量仍然较少，可通过如下命令触发内存规整进一步提升：
+
+```shell
+echo 1 /proc/sys/vm/compact_memory
+```
+
+如果可用内存仍然较少，可以重启环境。
+
 ##### 2. 准备配置文件
 
 假设在上一步中扫描得知环境上至少有600GB可用内存。
