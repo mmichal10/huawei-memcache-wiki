@@ -160,6 +160,7 @@ kubectl -n memcache-local-storage logs \
 4. UBSIO 必须使用容器内设备路径例如/dev/memcache-ubsio0:/dev/memcache-ubsio1，不要填写宿主机的 `/dev/loopN` 或 `/dev/nvmeNn1`；
 5. 确认推理镜像、Ascend 驱动目录、`/home` 中的模型和依赖、8 个 NPU 以及足够的内存资源在每个候选节点可用；NPU 需要由集群设备插件向 Kubernetes 注册；
 6. 若 MetaService 采用 etcd 主备高可用部署，Pod 挂载的 mmc-local.conf 中 `config_store_url` 必须与 MetaService 侧配置相同的 `etcd://` 地址（详见《怎么部署一个memcache的HA集群-etcd方案》）。
+7. 在候选节点检查 NPU 设备的属组，例如执行 `stat -c '%n %u:%g %a' /dev/davinci0 /dev/davinci_manager /dev/devmm_svm /dev/hisi_hdc`。本例使用 `supplementalGroups: [1000]`，应按实际设备 GID 调整；候选节点应采用一致的设备权限配置。移除全部 capabilities 后，UID 0 也不能绕过设备文件的访问权限。
 
 UBSIO 磁盘路径的精确配置项名称是 `ubsio.disk.path`。本例应配置为：
 
@@ -622,6 +623,10 @@ spec:
       hostNetwork: true
       # hostNetwork 场景继续使用集群 DNS。
       dnsPolicy: ClusterFirstWithHostNet
+      # 示例节点的 NPU 设备属组为 1000；按实际设备 GID 调整。
+      # 通过附加组访问 NPU，不需要启用业务容器特权模式或增加 capabilities。
+      securityContext:
+        supplementalGroups: [1000]
       # 删除 Pod 时最多等待 90 秒，再强制终止容器。
       terminationGracePeriodSeconds: 90
       nodeSelector:
