@@ -228,14 +228,15 @@ kubectl get pv -l memcache.io/pool=ubsio \
 
 ```bash
 # 观察期间保留 ADDED / MODIFIED / DELETED 事件及对象 UID。
-kubectl -n memcache-inference get pod,pvc --watch --output-watch-events -o json
-# 可再开一个终端观察整个 UBSIO 存储池的 PV。
+kubectl -n memcache-inference get pods --watch --output-watch-events -o json
+# 以下命令分别在其他终端运行；kubectl watch 每次只支持一种资源类型。
+kubectl -n memcache-inference get pvc --watch --output-watch-events -o json
 kubectl get pv -l memcache.io/pool=ubsio --watch --output-watch-events -o json
 ```
 
 ```bash
 kubectl -n "$NS" delete pod "$POD"
-kubectl -n "$NS" get pod,pvc -w
+kubectl -n "$NS" get pods -w
 ```
 
 验收时检查以下结果：
